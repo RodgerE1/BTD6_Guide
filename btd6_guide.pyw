@@ -23,7 +23,7 @@ import webbrowser
 import tkinter as tk
 from tkinter import ttk, messagebox, font, filedialog
 
-from heroes_data import HEROES_DATABASE, get_best_hero_for_map
+from heroes_data import HEROES_DATABASE, get_best_hero_for_map, get_strategy_hero_intel
 from threat_radar_data import get_round_data, check_strategy_defense_readiness, DANGER_ROUNDS
 from btd6_economy import parse_upgrade, is_legal_crosspath, get_cumulative_cash_ceiling
 from btd6_replay import validate_strategy, assign_explicit_tower_ids, validate_strategy_schema
@@ -1496,15 +1496,15 @@ class BTD6GuideApp(tk.Tk):
         rounds_badge.pack(side="right")
 
         # Hero Intelligence Box
-        hero = map_data.get("best_hero", "Sauda")
-        h_info = HEROES_DATABASE.get(hero, {})
+        strat_hero = strat.get("recommended_hero") or map_data.get("best_hero", "Sauda")
+        h_info = HEROES_DATABASE.get(strat_hero, {})
         h_icon = h_info.get("icon", "👑")
         h_title = h_info.get("title", "Hero")
-        alts = map_data.get("hero_alternatives", strat.get("hero_alternatives", []))
+        alts = strat.get("hero_alternatives") or map_data.get("hero_alternatives", [])
         alts_str = ", ".join(alts) if alts else "None"
-        reason = map_data.get("best_hero_reason", strat.get("best_hero_reason", ""))
-        synergies = map_data.get("hero_synergies", strat.get("hero_synergies", ""))
-        strat_hero = strat.get("recommended_hero", hero)
+        reason = strat.get("best_hero_reason") or map_data.get("best_hero_reason", "")
+        synergies = strat.get("hero_synergies") or map_data.get("hero_synergies", "")
+        map_best = map_data.get("best_hero")
 
         hero_box = tk.Frame(card, bg="#1a1b2b", padx=14, pady=10, highlightbackground=THEME["card_border"], highlightthickness=1)
         hero_box.pack(fill="x", pady=(10, 0))
@@ -1512,7 +1512,7 @@ class BTD6GuideApp(tk.Tk):
         h_top = tk.Frame(hero_box, bg="#1a1b2b")
         h_top.pack(fill="x")
 
-        tk.Label(h_top, text=f"{h_icon} OPTIMAL HERO FOR THIS MAP:  {hero.upper()} — {h_title}", font=self.font_body_bold, bg="#1a1b2b", fg=THEME["accent_yellow"]).pack(side="left")
+        tk.Label(h_top, text=f"{h_icon} RECOMMENDED HERO:  {strat_hero.upper()} — {h_title}", font=self.font_body_bold, bg="#1a1b2b", fg=THEME["accent_yellow"]).pack(side="left")
 
         btn_hero_detail = tk.Button(
             h_top,
@@ -1526,7 +1526,7 @@ class BTD6GuideApp(tk.Tk):
             padx=8,
             pady=1,
             cursor="hand2",
-            command=lambda h=hero: self.open_heroes_roster_dialog(focus_hero=h)
+            command=lambda h=strat_hero: self.open_heroes_roster_dialog(focus_hero=h)
         )
         btn_hero_detail.pack(side="right")
 
@@ -1538,8 +1538,8 @@ class BTD6GuideApp(tk.Tk):
         tk.Label(h_sub, text=f"🔄 Viable Alternatives: {alts_str}", font=self.font_small, bg="#1a1b2b", fg=THEME["text_muted"]).pack(side="left", padx=(0, 20))
         if synergies:
             tk.Label(h_sub, text=f"⚡ Synergies: {synergies}", font=self.font_small, bg="#1a1b2b", fg=THEME["accent_green"]).pack(side="left", padx=(0, 20))
-        if strat_hero and strat_hero != hero:
-            tk.Label(h_sub, text=f"🎯 Guide Build Hero: {strat_hero}", font=self.font_small, bg="#1a1b2b", fg=THEME["accent_teal"]).pack(side="left")
+        if map_best and map_best != strat_hero:
+            tk.Label(h_sub, text=f"🗺️ Map Affinity Hero: {map_best}", font=self.font_small, bg="#1a1b2b", fg=THEME["accent_teal"]).pack(side="left")
 
         # Sub-row: Starting Cash, Price Multiplier
         info_row = tk.Frame(card, bg=THEME["card"])
@@ -3147,13 +3147,14 @@ class BTD6GuideApp(tk.Tk):
             else:
                 f_steps = working_steps
 
+            rec_h = hero_var.get().strip()
             draft = copy.deepcopy(strat)
             draft.update({
                 "difficulty": diff_key,
                 "mode": strat.get("mode", "Standard"),
                 "rounds": strat.get("rounds", "1-40"),
                 "status": status_var.get(),
-                "recommended_hero": hero_var.get().strip(),
+                "recommended_hero": rec_h,
                 "overview": txt_overview.get("1.0", "end-1c").strip(),
                 "camo_handling": txt_camo.get("1.0", "end-1c").strip(),
                 "lead_handling": txt_lead.get("1.0", "end-1c").strip(),
@@ -3161,6 +3162,11 @@ class BTD6GuideApp(tk.Tk):
                 "why_it_works": txt_why.get("1.0", "end-1c").strip(),
                 "steps": f_steps
             })
+            if rec_h:
+                h_intel = get_strategy_hero_intel(rec_h, mid, map_data, difficulty=diff_key)
+                if not draft.get("best_hero_reason") or rec_h != strat.get("recommended_hero"):
+                    draft["best_hero_reason"] = h_intel["reason"]
+                    draft["hero_synergies"] = h_intel["synergies"]
             if "starting_cash" not in draft:
                 draft["starting_cash"] = 650
             return draft

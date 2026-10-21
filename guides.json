@@ -169,8 +169,8 @@
               "tower_id": "ouch_easy_t3"
             }
           ],
-          "best_hero_reason": "#Ouch has four disconnected quadrant tracks and heavy water/sight obstacles; Psi targets bloons across all lanes simultaneously with infinite range.",
-          "hero_synergies": "Ninja Monkey (4-0-1) + Alchemist (4-2-0) in center cross"
+          "best_hero_reason": "Quincy's cheap cost ($455 on Easy) allows an immediate foothold on #Ouch, providing vital early pierce across the center intersection.",
+          "hero_synergies": "Ninja Monkey (4-0-1) + Monkey Sub (2-0-3) + Alchemist"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -404,8 +404,8 @@
               "step_id": "ouch_medium_s14"
             }
           ],
-          "best_hero_reason": "#Ouch has four disconnected quadrant tracks and heavy water/sight obstacles; Psi targets bloons across all lanes simultaneously with infinite range.",
-          "hero_synergies": "Ninja Monkey (4-0-1) + Alchemist (4-2-0) in center cross"
+          "best_hero_reason": "Quincy's cheap cost ($540 on Medium) allows an immediate foothold on #Ouch, providing vital early pierce across the center intersection.",
+          "hero_synergies": "Ninja Monkey (4-0-1) + Monkey Sub (2-0-3) + Alchemist"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -742,7 +742,9 @@
               "tower_id": "ouch_hard_t2",
               "step_id": "ouch_hard_s21"
             }
-          ]
+          ],
+          "best_hero_reason": "Quincy's cheap cost ($585 on Hard) allows an immediate foothold on #Ouch, providing vital early pierce across the center intersection.",
+          "hero_synergies": "Ninja Monkey (4-0-1) + Monkey Sub (2-0-3) + Alchemist"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -1509,7 +1511,9 @@
               "timing": "before_round",
               "step_id": "adoras_temple_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Adora's canonical sacred home; her Blood Sacrifice instantly levels her up and massively enhances all Sun Temples on the pyramid.",
+          "hero_synergies": "Sun Temple (4-0-2 Super Monkey) + Alchemist (4-2-0)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -1674,8 +1678,8 @@
               "tower_id": "alpine_run_easy_t4"
             }
           ],
-          "best_hero_reason": "Winding downhill mountain track where Geraldo's Shootey Turrets, Gerry's Fire, and Creepy Idol provide cheap and versatile crowd control.",
-          "hero_synergies": "Dart Monkey (Apex Plasma Master) + Spike Factory (0-2-5 at exit)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Alpine Run, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -1924,8 +1928,8 @@
               "step_id": "alpine_run_medium_s15"
             }
           ],
-          "best_hero_reason": "Winding downhill mountain track where Geraldo's Shootey Turrets, Gerry's Fire, and Creepy Idol provide cheap and versatile crowd control.",
-          "hero_synergies": "Dart Monkey (Apex Plasma Master) + Spike Factory (0-2-5 at exit)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Alpine Run, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -2276,7 +2280,9 @@
               "timing": "before_round",
               "step_id": "alpine_run_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Alpine Run, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -2442,8 +2448,8 @@
               "tower_id": "ancient_portal_easy_t4"
             }
           ],
-          "best_hero_reason": "Bloons teleworking through portal gates emerge clumped together, making Pat's Big Squeeze and Roar devastating for area-of-effect destruction.",
-          "hero_synergies": "Recursive Cluster (2-0-4 Bomb) + Tack Zone (2-0-5)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Ancient Portal, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -2692,8 +2698,8 @@
               "step_id": "ancient_portal_medium_s15"
             }
           ],
-          "best_hero_reason": "Bloons teleworking through portal gates emerge clumped together, making Pat's Big Squeeze and Roar devastating for area-of-effect destruction.",
-          "hero_synergies": "Recursive Cluster (2-0-4 Bomb) + Tack Zone (2-0-5)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Ancient Portal, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -3044,7 +3050,9 @@
               "timing": "before_round",
               "step_id": "ancient_portal_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Ancient Portal, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -3209,8 +3217,8 @@
               "tower_id": "another_brick_easy_t4"
             }
           ],
-          "best_hero_reason": "The long straight road behind the brick wall allows Churchill's armor-piercing shells to pierce dozens of bloons per shot without obstruction.",
-          "hero_synergies": "Primary Mentoring (4-2-0 Village) + Recursive Cluster (2-0-4)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Another Brick, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -3459,8 +3467,8 @@
               "step_id": "another_brick_medium_s15"
             }
           ],
-          "best_hero_reason": "The long straight road behind the brick wall allows Churchill's armor-piercing shells to pierce dozens of bloons per shot without obstruction.",
-          "hero_synergies": "Primary Mentoring (4-2-0 Village) + Recursive Cluster (2-0-4)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Another Brick, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -3811,7 +3819,9 @@
               "timing": "before_round",
               "step_id": "another_brick_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Another Brick, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -3976,8 +3986,8 @@
               "tower_id": "ascent_easy_t4"
             }
           ],
-          "best_hero_reason": "Ascent features multiple separated elevation tiers and sight obstacles; Psi targets bloons across all tiers simultaneously with infinite range.",
-          "hero_synergies": "Sniper Monkey (0-2-4) + Wizard Monkey (0-2-4 Prince of Darkness)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Ascent, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -4226,8 +4236,8 @@
               "step_id": "ascent_medium_s15"
             }
           ],
-          "best_hero_reason": "Ascent features multiple separated elevation tiers and sight obstacles; Psi targets bloons across all tiers simultaneously with infinite range.",
-          "hero_synergies": "Sniper Monkey (0-2-4) + Wizard Monkey (0-2-4 Prince of Darkness)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Ascent, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -4578,7 +4588,9 @@
               "timing": "before_round",
               "step_id": "ascent_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Ascent, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -5361,7 +5373,9 @@
               "timing": "before_round",
               "step_id": "balance_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "The center circular dais is the premier Sauda spot in the game: 100% of all bloons pass directly under her dual blades on every lap.",
+          "hero_synergies": "Tack Zone (2-0-5) + Ring of Fire (4-0-2) + Berserker Brew (3-2-0)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -5541,8 +5555,8 @@
               "tower_id": "bazaar_easy_t5"
             }
           ],
-          "best_hero_reason": "Three separated marketplace lanes with obstacle awnings block conventional towers; Psi attacks bloons over all canopies with infinite range.",
-          "hero_synergies": "Sniper Monkey (0-2-5 Elite Defender) + Wizard (0-2-4)"
+          "best_hero_reason": "Quincy's long range covers multiple separated bazaar lanes, handling early camos and ceramic rushes with Storm of Arrows.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Wizard (0-2-4 Prince of Darkness)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -5806,8 +5820,8 @@
               "step_id": "bazaar_medium_s16"
             }
           ],
-          "best_hero_reason": "Three separated marketplace lanes with obstacle awnings block conventional towers; Psi attacks bloons over all canopies with infinite range.",
-          "hero_synergies": "Sniper Monkey (0-2-5 Elite Defender) + Wizard (0-2-4)"
+          "best_hero_reason": "Quincy's long range covers multiple separated bazaar lanes, handling early camos and ceramic rushes with Storm of Arrows.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Wizard (0-2-4 Prince of Darkness)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -6188,7 +6202,9 @@
               "timing": "before_round",
               "step_id": "bazaar_hard_s24"
             }
-          ]
+          ],
+          "best_hero_reason": "Quincy's long range covers multiple separated bazaar lanes, handling early camos and ceramic rushes with Storm of Arrows.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Wizard (0-2-4 Prince of Darkness)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -6926,7 +6942,9 @@
               "timing": "before_round",
               "step_id": "blons_hard_s21"
             }
-          ]
+          ],
+          "best_hero_reason": "Extremely short straight corner track; Sauda's instant melee burst damage and cheap cost are mandatory for stopping instant leaks.",
+          "hero_synergies": "Tack Zone (2-0-5) + Ice Monkey (2-0-4) + Alchemist"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -7665,7 +7683,9 @@
               "tower_id": "bloody_puddles_hard_t2",
               "step_id": "bloody_puddles_hard_s21"
             }
-          ]
+          ],
+          "best_hero_reason": "Ultra-spread parallel tracks make single defenders ineffective; Quincy's cheap cost ($540) and bouncing arrows are vital for early survival.",
+          "hero_synergies": "Sub 2-0-0 Advanced Intel + Dart Monkeys on muddy banks"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -7830,8 +7850,8 @@
               "tower_id": "bloonarius_prime_easy_t4"
             }
           ],
-          "best_hero_reason": "Bloon paths switch between prime and non-prime rounds; Etienne's global UAV and flying drones provide seamless coverage across shifting paths.",
-          "hero_synergies": "Sniper Monkey (0-2-4) + Heli Pilot (4-0-2 Apache)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Bloonarius Prime, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -8080,8 +8100,8 @@
               "step_id": "bloonarius_prime_medium_s15"
             }
           ],
-          "best_hero_reason": "Bloon paths switch between prime and non-prime rounds; Etienne's global UAV and flying drones provide seamless coverage across shifting paths.",
-          "hero_synergies": "Sniper Monkey (0-2-4) + Heli Pilot (4-0-2 Apache)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Bloonarius Prime, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -8432,7 +8452,9 @@
               "timing": "before_round",
               "step_id": "bloonarius_prime_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Bloonarius Prime, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -9199,7 +9221,9 @@
               "timing": "before_round",
               "step_id": "candy_falls_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Gentle winding curves with a single stone bridge crossing allow Sauda to solo the opening 20+ rounds with virtually zero support.",
+          "hero_synergies": "Ninja Monkey (4-0-1 Bloonjitsu) + Alchemist (4-2-0)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -9379,8 +9403,8 @@
               "tower_id": "cargo_easy_t5"
             }
           ],
-          "best_hero_reason": "Harbor layout with a separate MOAB exit benefits immensely from Benjamin's Bloon Trojan, which prevents MOABs from releasing ceramic children.",
-          "hero_synergies": "Buccaneer (0-5-2 Pirate Lord) in dock + Sniper Monkey (0-2-4)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows placing her immediately on Round 1 at the road intersection to solo land waves with innate Camo detection, letting defenses invest into naval and explosive towers to intercept the separate MOAB canal.",
+          "hero_synergies": "Monkey Buccaneer (3-2-0 Destroyer) + Alchemist (3-2-0 Berserker Brew) + Bomb Shooter (0-3-2)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -9644,8 +9668,8 @@
               "step_id": "cargo_medium_s16"
             }
           ],
-          "best_hero_reason": "Harbor layout with a separate MOAB exit benefits immensely from Benjamin's Bloon Trojan, which prevents MOABs from releasing ceramic children.",
-          "hero_synergies": "Buccaneer (0-5-2 Pirate Lord) in dock + Sniper Monkey (0-2-4)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows placing her immediately on Round 1 at the road intersection to solo land waves with innate Camo detection, letting defenses invest into naval and explosive towers to intercept the separate MOAB canal.",
+          "hero_synergies": "Monkey Buccaneer (3-2-0 Destroyer) + Alchemist (3-2-0 Berserker Brew) + Bomb Shooter (0-3-2)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -10026,7 +10050,9 @@
               "timing": "before_round",
               "step_id": "cargo_hard_s24"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows placing her immediately on Round 1 at the road intersection to solo land waves with innate Camo detection, letting defenses invest into naval and explosive towers to intercept the separate MOAB canal.",
+          "hero_synergies": "Monkey Buccaneer (3-2-0 Destroyer) + Alchemist (3-2-0 Berserker Brew) + Bomb Shooter (0-3-2)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -10808,7 +10834,9 @@
               "timing": "before_round",
               "step_id": "carved_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "Placing Sauda inside the carved pumpkin mouth grants coverage over both incoming and looped paths simultaneously.",
+          "hero_synergies": "Wizard Monkey (0-2-4 Prince of Darkness) + Tack Zone (2-0-5)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -10974,8 +11002,8 @@
               "tower_id": "castle_revenge_easy_t4"
             }
           ],
-          "best_hero_reason": "Siege ramparts give Gwendolin's fire blasts coverage over both castle gates, while Heat It Up grants Lead-popping to all rampart monkeys.",
-          "hero_synergies": "Ring of Fire (4-0-2 Tack) + Bomb Shooter (2-0-4 Recursive Cluster)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Castle Revenge, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -11224,8 +11252,8 @@
               "step_id": "castle_revenge_medium_s15"
             }
           ],
-          "best_hero_reason": "Siege ramparts give Gwendolin's fire blasts coverage over both castle gates, while Heat It Up grants Lead-popping to all rampart monkeys.",
-          "hero_synergies": "Ring of Fire (4-0-2 Tack) + Bomb Shooter (2-0-4 Recursive Cluster)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Castle Revenge, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -11591,7 +11619,9 @@
               "timing": "before_round",
               "step_id": "castle_revenge_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Castle Revenge, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -12358,7 +12388,9 @@
               "timing": "before_round",
               "step_id": "chutes_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Fast dual sand chutes require affordable opening defense; Quincy's bouncing arrows and Storm of Arrows cover both chutes reliably.",
+          "hero_synergies": "Sub Monkey (2-0-3) in water pool + Ninja (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -12524,8 +12556,8 @@
               "tower_id": "cornfield_easy_t4"
             }
           ],
-          "best_hero_reason": "Dense corn stalks block line-of-sight. Adora's elevated divine bolts seek and bend over the stalks without spending thousands clearing corn.",
-          "hero_synergies": "Ultra-Juggernaut (5-2-0 Dart) + Super Monkey (3-0-2 Sun Avatar)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Cornfield, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -12774,8 +12806,8 @@
               "step_id": "cornfield_medium_s15"
             }
           ],
-          "best_hero_reason": "Dense corn stalks block line-of-sight. Adora's elevated divine bolts seek and bend over the stalks without spending thousands clearing corn.",
-          "hero_synergies": "Ultra-Juggernaut (5-2-0 Dart) + Super Monkey (3-0-2 Sun Avatar)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Cornfield, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -13126,7 +13158,9 @@
               "timing": "before_round",
               "step_id": "cornfield_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Cornfield, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -13291,8 +13325,8 @@
               "tower_id": "covered_garden_easy_t5"
             }
           ],
-          "best_hero_reason": "The 4 glass greenhouse quadrants rotate every round, covering towers. Geraldo's pre-placed turrets, nails, and totems remain active under glass.",
-          "hero_synergies": "Sniper Monkey (0-2-4) in center open plot + Dart Monkey turrets"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Covered Garden, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -13541,8 +13575,8 @@
               "step_id": "covered_garden_medium_s15"
             }
           ],
-          "best_hero_reason": "The 4 glass greenhouse quadrants rotate every round, covering towers. Geraldo's pre-placed turrets, nails, and totems remain active under glass.",
-          "hero_synergies": "Sniper Monkey (0-2-4) in center open plot + Dart Monkey turrets"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Covered Garden, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -13893,7 +13927,9 @@
               "timing": "before_round",
               "step_id": "covered_garden_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Covered Garden, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -14660,7 +14696,9 @@
               "timing": "before_round",
               "step_id": "cracked_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Intersecting dry riverbed crossings allow Sauda to lock down early bloons while water sections allow cheap Sub backup.",
+          "hero_synergies": "Monkey Sub (2-0-4 Sub Commander) + Buccaneer (0-3-2)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -14826,8 +14864,8 @@
               "tower_id": "cubism_easy_t5"
             }
           ],
-          "best_hero_reason": "The multi-faceted winding layout requires wide coverage; Etienne's Level 8 global Camo saves immense cash, and UCAV wipes dense mid-game waves.",
-          "hero_synergies": "Tack Zone (2-0-5) in the square loop + Buccaneer (0-4-2 in water)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Cubism, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -15076,8 +15114,8 @@
               "step_id": "cubism_medium_s15"
             }
           ],
-          "best_hero_reason": "The multi-faceted winding layout requires wide coverage; Etienne's Level 8 global Camo saves immense cash, and UCAV wipes dense mid-game waves.",
-          "hero_synergies": "Tack Zone (2-0-5) in the square loop + Buccaneer (0-4-2 in water)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Cubism, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -15443,7 +15481,9 @@
               "timing": "before_round",
               "step_id": "cubism_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Cubism, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -16211,7 +16251,9 @@
               "timing": "before_round",
               "step_id": "dark_castle_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "All four bloon tracks converge directly onto a single wooden drawbridge. Sauda placed at the drawbridge entrance strikes 100% of bloons from all lanes.",
+          "hero_synergies": "Sub (2-0-4) in moat + Alchemist (4-2-0) on castle wall"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -16376,8 +16418,8 @@
               "tower_id": "dark_dungeons_easy_t4"
             }
           ],
-          "best_hero_reason": "Deep underground dungeon traps; Corvus's Spirit micro clears bloons in narrow corridors while soul harvest fuels devastating board-wide spells.",
-          "hero_synergies": "Spike Factory at dungeon exits + Sniper Monkey (0-2-4)"
+          "best_hero_reason": "Quincy's low starting cost ($455 on Easy) and long bouncing arrow range provide dependable multi-lane coverage across Dark Dungeons, handling early Camo (Lv5) and Lead (Lv7) with zero leaks.",
+          "hero_synergies": "Alchemist (Berserker Brew) + Monkey Village (Jungle Drums) + Sniper Monkey (0-2-4)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -16626,8 +16668,8 @@
               "step_id": "dark_dungeons_medium_s15"
             }
           ],
-          "best_hero_reason": "Deep underground dungeon traps; Corvus's Spirit micro clears bloons in narrow corridors while soul harvest fuels devastating board-wide spells.",
-          "hero_synergies": "Spike Factory at dungeon exits + Sniper Monkey (0-2-4)"
+          "best_hero_reason": "Quincy's low starting cost ($540 on Medium) and long bouncing arrow range provide dependable multi-lane coverage across Dark Dungeons, handling early Camo (Lv5) and Lead (Lv7) with zero leaks.",
+          "hero_synergies": "Alchemist (Berserker Brew) + Monkey Village (Jungle Drums) + Sniper Monkey (0-2-4)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -16978,7 +17020,9 @@
               "timing": "before_round",
               "step_id": "dark_dungeons_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Quincy's low starting cost ($585 on Hard) and long bouncing arrow range provide dependable multi-lane coverage across Dark Dungeons, handling early Camo (Lv5) and Lead (Lv7) with zero leaks.",
+          "hero_synergies": "Alchemist (Berserker Brew) + Monkey Village (Jungle Drums) + Sniper Monkey (0-2-4)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -17144,8 +17188,8 @@
               "tower_id": "dark_path_easy_t4"
             }
           ],
-          "best_hero_reason": "Dark cavern track where Obyn buffs magic monkeys and Druid clusters, while placing Wall of Trees at the cavern exit to swallow rushes.",
-          "hero_synergies": "Druid of the Forest (0-4-0) + Poplust (0-1-4) + Alchemist"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Dark Path, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -17394,8 +17438,8 @@
               "step_id": "dark_path_medium_s15"
             }
           ],
-          "best_hero_reason": "Dark cavern track where Obyn buffs magic monkeys and Druid clusters, while placing Wall of Trees at the cavern exit to swallow rushes.",
-          "hero_synergies": "Druid of the Forest (0-4-0) + Poplust (0-1-4) + Alchemist"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Dark Path, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -17746,7 +17790,9 @@
               "timing": "before_round",
               "step_id": "dark_path_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Dark Path, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -17926,8 +17972,8 @@
               "tower_id": "downstream_easy_t5"
             }
           ],
-          "best_hero_reason": "Multi-branch river tracks split bloons across islands; Etienne's drones freely fly between diverging streams without pathing restrictions.",
-          "hero_synergies": "Monkey Sub (2-0-4) + Alchemist (4-2-0) + Ninja (4-0-1)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Downstream, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -18191,8 +18237,8 @@
               "step_id": "downstream_medium_s16"
             }
           ],
-          "best_hero_reason": "Multi-branch river tracks split bloons across islands; Etienne's drones freely fly between diverging streams without pathing restrictions.",
-          "hero_synergies": "Monkey Sub (2-0-4) + Alchemist (4-2-0) + Ninja (4-0-1)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Downstream, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -18573,7 +18619,9 @@
               "timing": "before_round",
               "step_id": "downstream_hard_s24"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Downstream, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -18739,8 +18787,8 @@
               "tower_id": "enchanted_glade_easy_t4"
             }
           ],
-          "best_hero_reason": "Mystic forest where Soul Harvest fuels board-wide hexes and spirit strikes to obliterate multi-lane bloon waves.",
-          "hero_synergies": "Wizard Monkey (0-2-4) + Ninja Monkey (4-0-2) + Alchemist"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Enchanted Glade, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -18989,8 +19037,8 @@
               "step_id": "enchanted_glade_medium_s15"
             }
           ],
-          "best_hero_reason": "Mystic forest where Soul Harvest fuels board-wide hexes and spirit strikes to obliterate multi-lane bloon waves.",
-          "hero_synergies": "Wizard Monkey (0-2-4) + Ninja Monkey (4-0-2) + Alchemist"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Enchanted Glade, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -19341,7 +19389,9 @@
               "timing": "before_round",
               "step_id": "enchanted_glade_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Enchanted Glade, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -19506,8 +19556,8 @@
               "tower_id": "encrypted_easy_t5"
             }
           ],
-          "best_hero_reason": "Graveyard tombs with line-of-sight walls make Mortars and Bomb Shooters the strongest defense, massively buffed by Striker Jones.",
-          "hero_synergies": "Mortar Monkey (0-2-4 Shattering Shells) + Bomb Shooter (2-0-4)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Encrypted, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -19756,8 +19806,8 @@
               "step_id": "encrypted_medium_s15"
             }
           ],
-          "best_hero_reason": "Graveyard tombs with line-of-sight walls make Mortars and Bomb Shooters the strongest defense, massively buffed by Striker Jones.",
-          "hero_synergies": "Mortar Monkey (0-2-4 Shattering Shells) + Bomb Shooter (2-0-4)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Encrypted, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -20123,7 +20173,9 @@
               "timing": "before_round",
               "step_id": "encrypted_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Encrypted, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -20288,8 +20340,8 @@
               "tower_id": "end_of_the_road_easy_t5"
             }
           ],
-          "best_hero_reason": "A long, single dead-end road approach gives Gwendolin's Cocktail of Fire and Firestorm full lane coverage to burn Leads and Ceramic rushes.",
-          "hero_synergies": "Boomerang Monkey (4-0-2 Glaive Ricochet) + Bomb Shooter (2-0-4)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on End of the Road, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -20538,8 +20590,8 @@
               "step_id": "end_of_the_road_medium_s15"
             }
           ],
-          "best_hero_reason": "A long, single dead-end road approach gives Gwendolin's Cocktail of Fire and Firestorm full lane coverage to burn Leads and Ceramic rushes.",
-          "hero_synergies": "Boomerang Monkey (4-0-2 Glaive Ricochet) + Bomb Shooter (2-0-4)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on End of the Road, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -20905,7 +20957,9 @@
               "timing": "before_round",
               "step_id": "end_of_the_road_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on End of the Road, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -21070,8 +21124,8 @@
               "tower_id": "erosion_easy_t4"
             }
           ],
-          "best_hero_reason": "Collapsing ice floes shift the board throughout the game; Corvus's Soul Harvest sustains devastating spells and spirit micro from any position.",
-          "hero_synergies": "Buccaneer (0-4-2 Pirate Lord) + Ice Monkey (0-2-4 Cryo Cannon)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Erosion, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -21320,8 +21374,8 @@
               "step_id": "erosion_medium_s15"
             }
           ],
-          "best_hero_reason": "Collapsing ice floes shift the board throughout the game; Corvus's Soul Harvest sustains devastating spells and spirit micro from any position.",
-          "hero_synergies": "Buccaneer (0-4-2 Pirate Lord) + Ice Monkey (0-2-4 Cryo Cannon)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Erosion, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -21672,7 +21726,9 @@
               "timing": "before_round",
               "step_id": "erosion_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Erosion, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -22454,7 +22510,9 @@
               "timing": "before_round",
               "step_id": "firing_range_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "Elevated central bench overlooking the firing range gives Quincy full range coverage over both crossing lanes.",
+          "hero_synergies": "Sniper Monkey (0-2-4) on towers + Crossbow Master (0-2-5)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -23193,7 +23251,9 @@
               "tower_id": "flooded_valley_hard_t1",
               "step_id": "flooded_valley_hard_s21"
             }
-          ]
+          ],
+          "best_hero_reason": "Almost entirely submerged in water; Brickell placed at the floodgate provides unmatched mine placement and doubles attack speed for naval subs and boats.",
+          "hero_synergies": "Monkey Sub (Sub Commander 2-0-5) + Buccaneer (Pirate Lord 0-5-2)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -23358,8 +23418,8 @@
               "tower_id": "four_circles_easy_t3"
             }
           ],
-          "best_hero_reason": "Four isolated circular paths divide tower coverage; Etienne's aerial drones and global UAV cover every circle without needing repositioning.",
-          "hero_synergies": "Monkey Sub (2-0-4) in center pond + Sniper Monkey (0-2-4)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Four Circles, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -23608,8 +23668,8 @@
               "step_id": "four_circles_medium_s15"
             }
           ],
-          "best_hero_reason": "Four isolated circular paths divide tower coverage; Etienne's aerial drones and global UAV cover every circle without needing repositioning.",
-          "hero_synergies": "Monkey Sub (2-0-4) in center pond + Sniper Monkey (0-2-4)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Four Circles, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -23975,7 +24035,9 @@
               "timing": "before_round",
               "step_id": "four_circles_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Four Circles, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -24742,7 +24804,9 @@
               "timing": "before_round",
               "step_id": "frozen_over_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "The spiral track wrapping around the frozen caveman provides dense curve contact where Sauda easily wipes early waves.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Ice Monkey (2-0-4)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -24922,8 +24986,8 @@
               "tower_id": "geared_easy_t4"
             }
           ],
-          "best_hero_reason": "The central rotating gear moves towers away from the bloon track each round; Psi attacks bloons anywhere with infinite range, completely immune to rotation.",
-          "hero_synergies": "Sniper Monkey (0-2-5 Elite Defender) + Heli Pilot (4-0-2 Apache)"
+          "best_hero_reason": "Quincy's affordable cost ($455 on Easy) and long range bouncing arrows provide reliable early coverage while saving cash for long-range Snipers and Heli Pilots immune to gear rotation.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Heli Pilot (3-0-2) + Alchemist"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -25172,8 +25236,8 @@
               "step_id": "geared_medium_s15"
             }
           ],
-          "best_hero_reason": "The central rotating gear moves towers away from the bloon track each round; Psi attacks bloons anywhere with infinite range, completely immune to rotation.",
-          "hero_synergies": "Sniper Monkey (0-2-5 Elite Defender) + Heli Pilot (4-0-2 Apache)"
+          "best_hero_reason": "Quincy's affordable cost ($540 on Medium) and long range bouncing arrows provide reliable early coverage while saving cash for long-range Snipers and Heli Pilots immune to gear rotation.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Heli Pilot (3-0-2) + Alchemist"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -25524,7 +25588,9 @@
               "timing": "before_round",
               "step_id": "geared_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Quincy's affordable cost ($585 on Hard) and long range bouncing arrows provide reliable early coverage while saving cash for long-range Snipers and Heli Pilots immune to gear rotation.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Heli Pilot (3-0-2) + Alchemist"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -25690,8 +25756,8 @@
               "tower_id": "glacial_trail_easy_t5"
             }
           ],
-          "best_hero_reason": "Map freezing mechanics periodically freeze ordinary monkeys; Corvus's Spirit and spells operate immune to frost, maintaining 100% uptime.",
-          "hero_synergies": "Ice Monkey (0-2-4) + Wizard (0-2-4) + Alchemist"
+          "best_hero_reason": "Quincy's low starting cost ($455 on Easy) and long bouncing arrow range provide dependable multi-lane coverage across Glacial Trail, handling early Camo (Lv5) and Lead (Lv7) with zero leaks.",
+          "hero_synergies": "Alchemist (Berserker Brew) + Monkey Village (Jungle Drums) + Sniper Monkey (0-2-4)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -25940,8 +26006,8 @@
               "step_id": "glacial_trail_medium_s15"
             }
           ],
-          "best_hero_reason": "Map freezing mechanics periodically freeze ordinary monkeys; Corvus's Spirit and spells operate immune to frost, maintaining 100% uptime.",
-          "hero_synergies": "Ice Monkey (0-2-4) + Wizard (0-2-4) + Alchemist"
+          "best_hero_reason": "Quincy's low starting cost ($540 on Medium) and long bouncing arrow range provide dependable multi-lane coverage across Glacial Trail, handling early Camo (Lv5) and Lead (Lv7) with zero leaks.",
+          "hero_synergies": "Alchemist (Berserker Brew) + Monkey Village (Jungle Drums) + Sniper Monkey (0-2-4)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -26292,7 +26358,9 @@
               "timing": "before_round",
               "step_id": "glacial_trail_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Quincy's low starting cost ($585 on Hard) and long bouncing arrow range provide dependable multi-lane coverage across Glacial Trail, handling early Camo (Lv5) and Lead (Lv7) with zero leaks.",
+          "hero_synergies": "Alchemist (Berserker Brew) + Monkey Village (Jungle Drums) + Sniper Monkey (0-2-4)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -26457,8 +26525,8 @@
               "tower_id": "haunted_easy_t4"
             }
           ],
-          "best_hero_reason": "Two parallel lanes split the track; Etienne's global Camo eliminates the need for expensive split Villages on both sides.",
-          "hero_synergies": "Wizard Monkey (0-2-4 Prince of Darkness) + Tack Zone (2-0-5)"
+          "best_hero_reason": "Sauda placed at the lane intersection provides dual-track melee coverage, securing early rounds with innate Camo detection while defenses build for mid-game blimps.",
+          "hero_synergies": "Ninja Monkey (4-0-1 Bloonjitsu) + Alchemist (3-2-0 Berserker Brew)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -26707,8 +26775,8 @@
               "step_id": "haunted_medium_s15"
             }
           ],
-          "best_hero_reason": "Two parallel lanes split the track; Etienne's global Camo eliminates the need for expensive split Villages on both sides.",
-          "hero_synergies": "Wizard Monkey (0-2-4 Prince of Darkness) + Tack Zone (2-0-5)"
+          "best_hero_reason": "Sauda placed at the lane intersection provides dual-track melee coverage, securing early rounds with innate Camo detection while defenses build for mid-game blimps.",
+          "hero_synergies": "Ninja Monkey (4-0-1 Bloonjitsu) + Alchemist (3-2-0 Berserker Brew)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -27059,7 +27127,9 @@
               "timing": "before_round",
               "step_id": "haunted_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda placed at the lane intersection provides dual-track melee coverage, securing early rounds with innate Camo detection while defenses build for mid-game blimps.",
+          "hero_synergies": "Ninja Monkey (4-0-1 Bloonjitsu) + Alchemist (3-2-0 Berserker Brew)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -27224,8 +27294,8 @@
               "tower_id": "hedge_easy_t4"
             }
           ],
-          "best_hero_reason": "Dense hedge walls block line-of-sight for straight-line towers. Obyn's seeking spirit wolves bypass hedges, and Wall of Trees catches sudden leaks.",
-          "hero_synergies": "Druid of the Forest (0-4-0) + Poplust (0-1-4 Druids) + Alchemist"
+          "best_hero_reason": "Quincy's low starting cost ($455 on Easy) and long bouncing arrow range provide dependable multi-lane coverage across Hedge, handling early Camo (Lv5) and Lead (Lv7) with zero leaks.",
+          "hero_synergies": "Alchemist (Berserker Brew) + Monkey Village (Jungle Drums) + Sniper Monkey (0-2-4)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -27474,8 +27544,8 @@
               "step_id": "hedge_medium_s15"
             }
           ],
-          "best_hero_reason": "Dense hedge walls block line-of-sight for straight-line towers. Obyn's seeking spirit wolves bypass hedges, and Wall of Trees catches sudden leaks.",
-          "hero_synergies": "Druid of the Forest (0-4-0) + Poplust (0-1-4 Druids) + Alchemist"
+          "best_hero_reason": "Quincy's low starting cost ($540 on Medium) and long bouncing arrow range provide dependable multi-lane coverage across Hedge, handling early Camo (Lv5) and Lead (Lv7) with zero leaks.",
+          "hero_synergies": "Alchemist (Berserker Brew) + Monkey Village (Jungle Drums) + Sniper Monkey (0-2-4)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -27841,7 +27911,9 @@
               "timing": "before_round",
               "step_id": "hedge_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "Quincy's low starting cost ($585 on Hard) and long bouncing arrow range provide dependable multi-lane coverage across Hedge, handling early Camo (Lv5) and Lead (Lv7) with zero leaks.",
+          "hero_synergies": "Alchemist (Berserker Brew) + Monkey Village (Jungle Drums) + Sniper Monkey (0-2-4)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -28006,8 +28078,8 @@
               "tower_id": "high_finance_easy_t3"
             }
           ],
-          "best_hero_reason": "Expensive plot construction costs make Benjamin's bank interest and cash skimming essential for early economic expansion.",
-          "hero_synergies": "Monkey Bank (2-3-0) + Sun Avatar (3-0-2 on central skyscraper)"
+          "best_hero_reason": "Quincy's low starting cost ($455 on Easy) and long bouncing arrow range cover multiple separated city building lanes without paying expensive early plot construction fees.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Dart Monkey + Monkey Village (2-2-0)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -28241,8 +28313,8 @@
               "step_id": "high_finance_medium_s14"
             }
           ],
-          "best_hero_reason": "Expensive plot construction costs make Benjamin's bank interest and cash skimming essential for early economic expansion.",
-          "hero_synergies": "Monkey Bank (2-3-0) + Sun Avatar (3-0-2 on central skyscraper)"
+          "best_hero_reason": "Quincy's low starting cost ($540 on Medium) and long bouncing arrow range cover multiple separated city building lanes without paying expensive early plot construction fees.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Dart Monkey + Monkey Village (2-2-0)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -28579,7 +28651,9 @@
               "tower_id": "high_finance_hard_t2",
               "step_id": "high_finance_hard_s21"
             }
-          ]
+          ],
+          "best_hero_reason": "Quincy's low starting cost ($585 on Hard) and long bouncing arrow range cover multiple separated city building lanes without paying expensive early plot construction fees.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Dart Monkey + Monkey Village (2-2-0)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -28744,8 +28818,8 @@
               "tower_id": "in_the_loop_easy_t4"
             }
           ],
-          "best_hero_reason": "Concentric loops and intersecting straightaways allow Churchill's explosive tank shells to bounce and pierce through multiple track passes.",
-          "hero_synergies": "Primary Mentoring (4-2-0 Village) + Ring of Fire (4-0-2 Tack)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on In The Loop, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -28994,8 +29068,8 @@
               "step_id": "in_the_loop_medium_s15"
             }
           ],
-          "best_hero_reason": "Concentric loops and intersecting straightaways allow Churchill's explosive tank shells to bounce and pierce through multiple track passes.",
-          "hero_synergies": "Primary Mentoring (4-2-0 Village) + Ring of Fire (4-0-2 Tack)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on In The Loop, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -29346,7 +29420,9 @@
               "timing": "before_round",
               "step_id": "in_the_loop_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on In The Loop, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -30113,7 +30189,9 @@
               "timing": "before_round",
               "step_id": "infernal_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Tiny isolated rock islands in lava have strict placement space. Quincy fits on the early lower rock and uses bouncing arrows to cover both lanes.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Boomerang Monkey on upper rocks"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -30278,8 +30356,8 @@
               "tower_id": "karts_n_darts_easy_t4"
             }
           ],
-          "best_hero_reason": "Multiple race tracks with rapid kart bloons require Rosalia's flight repositioning and anti-lead grenades to cover the winding circuit.",
-          "hero_synergies": "Tack Zone (2-0-5) in pit lane + Boomerang (0-2-4 MOAB Press)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Karts N' Darts, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -30528,8 +30606,8 @@
               "step_id": "karts_n_darts_medium_s15"
             }
           ],
-          "best_hero_reason": "Multiple race tracks with rapid kart bloons require Rosalia's flight repositioning and anti-lead grenades to cover the winding circuit.",
-          "hero_synergies": "Tack Zone (2-0-5) in pit lane + Boomerang (0-2-4 MOAB Press)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Karts N' Darts, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -30895,7 +30973,9 @@
               "timing": "before_round",
               "step_id": "karts_n_darts_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Karts N' Darts, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -31061,8 +31141,8 @@
               "tower_id": "last_resort_easy_t4"
             }
           ],
-          "best_hero_reason": "Pyramid-style oasis layout where Adora's divine homing bolts bend around the palms to strike approaching bloons at extreme range.",
-          "hero_synergies": "Sun Temple (4-0-2 Super) + Alchemist (4-2-0 Stronger Stimulant)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Last Resort, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -31311,8 +31391,8 @@
               "step_id": "last_resort_medium_s15"
             }
           ],
-          "best_hero_reason": "Pyramid-style oasis layout where Adora's divine homing bolts bend around the palms to strike approaching bloons at extreme range.",
-          "hero_synergies": "Sun Temple (4-0-2 Super) + Alchemist (4-2-0 Stronger Stimulant)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Last Resort, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -31663,7 +31743,9 @@
               "timing": "before_round",
               "step_id": "last_resort_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Last Resort, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -31830,8 +31912,8 @@
               "tower_id": "logs_easy_t3"
             }
           ],
-          "best_hero_reason": "The longest track in Bloons history provides endless straightaways where Churchill's high-velocity armor-piercing shells pierce hundreds of bloons.",
-          "hero_synergies": "Village (2-3-0 MIB) + Alchemist (4-2-0) + Super Monkey (3-0-2)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Logs, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -32066,8 +32148,8 @@
               "step_id": "logs_medium_s14"
             }
           ],
-          "best_hero_reason": "The longest track in Bloons history provides endless straightaways where Churchill's high-velocity armor-piercing shells pierce hundreds of bloons.",
-          "hero_synergies": "Village (2-3-0 MIB) + Alchemist (4-2-0) + Super Monkey (3-0-2)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Logs, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -32404,7 +32486,9 @@
               "timing": "before_round",
               "step_id": "logs_hard_s21"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Logs, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -32569,8 +32653,8 @@
               "tower_id": "lost_crevasse_easy_t4"
             }
           ],
-          "best_hero_reason": "Narrow icy crevasse choke concentrates all bloons; Obyn's Brambles and Wall of Trees trap every single wave with 100% efficiency.",
-          "hero_synergies": "Druid of the Forest (0-4-0) + Poplust (0-1-4 Druids)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Lost Crevasse, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -32819,8 +32903,8 @@
               "step_id": "lost_crevasse_medium_s15"
             }
           ],
-          "best_hero_reason": "Narrow icy crevasse choke concentrates all bloons; Obyn's Brambles and Wall of Trees trap every single wave with 100% efficiency.",
-          "hero_synergies": "Druid of the Forest (0-4-0) + Poplust (0-1-4 Druids)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Lost Crevasse, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -33171,7 +33255,9 @@
               "timing": "before_round",
               "step_id": "lost_crevasse_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Lost Crevasse, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -33998,7 +34084,9 @@
               "timing": "before_round",
               "step_id": "lotus_island_hard_s24"
             }
-          ]
+          ],
+          "best_hero_reason": "The central track loops around the island perimeter, giving Sauda continuous contact while interactive lotus flowers stun escaping bloons.",
+          "hero_synergies": "Buccaneer (0-3-2 Cannon Ship) + Alchemist (3-2-0)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -34179,8 +34267,8 @@
               "tower_id": "luminous_cove_easy_t5"
             }
           ],
-          "best_hero_reason": "Glowing subterranean cove where Adora's radiant homing bolts illuminate and bend around the cavern walls to shred bloon packs.",
-          "hero_synergies": "Sun Avatar (3-0-2 Super) + Alchemist (4-2-0) + Buccaneer"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Luminous Cove, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -34444,8 +34532,8 @@
               "step_id": "luminous_cove_medium_s16"
             }
           ],
-          "best_hero_reason": "Glowing subterranean cove where Adora's radiant homing bolts illuminate and bend around the cavern walls to shred bloon packs.",
-          "hero_synergies": "Sun Avatar (3-0-2 Super) + Alchemist (4-2-0) + Buccaneer"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Luminous Cove, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -34826,7 +34914,9 @@
               "timing": "before_round",
               "step_id": "luminous_cove_hard_s24"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Luminous Cove, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -35593,7 +35683,9 @@
               "timing": "before_round",
               "step_id": "mesa_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Two desert tracks separated by a stone canyon; Quincy's low starting cost and long bouncing arrows cover both canyon paths easily.",
+          "hero_synergies": "Sniper Monkey (0-2-5 Elite Defender) + Alchemist (4-2-0)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -36360,7 +36452,9 @@
               "timing": "before_round",
               "step_id": "middle_of_the_road_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Central roundabout layout ensures bloons pass Sauda's swords twice, allowing her high pierce and abilities to dismantle dense waves.",
+          "hero_synergies": "Boomerang Monkey (4-0-2 MOAB Press) + Ice Monkey (0-2-4)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -36525,8 +36619,8 @@
               "tower_id": "midnight_mansion_easy_t4"
             }
           ],
-          "best_hero_reason": "Haunted mansion corridors block line-of-sight for normal monkeys; Ezili curses bloons through solid walls and her MOAB Hex vaporizes BFBs.",
-          "hero_synergies": "Wizard Monkey (0-2-4 Prince of Darkness) + Tack Zone in foyer"
+          "best_hero_reason": "Sauda fits cleanly in the interior mansion chokepoints, maximizing close-range blade damage while bypassing tight line-of-sight constraints.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Alchemist (3-2-0 Berserker Brew)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -36775,8 +36869,8 @@
               "step_id": "midnight_mansion_medium_s15"
             }
           ],
-          "best_hero_reason": "Haunted mansion corridors block line-of-sight for normal monkeys; Ezili curses bloons through solid walls and her MOAB Hex vaporizes BFBs.",
-          "hero_synergies": "Wizard Monkey (0-2-4 Prince of Darkness) + Tack Zone in foyer"
+          "best_hero_reason": "Sauda fits cleanly in the interior mansion chokepoints, maximizing close-range blade damage while bypassing tight line-of-sight constraints.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Alchemist (3-2-0 Berserker Brew)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -37127,7 +37221,9 @@
               "timing": "before_round",
               "step_id": "midnight_mansion_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda fits cleanly in the interior mansion chokepoints, maximizing close-range blade damage while bypassing tight line-of-sight constraints.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Alchemist (3-2-0 Berserker Brew)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -37941,7 +38037,9 @@
               "timing": "before_round",
               "step_id": "monkey_meadow_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "Classic single-loop layout where placing Sauda inside the upper bend gives dual-lane coverage, shredding early rounds with zero leaks.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -38106,8 +38204,8 @@
               "tower_id": "moon_landing_easy_t5"
             }
           ],
-          "best_hero_reason": "Crater trenches completely block normal vision. Striker Jones boosts Mortar Monkeys with faster firing and massive artillery stuns into craters.",
-          "hero_synergies": "Mortar Monkey (2-4-0 Artillery Battery) + Bomb Shooter (2-0-4 Recursive)"
+          "best_hero_reason": "Quincy provides cheap, reliable starting defense over crater walls, saving funds for Mortar and Tack towers that bypass sight obstruction.",
+          "hero_synergies": "Mortar Monkey (2-4-0) + Tack Shooter (2-0-4 Overdrive)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -38356,8 +38454,8 @@
               "step_id": "moon_landing_medium_s15"
             }
           ],
-          "best_hero_reason": "Crater trenches completely block normal vision. Striker Jones boosts Mortar Monkeys with faster firing and massive artillery stuns into craters.",
-          "hero_synergies": "Mortar Monkey (2-4-0 Artillery Battery) + Bomb Shooter (2-0-4 Recursive)"
+          "best_hero_reason": "Quincy provides cheap, reliable starting defense over crater walls, saving funds for Mortar and Tack towers that bypass sight obstruction.",
+          "hero_synergies": "Mortar Monkey (2-4-0) + Tack Shooter (2-0-4 Overdrive)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -38708,7 +38806,9 @@
               "timing": "before_round",
               "step_id": "moon_landing_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Quincy provides cheap, reliable starting defense over crater walls, saving funds for Mortar and Tack towers that bypass sight obstruction.",
+          "hero_synergies": "Mortar Monkey (2-4-0) + Tack Shooter (2-0-4 Overdrive)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -39447,7 +39547,9 @@
               "tower_id": "muddy_puddles_hard_t2",
               "step_id": "muddy_puddles_hard_s21"
             }
-          ]
+          ],
+          "best_hero_reason": "Multiple parallel muddy streams require cheap early coverage; Quincy's bouncing arrows and rapid shot handle early alternating tracks.",
+          "hero_synergies": "Sub 2-0-3 Triple Guns + Dart Monkey (0-2-3)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -39627,8 +39729,8 @@
               "tower_id": "off_the_coast_easy_t5"
             }
           ],
-          "best_hero_reason": "Wide open ocean allows deploying a massive naval armada; Brickell's Naval Tactics doubles the attack speed of Sub Commander and Pirate Lord.",
-          "hero_synergies": "Sub Commander (2-0-5) + Buccaneer (0-5-2 Pirate Lord)"
+          "best_hero_reason": "Sauda defends the shore chokepoint against early bloons, providing innate Camo popping and early stability so naval investments can scale in open water.",
+          "hero_synergies": "Monkey Buccaneer (3-2-0 Destroyer) + Monkey Sub (2-0-3 Triple Guns)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -39892,8 +39994,8 @@
               "step_id": "off_the_coast_medium_s16"
             }
           ],
-          "best_hero_reason": "Wide open ocean allows deploying a massive naval armada; Brickell's Naval Tactics doubles the attack speed of Sub Commander and Pirate Lord.",
-          "hero_synergies": "Sub Commander (2-0-5) + Buccaneer (0-5-2 Pirate Lord)"
+          "best_hero_reason": "Sauda defends the shore chokepoint against early bloons, providing innate Camo popping and early stability so naval investments can scale in open water.",
+          "hero_synergies": "Monkey Buccaneer (3-2-0 Destroyer) + Monkey Sub (2-0-3 Triple Guns)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -40274,7 +40376,9 @@
               "timing": "before_round",
               "step_id": "off_the_coast_hard_s24"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda defends the shore chokepoint against early bloons, providing innate Camo popping and early stability so naval investments can scale in open water.",
+          "hero_synergies": "Monkey Buccaneer (3-2-0 Destroyer) + Monkey Sub (2-0-3 Triple Guns)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -40439,8 +40543,8 @@
               "tower_id": "one_two_tree_easy_t3"
             }
           ],
-          "best_hero_reason": "Map buff tiles amplify Geraldo's Shootey Turrets, Sharpening Stone, and Fertilizer, creating immense value across all categories.",
-          "hero_synergies": "Dart Monkey (Apex Plasma Master build) + Ninja Monkey on magic tiles"
+          "best_hero_reason": "Sauda placed on the central intersection covers multiple converging tracks, dealing high melee damage while magic and military towers take advantage of specialized buff tiles.",
+          "hero_synergies": "Ninja Monkey (4-0-1 Bloonjitsu) + Alchemist (3-2-0 Berserker Brew)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -40674,8 +40778,8 @@
               "step_id": "one_two_tree_medium_s14"
             }
           ],
-          "best_hero_reason": "Map buff tiles amplify Geraldo's Shootey Turrets, Sharpening Stone, and Fertilizer, creating immense value across all categories.",
-          "hero_synergies": "Dart Monkey (Apex Plasma Master build) + Ninja Monkey on magic tiles"
+          "best_hero_reason": "Sauda placed on the central intersection covers multiple converging tracks, dealing high melee damage while magic and military towers take advantage of specialized buff tiles.",
+          "hero_synergies": "Ninja Monkey (4-0-1 Bloonjitsu) + Alchemist (3-2-0 Berserker Brew)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -41011,7 +41115,9 @@
               "timing": "before_round",
               "step_id": "one_two_tree_hard_s21"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda placed on the central intersection covers multiple converging tracks, dealing high melee damage while magic and military towers take advantage of specialized buff tiles.",
+          "hero_synergies": "Ninja Monkey (4-0-1 Bloonjitsu) + Alchemist (3-2-0 Berserker Brew)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -41793,7 +41899,9 @@
               "timing": "before_round",
               "step_id": "park_path_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "The central figure-eight intersection allows Sauda to attack bloons on both loops while keeping abilities ready for MOABs.",
+          "hero_synergies": "Bomb Shooter (2-0-4 Recursive Cluster) + Primary Training (3-2-0 Village)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -41958,8 +42066,8 @@
               "tower_id": "party_parade_easy_t4"
             }
           ],
-          "best_hero_reason": "Carnival turns where Geraldo's nail traps, Gerry's fire, and bunny swarm control crowded parade lanes with high efficiency.",
-          "hero_synergies": "Tack Zone (2-0-5) + Boomerang (0-2-4 MOAB Press)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Party Parade, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -42208,8 +42316,8 @@
               "step_id": "party_parade_medium_s15"
             }
           ],
-          "best_hero_reason": "Carnival turns where Geraldo's nail traps, Gerry's fire, and bunny swarm control crowded parade lanes with high efficiency.",
-          "hero_synergies": "Tack Zone (2-0-5) + Boomerang (0-2-4 MOAB Press)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Party Parade, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -42560,7 +42668,9 @@
               "timing": "before_round",
               "step_id": "party_parade_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Party Parade, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -42725,8 +42835,8 @@
               "tower_id": "pat_s_pond_easy_t5"
             }
           ],
-          "best_hero_reason": "Pat's namesake home; placed in the central pond, his huge slaps stun and push back both paths while roaring to buff naval subs and land towers.",
-          "hero_synergies": "Monkey Sub (2-0-4 Armor Piercing Darts) + Tack Zone (2-0-5)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Pat's Pond, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -42975,8 +43085,8 @@
               "step_id": "pat_s_pond_medium_s15"
             }
           ],
-          "best_hero_reason": "Pat's namesake home; placed in the central pond, his huge slaps stun and push back both paths while roaring to buff naval subs and land towers.",
-          "hero_synergies": "Monkey Sub (2-0-4 Armor Piercing Darts) + Tack Zone (2-0-5)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Pat's Pond, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -43327,7 +43437,9 @@
               "timing": "before_round",
               "step_id": "pat_s_pond_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Pat's Pond, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -43492,8 +43604,8 @@
               "tower_id": "peninsula_easy_t3"
             }
           ],
-          "best_hero_reason": "The elevated rock peninsula is surrounded by deep ocean; Brickell commands a lethal fleet of subs and buccaneers with sea mines.",
-          "hero_synergies": "Sub Commander (2-0-5) + Carrier Flagship (5-2-0 Buccaneer)"
+          "best_hero_reason": "Sauda locks down the tight land choke at the base of the mountain, handling early rounds and early camos while naval Subs and Buccaneers dominate the surrounding ocean.",
+          "hero_synergies": "Monkey Sub (2-0-4 AP Darts) + Buccaneer (3-2-0 Destroyer) + Alchemist"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -43727,8 +43839,8 @@
               "step_id": "peninsula_medium_s14"
             }
           ],
-          "best_hero_reason": "The elevated rock peninsula is surrounded by deep ocean; Brickell commands a lethal fleet of subs and buccaneers with sea mines.",
-          "hero_synergies": "Sub Commander (2-0-5) + Carrier Flagship (5-2-0 Buccaneer)"
+          "best_hero_reason": "Sauda locks down the tight land choke at the base of the mountain, handling early rounds and early camos while naval Subs and Buccaneers dominate the surrounding ocean.",
+          "hero_synergies": "Monkey Sub (2-0-4 AP Darts) + Buccaneer (3-2-0 Destroyer) + Alchemist"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -44080,7 +44192,9 @@
               "tower_id": "peninsula_hard_t2",
               "step_id": "peninsula_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda locks down the tight land choke at the base of the mountain, handling early rounds and early camos while naval Subs and Buccaneers dominate the surrounding ocean.",
+          "hero_synergies": "Monkey Sub (2-0-4 AP Darts) + Buccaneer (3-2-0 Destroyer) + Alchemist"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -44245,8 +44359,8 @@
               "tower_id": "polyphemus_easy_t4"
             }
           ],
-          "best_hero_reason": "The central cyclops eye provides water access that periodically floods and drains; Brickell deploys deadly mega mines that hit both paths.",
-          "hero_synergies": "Buccaneer (0-4-2 Pirate) in the eye + Spike Factory at exit"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Polyphemus, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -44495,8 +44609,8 @@
               "step_id": "polyphemus_medium_s15"
             }
           ],
-          "best_hero_reason": "The central cyclops eye provides water access that periodically floods and drains; Brickell deploys deadly mega mines that hit both paths.",
-          "hero_synergies": "Buccaneer (0-4-2 Pirate) in the eye + Spike Factory at exit"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Polyphemus, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -44847,7 +44961,9 @@
               "timing": "before_round",
               "step_id": "polyphemus_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Polyphemus, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -45027,8 +45143,8 @@
               "tower_id": "protect_the_yacht_easy_t5"
             }
           ],
-          "best_hero_reason": "Naval channel track where Brickell's fleet defends the central yacht with devastating mega mines and doubled attack speed.",
-          "hero_synergies": "Sub Commander (2-0-5) + Buccaneer (0-5-2 Pirate Lord)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Protect the Yacht, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -45292,8 +45408,8 @@
               "step_id": "protect_the_yacht_medium_s16"
             }
           ],
-          "best_hero_reason": "Naval channel track where Brickell's fleet defends the central yacht with devastating mega mines and doubled attack speed.",
-          "hero_synergies": "Sub Commander (2-0-5) + Buccaneer (0-5-2 Pirate Lord)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Protect the Yacht, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -45674,7 +45790,9 @@
               "timing": "before_round",
               "step_id": "protect_the_yacht_hard_s24"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Protect the Yacht, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -45839,8 +45957,8 @@
               "tower_id": "quad_easy_t5"
             }
           ],
-          "best_hero_reason": "Four separate tracks coming from all four directions with zero central overlap; Psi hits bloons on all four paths without repositioning.",
-          "hero_synergies": "Sniper Monkey (0-2-5) + Spike Factory at bottom exits"
+          "best_hero_reason": "Quincy's affordable starting cost and long bouncing range allow early defense across four distant lanes, giving time to establish multi-target coverage.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Monkey Sub (2-0-3 Triple Guns)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -46089,8 +46207,8 @@
               "step_id": "quad_medium_s15"
             }
           ],
-          "best_hero_reason": "Four separate tracks coming from all four directions with zero central overlap; Psi hits bloons on all four paths without repositioning.",
-          "hero_synergies": "Sniper Monkey (0-2-5) + Spike Factory at bottom exits"
+          "best_hero_reason": "Quincy's affordable starting cost and long bouncing range allow early defense across four distant lanes, giving time to establish multi-target coverage.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Monkey Sub (2-0-3 Triple Guns)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -46441,7 +46559,9 @@
               "timing": "before_round",
               "step_id": "quad_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Quincy's affordable starting cost and long bouncing range allow early defense across four distant lanes, giving time to establish multi-target coverage.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Monkey Sub (2-0-3 Triple Guns)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -46606,8 +46726,8 @@
               "tower_id": "quarry_easy_t4"
             }
           ],
-          "best_hero_reason": "Stepped quarry stone walls block projectile line of sight. Psi's psionic attacks ignore quarry depth and target bloons across all levels.",
-          "hero_synergies": "Sniper Monkey (0-2-4) on elevated ramparts + Spike Factory"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Quarry, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -46856,8 +46976,8 @@
               "step_id": "quarry_medium_s15"
             }
           ],
-          "best_hero_reason": "Stepped quarry stone walls block projectile line of sight. Psi's psionic attacks ignore quarry depth and target bloons across all levels.",
-          "hero_synergies": "Sniper Monkey (0-2-4) on elevated ramparts + Spike Factory"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Quarry, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -47208,7 +47328,9 @@
               "timing": "before_round",
               "step_id": "quarry_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Quarry, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -47373,8 +47495,8 @@
               "tower_id": "quiet_street_easy_t4"
             }
           ],
-          "best_hero_reason": "Urban townhouses block horizontal sightlines. Psi attacks through structures with zero hindrance, targeting both streets simultaneously.",
-          "hero_synergies": "Wizard Monkey (0-2-4 Prince of Darkness) + Tack Shooter"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Quiet Street, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -47623,8 +47745,8 @@
               "step_id": "quiet_street_medium_s15"
             }
           ],
-          "best_hero_reason": "Urban townhouses block horizontal sightlines. Psi attacks through structures with zero hindrance, targeting both streets simultaneously.",
-          "hero_synergies": "Wizard Monkey (0-2-4 Prince of Darkness) + Tack Shooter"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Quiet Street, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -47975,7 +48097,9 @@
               "timing": "before_round",
               "step_id": "quiet_street_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Quiet Street, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -48140,8 +48264,8 @@
               "tower_id": "rake_easy_t4"
             }
           ],
-          "best_hero_reason": "Diverging paths across the garden intersect only at the exit; Etienne's Level 8 global Camo and UCAV provide full dual-lane control.",
-          "hero_synergies": "Ninja Monkey (4-0-2) + Alchemist (4-2-0) at central intersection"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Rake, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -48390,8 +48514,8 @@
               "step_id": "rake_medium_s15"
             }
           ],
-          "best_hero_reason": "Diverging paths across the garden intersect only at the exit; Etienne's Level 8 global Camo and UCAV provide full dual-lane control.",
-          "hero_synergies": "Ninja Monkey (4-0-2) + Alchemist (4-2-0) at central intersection"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Rake, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -48742,7 +48866,9 @@
               "timing": "before_round",
               "step_id": "rake_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Rake, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -48907,8 +49033,8 @@
               "tower_id": "ravine_easy_t5"
             }
           ],
-          "best_hero_reason": "Narrow mountain chasm with extreme sight blockers; Psi's mind blast penetrates all rock faces to destroy bloons on both sides.",
-          "hero_synergies": "Sniper Monkey (0-2-4) + Dart Monkey (0-2-5 Crossbow Master)"
+          "best_hero_reason": "Quincy's high-speed arrows provide critical early defense along the narrow canyon path before difficult multi-lane waves emerge.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Alchemist (3-2-0)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -49157,8 +49283,8 @@
               "step_id": "ravine_medium_s15"
             }
           ],
-          "best_hero_reason": "Narrow mountain chasm with extreme sight blockers; Psi's mind blast penetrates all rock faces to destroy bloons on both sides.",
-          "hero_synergies": "Sniper Monkey (0-2-4) + Dart Monkey (0-2-5 Crossbow Master)"
+          "best_hero_reason": "Quincy's high-speed arrows provide critical early defense along the narrow canyon path before difficult multi-lane waves emerge.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Alchemist (3-2-0)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -49509,7 +49635,9 @@
               "timing": "before_round",
               "step_id": "ravine_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Quincy's high-speed arrows provide critical early defense along the narrow canyon path before difficult multi-lane waves emerge.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Alchemist (3-2-0)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -50277,7 +50405,9 @@
               "timing": "before_round",
               "step_id": "resort_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "The famous quadruple-pass loop allows Sauda placed in the center loop to slice bloons four separate times per lap with extreme efficiency.",
+          "hero_synergies": "Tack Zone (2-0-5) + Super Brittle (5-2-0 Ice) + Alchemist"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -50442,8 +50572,8 @@
               "tower_id": "sanctuary_easy_t3"
             }
           ],
-          "best_hero_reason": "Moving elevation tiles displace ground towers; Psi attacks bloons anywhere regardless of moving platforms with infinite range.",
-          "hero_synergies": "Sniper Monkey (0-2-5 Elite Defender) + Spike Factory at exit"
+          "best_hero_reason": "Quincy's low starting cost helps navigate moving sanctuary platforms, covering shifting lanes with bouncing arrows.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Heli Pilot (3-0-2)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -50677,8 +50807,8 @@
               "step_id": "sanctuary_medium_s14"
             }
           ],
-          "best_hero_reason": "Moving elevation tiles displace ground towers; Psi attacks bloons anywhere regardless of moving platforms with infinite range.",
-          "hero_synergies": "Sniper Monkey (0-2-5 Elite Defender) + Spike Factory at exit"
+          "best_hero_reason": "Quincy's low starting cost helps navigate moving sanctuary platforms, covering shifting lanes with bouncing arrows.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Heli Pilot (3-0-2)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -51015,7 +51145,9 @@
               "tower_id": "sanctuary_hard_t2",
               "step_id": "sanctuary_hard_s21"
             }
-          ]
+          ],
+          "best_hero_reason": "Quincy's low starting cost helps navigate moving sanctuary platforms, covering shifting lanes with bouncing arrows.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Heli Pilot (3-0-2)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -51180,8 +51312,8 @@
               "tower_id": "scrapyard_easy_t4"
             }
           ],
-          "best_hero_reason": "The interactive junk compactor combines with Geraldo's shop utilities (Nails, Turrets, Gerry's Fire) to solve tricky rounds cheaply.",
-          "hero_synergies": "Tack Shooter (0-4-2 Maelstrom) + Bomb Shooter (2-0-4)"
+          "best_hero_reason": "Sauda controls the junkyard hairpin turn near the trash compactor, slicing through dense early clusters and handling Camo bloons without early support.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Bomb Shooter (2-0-4 Recursive Cluster)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -51430,8 +51562,8 @@
               "step_id": "scrapyard_medium_s15"
             }
           ],
-          "best_hero_reason": "The interactive junk compactor combines with Geraldo's shop utilities (Nails, Turrets, Gerry's Fire) to solve tricky rounds cheaply.",
-          "hero_synergies": "Tack Shooter (0-4-2 Maelstrom) + Bomb Shooter (2-0-4)"
+          "best_hero_reason": "Sauda controls the junkyard hairpin turn near the trash compactor, slicing through dense early clusters and handling Camo bloons without early support.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Bomb Shooter (2-0-4 Recursive Cluster)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -51782,7 +51914,9 @@
               "timing": "before_round",
               "step_id": "scrapyard_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda controls the junkyard hairpin turn near the trash compactor, slicing through dense early clusters and handling Camo bloons without early support.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Bomb Shooter (2-0-4 Recursive Cluster)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -52549,7 +52683,9 @@
               "timing": "before_round",
               "step_id": "skates_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Tight ice rink bends give Sauda continuous contact, while her Leaping Sword easily handles clustered mid-game Leads and Ceramics.",
+          "hero_synergies": "Ice Monkey (2-0-4 Cryo Cannon) + Wizard Monkey (0-2-4)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -52714,8 +52850,8 @@
               "tower_id": "skull_tweak_easy_t4"
             }
           ],
-          "best_hero_reason": "Tight skull canyon where Ezili's necrotic hexes destroy incoming blimps and Heartstopper prevents regrow bloon explosions.",
-          "hero_synergies": "Bomb Shooter (2-0-4) + Wizard Monkey (0-2-4)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Skull Tweak, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -52964,8 +53100,8 @@
               "step_id": "skull_tweak_medium_s15"
             }
           ],
-          "best_hero_reason": "Tight skull canyon where Ezili's necrotic hexes destroy incoming blimps and Heartstopper prevents regrow bloon explosions.",
-          "hero_synergies": "Bomb Shooter (2-0-4) + Wizard Monkey (0-2-4)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Skull Tweak, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -53331,7 +53467,9 @@
               "timing": "before_round",
               "step_id": "skull_tweak_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Skull Tweak, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -53512,8 +53650,8 @@
               "tower_id": "spa_pits_easy_t5"
             }
           ],
-          "best_hero_reason": "Bubbling volcanic springs with tight curves allow Geraldo's shop utilities (Shooty Turrets, Nails, Fire Sauce) to dominate key turns.",
-          "hero_synergies": "Wizard Monkey (0-2-4 Prince of Darkness) + Tack Zone (2-0-5)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Spa Pits, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -53777,8 +53915,8 @@
               "step_id": "spa_pits_medium_s16"
             }
           ],
-          "best_hero_reason": "Bubbling volcanic springs with tight curves allow Geraldo's shop utilities (Shooty Turrets, Nails, Fire Sauce) to dominate key turns.",
-          "hero_synergies": "Wizard Monkey (0-2-4 Prince of Darkness) + Tack Zone (2-0-5)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Spa Pits, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -54159,7 +54297,9 @@
               "timing": "before_round",
               "step_id": "spa_pits_hard_s24"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Spa Pits, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -54912,7 +55052,9 @@
               "tower_id": "spice_islands_hard_t1",
               "step_id": "spice_islands_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Vast ocean archipelago allows building a colossal Sub and Buccaneer fleet; Brickell's Naval Tactics doubles all naval attack speed.",
+          "hero_synergies": "Sub Commander (2-0-5) + Buccaneer (0-5-2 Pirate Lord)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -55077,8 +55219,8 @@
               "tower_id": "spillway_easy_t4"
             }
           ],
-          "best_hero_reason": "The central drain barrel is the only placement spot that reaches all incoming bloon pipes; Brickell fits inside and drops mega mines that destroy all 5 paths.",
-          "hero_synergies": "Mortar Monkey (2-4-0) + Ring of Fire around perimeter"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Spillway, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -55327,8 +55469,8 @@
               "step_id": "spillway_medium_s15"
             }
           ],
-          "best_hero_reason": "The central drain barrel is the only placement spot that reaches all incoming bloon pipes; Brickell fits inside and drops mega mines that destroy all 5 paths.",
-          "hero_synergies": "Mortar Monkey (2-4-0) + Ring of Fire around perimeter"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Spillway, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -55679,7 +55821,9 @@
               "timing": "before_round",
               "step_id": "spillway_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Spillway, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -55844,8 +55988,8 @@
               "tower_id": "spring_spring_easy_t4"
             }
           ],
-          "best_hero_reason": "Split paths around twin ponds split bloons; Etienne's aerial drones seamlessly support both tracks while ponds allow Sub support.",
-          "hero_synergies": "Sub Monkey (2-0-4 Armor Piercing Darts) + Buccaneer (3-2-0)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Spring Spring, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -56094,8 +56238,8 @@
               "step_id": "spring_spring_medium_s15"
             }
           ],
-          "best_hero_reason": "Split paths around twin ponds split bloons; Etienne's aerial drones seamlessly support both tracks while ponds allow Sub support.",
-          "hero_synergies": "Sub Monkey (2-0-4 Armor Piercing Darts) + Buccaneer (3-2-0)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Spring Spring, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -56446,7 +56590,9 @@
               "timing": "before_round",
               "step_id": "spring_spring_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Spring Spring, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -57213,7 +57359,9 @@
               "timing": "before_round",
               "step_id": "streambed_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Tight corners along the winding riverbank give Sauda maximum contact time and easy early-game solo capability.",
+          "hero_synergies": "Buccaneer (0-5-2 Pirate Lord) + Tack Shooter (2-0-4)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -57379,8 +57527,8 @@
               "tower_id": "sulfur_springs_easy_t4"
             }
           ],
-          "best_hero_reason": "Geothermal vents and tight straightaways concentrate bloons into Gwendolin's Heat It Up aura and fire traps for rapid lead and ceramic burning.",
-          "hero_synergies": "Ring of Fire (4-0-2 Tack) + Alchemist (3-2-0 Berserker)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Sulfur Springs, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -57629,8 +57777,8 @@
               "step_id": "sulfur_springs_medium_s15"
             }
           ],
-          "best_hero_reason": "Geothermal vents and tight straightaways concentrate bloons into Gwendolin's Heat It Up aura and fire traps for rapid lead and ceramic burning.",
-          "hero_synergies": "Ring of Fire (4-0-2 Tack) + Alchemist (3-2-0 Berserker)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Sulfur Springs, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -57981,7 +58129,9 @@
               "timing": "before_round",
               "step_id": "sulfur_springs_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Sulfur Springs, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -58146,8 +58296,8 @@
               "tower_id": "sunken_columns_easy_t4"
             }
           ],
-          "best_hero_reason": "Submerged trenches provide prime water placement for ballistics and mega mines, dominating the converging bloon paths.",
-          "hero_synergies": "Sub Commander (2-0-5) + Buccaneer (0-4-2 Cannon Ship)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Sunken Columns, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -58396,8 +58546,8 @@
               "step_id": "sunken_columns_medium_s15"
             }
           ],
-          "best_hero_reason": "Submerged trenches provide prime water placement for ballistics and mega mines, dominating the converging bloon paths.",
-          "hero_synergies": "Sub Commander (2-0-5) + Buccaneer (0-4-2 Cannon Ship)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Sunken Columns, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -58748,7 +58898,9 @@
               "timing": "before_round",
               "step_id": "sunken_columns_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Sunken Columns, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -58913,8 +59065,8 @@
               "tower_id": "sunset_gulch_easy_t4"
             }
           ],
-          "best_hero_reason": "Deep canyon gorge with cliff sight blockers; Psi targets bloons across the canyon depths effortlessly without line-of-sight penalties.",
-          "hero_synergies": "Sniper Monkey (0-2-5 Elite Defender) + Spike Factory at exit"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Sunset Gulch, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -59163,8 +59315,8 @@
               "step_id": "sunset_gulch_medium_s15"
             }
           ],
-          "best_hero_reason": "Deep canyon gorge with cliff sight blockers; Psi targets bloons across the canyon depths effortlessly without line-of-sight penalties.",
-          "hero_synergies": "Sniper Monkey (0-2-5 Elite Defender) + Spike Factory at exit"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Sunset Gulch, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -59515,7 +59667,9 @@
               "timing": "before_round",
               "step_id": "sunset_gulch_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Sunset Gulch, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -59680,8 +59834,8 @@
               "tower_id": "the_cabin_easy_t4"
             }
           ],
-          "best_hero_reason": "The narrow snowy straightaway in front of the cabin concentrates bloons directly into Gwen's Cocktail of Fire and Heat It Up aura.",
-          "hero_synergies": "Ring of Fire (4-0-2 Tack) + Monkey Sub (2-0-4 in pond)"
+          "best_hero_reason": "Sauda placed on the sharp front porch hairpin curve slices bloons with maximum contact time and provides innate Camo detection from Round 1, effortlessly protecting the cabin entrance.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Alchemist (3-2-0) + Bomb Shooter (0-3-2)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -59930,8 +60084,8 @@
               "step_id": "the_cabin_medium_s15"
             }
           ],
-          "best_hero_reason": "The narrow snowy straightaway in front of the cabin concentrates bloons directly into Gwen's Cocktail of Fire and Heat It Up aura.",
-          "hero_synergies": "Ring of Fire (4-0-2 Tack) + Monkey Sub (2-0-4 in pond)"
+          "best_hero_reason": "Sauda placed on the sharp front porch hairpin curve slices bloons with maximum contact time and provides innate Camo detection from Round 1, effortlessly protecting the cabin entrance.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Alchemist (3-2-0) + Bomb Shooter (0-3-2)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -60282,7 +60436,9 @@
               "timing": "before_round",
               "step_id": "the_cabin_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda placed on the sharp front porch hairpin curve slices bloons with maximum contact time and provides innate Camo detection from Round 1, effortlessly protecting the cabin entrance.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Alchemist (3-2-0) + Bomb Shooter (0-3-2)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -60447,8 +60603,8 @@
               "tower_id": "three_mines_round_easy_t4"
             }
           ],
-          "best_hero_reason": "Circular mine tracks where clustered Bomb Shooters and Mortars under Striker decimate tight groups and stun incoming blimps.",
-          "hero_synergies": "Bomb Shooter (2-0-4 Recursive) + Mortar (2-4-0 Artillery Battery)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Three Mines 'Round, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -60697,8 +60853,8 @@
               "step_id": "three_mines_round_medium_s15"
             }
           ],
-          "best_hero_reason": "Circular mine tracks where clustered Bomb Shooters and Mortars under Striker decimate tight groups and stun incoming blimps.",
-          "hero_synergies": "Bomb Shooter (2-0-4 Recursive) + Mortar (2-4-0 Artillery Battery)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Three Mines 'Round, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -61049,7 +61205,9 @@
               "timing": "before_round",
               "step_id": "three_mines_round_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Three Mines 'Round, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -61215,8 +61373,8 @@
               "tower_id": "tinkerton_easy_t4"
             }
           ],
-          "best_hero_reason": "Rosalia's signature inventor workshop; her jetpack flight easily hops between the upper and lower conveyor tracks while her grenades pop Leads.",
-          "hero_synergies": "Heli Pilot (3-0-2) + Monkey Ace (2-0-4 Spectre) + Engineer (4-2-0)"
+          "best_hero_reason": "Sauda's fast melee attack locks down conveyor track intersections, effortlessly popping early waves and camos while saving for heavy mechanical defense.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Village (2-2-0) + Alchemist"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -61465,8 +61623,8 @@
               "step_id": "tinkerton_medium_s15"
             }
           ],
-          "best_hero_reason": "Rosalia's signature inventor workshop; her jetpack flight easily hops between the upper and lower conveyor tracks while her grenades pop Leads.",
-          "hero_synergies": "Heli Pilot (3-0-2) + Monkey Ace (2-0-4 Spectre) + Engineer (4-2-0)"
+          "best_hero_reason": "Sauda's fast melee attack locks down conveyor track intersections, effortlessly popping early waves and camos while saving for heavy mechanical defense.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Village (2-2-0) + Alchemist"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -61832,7 +61990,9 @@
               "timing": "before_round",
               "step_id": "tinkerton_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's fast melee attack locks down conveyor track intersections, effortlessly popping early waves and camos while saving for heavy mechanical defense.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Village (2-2-0) + Alchemist"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -62615,7 +62775,9 @@
               "timing": "before_round",
               "step_id": "town_center_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "The central crossroads intersection near the pond gives Sauda multiple sweeps on every bloon as it enters and leaves the center square.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Alchemist (3-2-0)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -62781,8 +62943,8 @@
               "tower_id": "tree_stump_easy_t4"
             }
           ],
-          "best_hero_reason": "Mounting Churchill atop the high central tree stump provides 360-degree elevated vision and continuous armor-piercing artillery along the spiraling path.",
-          "hero_synergies": "Monkey Village (2-2-0 Primary Mentoring) + Alchemist (4-2-0 Stronger Stimulant)"
+          "best_hero_reason": "Sauda locks down the spiraling stump base with high melee pierce and innate Camo, allowing easy saving for heavy mid-game artillery and primary tower upgrades.",
+          "hero_synergies": "Monkey Village (2-2-0) + Tack Shooter (2-0-4) + Alchemist (3-2-0)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -63031,8 +63193,8 @@
               "step_id": "tree_stump_medium_s15"
             }
           ],
-          "best_hero_reason": "Mounting Churchill atop the high central tree stump provides 360-degree elevated vision and continuous armor-piercing artillery along the spiraling path.",
-          "hero_synergies": "Monkey Village (2-2-0 Primary Mentoring) + Alchemist (4-2-0 Stronger Stimulant)"
+          "best_hero_reason": "Sauda locks down the spiraling stump base with high melee pierce and innate Camo, allowing easy saving for heavy mid-game artillery and primary tower upgrades.",
+          "hero_synergies": "Monkey Village (2-2-0) + Tack Shooter (2-0-4) + Alchemist (3-2-0)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -63398,7 +63560,9 @@
               "timing": "before_round",
               "step_id": "tree_stump_hard_s23"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda locks down the spiraling stump base with high melee pierce and innate Camo, allowing easy saving for heavy mid-game artillery and primary tower upgrades.",
+          "hero_synergies": "Monkey Village (2-2-0) + Tack Shooter (2-0-4) + Alchemist (3-2-0)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -63563,8 +63727,8 @@
               "tower_id": "underground_easy_t4"
             }
           ],
-          "best_hero_reason": "Dual intersecting underground pipes create tight straightaways where Ezili's curse and Heartstopper neutralize regrows and blimps.",
-          "hero_synergies": "Wizard Monkey (0-2-4 Prince of Darkness) + Spike Factory (0-2-5)"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Underground, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -63813,8 +63977,8 @@
               "step_id": "underground_medium_s15"
             }
           ],
-          "best_hero_reason": "Dual intersecting underground pipes create tight straightaways where Ezili's curse and Heartstopper neutralize regrows and blimps.",
-          "hero_synergies": "Wizard Monkey (0-2-4 Prince of Darkness) + Spike Factory (0-2-5)"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Underground, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -64165,7 +64329,9 @@
               "timing": "before_round",
               "step_id": "underground_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Underground, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -64346,8 +64512,8 @@
               "tower_id": "water_park_easy_t5"
             }
           ],
-          "best_hero_reason": "Placed directly in the central splash pool, Pat Fusty's amphibious fists slam and knock back bloons exiting the water slides while his Roar buffs towers.",
-          "hero_synergies": "Tack Zone (2-0-5) + Buccaneer (0-3-2) in water pool"
+          "best_hero_reason": "Sauda's affordable starting cost ($510 on Easy) allows immediate placement on Round 1 at key curves on Water Park, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -64611,8 +64777,8 @@
               "step_id": "water_park_medium_s16"
             }
           ],
-          "best_hero_reason": "Placed directly in the central splash pool, Pat Fusty's amphibious fists slam and knock back bloons exiting the water slides while his Roar buffs towers.",
-          "hero_synergies": "Tack Zone (2-0-5) + Buccaneer (0-3-2) in water pool"
+          "best_hero_reason": "Sauda's affordable starting cost ($600 on Medium) allows immediate placement on Round 1 at key curves on Water Park, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -64993,7 +65159,9 @@
               "timing": "before_round",
               "step_id": "water_park_hard_s24"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's affordable starting cost ($650 on Hard) allows immediate placement on Round 1 at key curves on Water Park, soloing early rounds with innate Camo detection and high pierce abilities.",
+          "hero_synergies": "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -65760,7 +65928,9 @@
               "timing": "before_round",
               "step_id": "winter_park_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Twin fountain loops force bloons to circle around Sauda multiple times, maximizing her high melee DPS and Sword Charge coverage.",
+          "hero_synergies": "Tack Shooter (2-0-4 Overdrive) + Village (2-2-0)"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -65925,8 +66095,8 @@
               "tower_id": "workshop_easy_t4"
             }
           ],
-          "best_hero_reason": "Short conveyor track with expensive track extensions where Benjamin's Bloon Trojan neutralizes MOAB ceramic children and funds extensions.",
-          "hero_synergies": "Spike Factory (0-2-5 Perma-Spike) + Village (2-3-0 MIB)"
+          "best_hero_reason": "Sauda's compact footprint fits cleanly at the track junction ahead of the conveyor track, securing early rounds with dual-blade slashing while saving funds for track mechanisms and mid-game defense.",
+          "hero_synergies": "Spike Factory (0-2-4) + Alchemist (3-2-0) + Boomerang Monkey"
         },
         "Medium": {
           "difficulty": "Medium",
@@ -66175,8 +66345,8 @@
               "step_id": "workshop_medium_s15"
             }
           ],
-          "best_hero_reason": "Short conveyor track with expensive track extensions where Benjamin's Bloon Trojan neutralizes MOAB ceramic children and funds extensions.",
-          "hero_synergies": "Spike Factory (0-2-5 Perma-Spike) + Village (2-3-0 MIB)"
+          "best_hero_reason": "Sauda's compact footprint fits cleanly at the track junction ahead of the conveyor track, securing early rounds with dual-blade slashing while saving funds for track mechanisms and mid-game defense.",
+          "hero_synergies": "Spike Factory (0-2-4) + Alchemist (3-2-0) + Boomerang Monkey"
         },
         "Hard": {
           "difficulty": "Hard",
@@ -66527,7 +66697,9 @@
               "timing": "before_round",
               "step_id": "workshop_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Sauda's compact footprint fits cleanly at the track junction ahead of the conveyor track, securing early rounds with dual-blade slashing while saving funds for track mechanisms and mid-game defense.",
+          "hero_synergies": "Spike Factory (0-2-4) + Alchemist (3-2-0) + Boomerang Monkey"
         },
         "Impoppable": null,
         "CHIMPS": null
@@ -66692,7 +66864,7 @@
               "tower_id": "x_factor_easy_t5"
             }
           ],
-          "best_hero_reason": "Diagonal criss-crossing tracks with blind spots make targeting difficult; Psi's infinite range covers the entire crossroad with zero blind angles.",
+          "best_hero_reason": "Quincy's bouncing arrows and Storm of Arrows cover the separated diagonal tracks cleanly through the early game, detecting Camo at Lv5 and popping Leads at Lv7.",
           "hero_synergies": "Sniper Monkey (0-2-4) + Wizard (0-2-4 Prince of Darkness)"
         },
         "Medium": {
@@ -66942,7 +67114,7 @@
               "step_id": "x_factor_medium_s15"
             }
           ],
-          "best_hero_reason": "Diagonal criss-crossing tracks with blind spots make targeting difficult; Psi's infinite range covers the entire crossroad with zero blind angles.",
+          "best_hero_reason": "Quincy's bouncing arrows and Storm of Arrows cover the separated diagonal tracks cleanly through the early game, detecting Camo at Lv5 and popping Leads at Lv7.",
           "hero_synergies": "Sniper Monkey (0-2-4) + Wizard (0-2-4 Prince of Darkness)"
         },
         "Hard": {
@@ -67294,7 +67466,9 @@
               "timing": "before_round",
               "step_id": "x_factor_hard_s22"
             }
-          ]
+          ],
+          "best_hero_reason": "Quincy's bouncing arrows and Storm of Arrows cover the separated diagonal tracks cleanly through the early game, detecting Camo at Lv5 and popping Leads at Lv7.",
+          "hero_synergies": "Sniper Monkey (0-2-4) + Wizard (0-2-4 Prince of Darkness)"
         },
         "Impoppable": null,
         "CHIMPS": null

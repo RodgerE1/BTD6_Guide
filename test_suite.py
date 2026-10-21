@@ -1752,6 +1752,55 @@ class TestV140RegressionFixes(unittest.TestCase):
         self.assertFalse(ver_ok)
         self.assertTrue(any("requires at least 5 steps" in e for e in ver_errs))
 
+    def test_cargo_and_all_maps_hero_alignment(self):
+        """Verify Cargo map on Easy and all other maps have aligned hero recommendations, steps, and reasons."""
+        dm = DataManager(show_dialogs=False)
+        maps = dm.get_maps()
+
+        # 1. Cargo Easy specifically
+        cargo = maps["cargo"]
+        self.assertEqual(cargo["best_hero"], "Benjamin")
+        easy_strat = cargo["difficulties"]["Easy"]
+        self.assertEqual(easy_strat["recommended_hero"], "Sauda")
+        # Step 1 must place Sauda
+        first_step = easy_strat["steps"][0]
+        self.assertEqual(first_step["action"], "Place")
+        self.assertEqual(first_step["tower"], "Sauda")
+        # best_hero_reason must explain Sauda's role, not Benjamin's Bloon Trojan
+        self.assertIn("Sauda", easy_strat["best_hero_reason"])
+        self.assertNotIn("Benjamin", easy_strat["best_hero_reason"])
+        self.assertNotIn("Trojan", easy_strat["best_hero_reason"])
+        self.assertIn("Buccaneer", easy_strat["hero_synergies"])
+
+        # 2. Invariant across all 87 maps and 261 strategies:
+        # If any strategy has a step placing a hero, recommended_hero MUST match that hero!
+        canonical_hero_names = set(HEROES_DATABASE.keys())
+        for mid, mdata in maps.items():
+            for diff in ["Easy", "Medium", "Hard"]:
+                strat = mdata.get("difficulties", {}).get(diff)
+                if not strat:
+                    continue
+                rec_hero = strat.get("recommended_hero")
+                self.assertIsNotNone(rec_hero, f"{mid} [{diff}] missing recommended_hero")
+
+                # Check placed heroes
+                heroes_placed = [
+                    s["tower"] for s in strat.get("steps", [])
+                    if s.get("action") in ("Place", "Buy") and s.get("tower") in canonical_hero_names
+                ]
+                if heroes_placed:
+                    self.assertEqual(
+                        rec_hero, heroes_placed[0],
+                        f"Hero mismatch on {mid} [{diff}]: recommended_hero={rec_hero} but placed {heroes_placed[0]}"
+                    )
+
+                # Reason must not mention a conflicting hero
+                reason = strat.get("best_hero_reason", "")
+                self.assertTrue(len(reason) > 15, f"{mid} [{diff}] reason too short")
+                for h in canonical_hero_names:
+                    if h.lower() in reason.lower() and h.lower() not in rec_hero.lower():
+                        self.fail(f"Conflicting hero '{h}' mentioned in reason for {mid} [{diff}] with rec_hero='{rec_hero}'")
+
 
 if __name__ == "__main__":
     unittest.main()

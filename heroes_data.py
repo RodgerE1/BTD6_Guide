@@ -985,3 +985,214 @@ def get_best_hero_for_map(map_id, map_data):
         "synergies": "Alchemist (3-2-0 Berserker Brew) + Ninja Monkey (4-0-1 Bloonjitsu)"
     }
 
+
+def get_strategy_hero_intel(hero_name, map_id, map_data, difficulty="Easy"):
+    """
+    Returns tactical intelligence (reason, alternatives, synergies)
+    tailored specifically to the given hero on the specified map and difficulty.
+    Ensures tactical reasons and synergies align directly with the strategy's build.
+    """
+    map_hero_intel = get_best_hero_for_map(map_id, map_data)
+    m_name = map_data.get("name", map_id)
+
+    # If the strategy hero matches the map's signature hero, use the curated intelligence
+    if hero_name and hero_name == map_hero_intel.get("best_hero"):
+        return {
+            "hero": hero_name,
+            "reason": map_hero_intel.get("reason", ""),
+            "alternatives": map_hero_intel.get("alternatives", []),
+            "synergies": map_hero_intel.get("synergies", "")
+        }
+
+    h_data = HEROES_DATABASE.get(hero_name, {})
+    cost_key = f"cost_{difficulty.lower()}" if difficulty else "cost_easy"
+    cost_val = h_data.get(cost_key, h_data.get("cost_easy", 510))
+
+    # Map-specific tailored reasons for strategy heroes
+    if hero_name == "Sauda":
+        if map_id == "cargo":
+            reason = (
+                f"Sauda's affordable starting cost (${cost_val} on {difficulty}) allows placing her immediately on Round 1 "
+                f"at the road intersection to solo land waves with innate Camo detection, letting defenses invest into "
+                f"naval and explosive towers to intercept the separate MOAB canal."
+            )
+            synergies = "Monkey Buccaneer (3-2-0 Destroyer) + Alchemist (3-2-0 Berserker Brew) + Bomb Shooter (0-3-2)"
+            alternatives = ["Quincy", "Admiral Brickell"]
+        elif map_id == "the_cabin":
+            reason = (
+                f"Sauda placed on the sharp front porch hairpin curve slices bloons with maximum contact time and provides "
+                f"innate Camo detection from Round 1, effortlessly protecting the cabin entrance."
+            )
+            synergies = "Tack Shooter (2-0-4 Overdrive) + Alchemist (3-2-0) + Bomb Shooter (0-3-2)"
+            alternatives = ["Quincy", "Gwendolin", "Obyn Greenfoot"]
+        elif map_id == "tree_stump":
+            reason = (
+                f"Sauda locks down the spiraling stump base with high melee pierce and innate Camo, allowing easy saving "
+                f"for heavy mid-game artillery and primary tower upgrades."
+            )
+            synergies = "Monkey Village (2-2-0) + Tack Shooter (2-0-4) + Alchemist (3-2-0)"
+            alternatives = ["Captain Churchill", "Quincy", "Gwendolin"]
+        elif map_id == "peninsula":
+            reason = (
+                f"Sauda locks down the tight land choke at the base of the mountain, handling early rounds and early camos "
+                f"while naval Subs and Buccaneers dominate the surrounding ocean."
+            )
+            synergies = "Monkey Sub (2-0-4 AP Darts) + Buccaneer (3-2-0 Destroyer) + Alchemist"
+            alternatives = ["Admiral Brickell", "Quincy"]
+        elif map_id == "workshop":
+            reason = (
+                f"Sauda's compact footprint fits cleanly at the track junction ahead of the conveyor track, securing early rounds "
+                f"with dual-blade slashing while saving funds for track mechanisms and mid-game defense."
+            )
+            synergies = "Spike Factory (0-2-4) + Alchemist (3-2-0) + Boomerang Monkey"
+            alternatives = ["Benjamin", "Quincy", "Geraldo"]
+        elif map_id == "one_two_tree":
+            reason = (
+                f"Sauda placed on the central intersection covers multiple converging tracks, dealing high melee damage "
+                f"while magic and military towers take advantage of specialized buff tiles."
+            )
+            synergies = "Ninja Monkey (4-0-1 Bloonjitsu) + Alchemist (3-2-0 Berserker Brew)"
+            alternatives = ["Geraldo", "Quincy", "Etienne"]
+        elif map_id == "scrapyard":
+            reason = (
+                f"Sauda controls the junkyard hairpin turn near the trash compactor, slicing through dense early clusters "
+                f"and handling Camo bloons without early support."
+            )
+            synergies = "Tack Shooter (2-0-4 Overdrive) + Bomb Shooter (2-0-4 Recursive Cluster)"
+            alternatives = ["Geraldo", "Quincy", "Pat Fusty"]
+        elif map_id == "off_the_coast":
+            reason = (
+                f"Sauda defends the shore chokepoint against early bloons, providing innate Camo popping and early stability "
+                f"so naval investments can scale in open water."
+            )
+            synergies = "Monkey Buccaneer (3-2-0 Destroyer) + Monkey Sub (2-0-3 Triple Guns)"
+            alternatives = ["Admiral Brickell", "Quincy"]
+        elif map_id == "haunted":
+            reason = (
+                f"Sauda placed at the lane intersection provides dual-track melee coverage, securing early rounds with "
+                f"innate Camo detection while defenses build for mid-game blimps."
+            )
+            synergies = "Ninja Monkey (4-0-1 Bloonjitsu) + Alchemist (3-2-0 Berserker Brew)"
+            alternatives = ["Etienne", "Quincy"]
+        elif map_id == "midnight_mansion":
+            reason = (
+                f"Sauda fits cleanly in the interior mansion chokepoints, maximizing close-range blade damage while "
+                f"bypassing tight line-of-sight constraints."
+            )
+            synergies = "Tack Shooter (2-0-4 Overdrive) + Alchemist (3-2-0 Berserker Brew)"
+            alternatives = ["Ezili", "Quincy"]
+        elif map_id == "tinkerton":
+            reason = (
+                f"Sauda's fast melee attack locks down conveyor track intersections, effortlessly popping early waves "
+                f"and camos while saving for heavy mechanical defense."
+            )
+            synergies = "Tack Shooter (2-0-4 Overdrive) + Village (2-2-0) + Alchemist"
+            alternatives = ["Rosalia", "Quincy"]
+        else:
+            reason = (
+                f"Sauda's affordable starting cost (${cost_val} on {difficulty}) allows immediate placement on Round 1 "
+                f"at key curves on {m_name}, soloing early rounds with innate Camo detection and high pierce abilities."
+            )
+            synergies = "Alchemist (3-2-0 Berserker Brew) + Tack Shooter (2-0-4 Overdrive) / Ninja Monkey (4-0-1 Bloonjitsu)"
+            alternatives = [map_hero_intel.get("best_hero", "Quincy"), "Quincy", "Gwendolin"]
+    elif hero_name == "Quincy":
+        if map_id == "high_finance":
+            reason = (
+                f"Quincy's low starting cost (${cost_val} on {difficulty}) and long bouncing arrow range cover multiple separated "
+                f"city building lanes without paying expensive early plot construction fees."
+            )
+            synergies = "Sniper Monkey (0-2-4) + Dart Monkey + Monkey Village (2-2-0)"
+            alternatives = ["Benjamin", "Psi", "Etienne"]
+        elif map_id == "geared":
+            reason = (
+                f"Quincy's affordable cost (${cost_val} on {difficulty}) and long range bouncing arrows provide reliable early coverage "
+                f"while saving cash for long-range Snipers and Heli Pilots immune to gear rotation."
+            )
+            synergies = "Sniper Monkey (0-2-4) + Heli Pilot (3-0-2) + Alchemist"
+            alternatives = ["Psi", "Geraldo", "Etienne"]
+        elif map_id == "x_factor":
+            reason = (
+                f"Quincy's bouncing arrows and Storm of Arrows cover the separated diagonal tracks cleanly through the early game, "
+                f"detecting Camo at Lv5 and popping Leads at Lv7."
+            )
+            synergies = "Sniper Monkey (0-2-4) + Wizard (0-2-4 Prince of Darkness)"
+            alternatives = ["Psi", "Etienne", "Geraldo"]
+        elif map_id == "moon_landing":
+            reason = (
+                f"Quincy provides cheap, reliable starting defense over crater walls, saving funds for Mortar and Tack towers "
+                f"that bypass sight obstruction."
+            )
+            synergies = "Mortar Monkey (2-4-0) + Tack Shooter (2-0-4 Overdrive)"
+            alternatives = ["Striker Jones", "Psi", "Etienne"]
+        elif map_id == "quad":
+            reason = (
+                f"Quincy's affordable starting cost and long bouncing range allow early defense across four distant lanes, "
+                f"giving time to establish multi-target coverage."
+            )
+            synergies = "Sniper Monkey (0-2-4) + Monkey Sub (2-0-3 Triple Guns)"
+            alternatives = ["Psi", "Etienne"]
+        elif map_id == "ravine":
+            reason = (
+                f"Quincy's high-speed arrows provide critical early defense along the narrow canyon path before difficult "
+                f"multi-lane waves emerge."
+            )
+            synergies = "Sniper Monkey (0-2-4) + Alchemist (3-2-0)"
+            alternatives = ["Psi", "Etienne"]
+        elif map_id == "sanctuary":
+            reason = (
+                f"Quincy's low starting cost helps navigate moving sanctuary platforms, covering shifting lanes with bouncing arrows."
+            )
+            synergies = "Sniper Monkey (0-2-4) + Heli Pilot (3-0-2)"
+            alternatives = ["Psi", "Etienne"]
+        elif map_id == "bazaar":
+            reason = (
+                f"Quincy's long range covers multiple separated bazaar lanes, handling early camos and ceramic rushes with Storm of Arrows."
+            )
+            synergies = "Sniper Monkey (0-2-4) + Wizard (0-2-4 Prince of Darkness)"
+            alternatives = ["Psi", "Etienne", "Geraldo"]
+        elif map_id == "ouch":
+            reason = (
+                f"Quincy's cheap cost (${cost_val} on {difficulty}) allows an immediate foothold on #Ouch, providing vital early pierce "
+                f"across the center intersection."
+            )
+            synergies = "Ninja Monkey (4-0-1) + Monkey Sub (2-0-3) + Alchemist"
+            alternatives = ["Psi", "Geraldo"]
+        else:
+            reason = (
+                f"Quincy's low starting cost (${cost_val} on {difficulty}) and long bouncing arrow range provide dependable multi-lane "
+                f"coverage across {m_name}, handling early Camo (Lv5) and Lead (Lv7) with zero leaks."
+            )
+            synergies = "Alchemist (Berserker Brew) + Monkey Village (Jungle Drums) + Sniper Monkey (0-2-4)"
+            alternatives = [map_hero_intel.get("best_hero", "Sauda"), "Sauda", "Etienne"]
+    elif hero_name == "Admiral Brickell":
+        reason = (
+            f"Extensive water layout on {m_name} maximizes Brickell's Naval Tactics, doubling attack speed and granting "
+            f"Lead/Camo popping to surrounding water towers."
+        )
+        synergies = "Monkey Buccaneer (3-2-0 Destroyer) + Monkey Sub (2-0-4 Armor Piercing Darts)"
+        alternatives = ["Sauda", "Quincy", "Pat Fusty"]
+    elif hero_name == "Adora":
+        reason = (
+            f"Adora provides high-damage seeking magic bolts with unobstructed elevation across {m_name}, scaling into "
+            f"a powerful late-game damage carry."
+        )
+        synergies = "Super Monkey (3-0-2 Sun Avatar) + Alchemist (3-2-0 Berserker Brew)"
+        alternatives = ["Sauda", "Quincy", "Obyn Greenfoot"]
+    else:
+        reason = h_data.get("summary", f"{hero_name} provides strong tactical capabilities across {m_name}.")
+        syn_list = h_data.get("synergies", [])
+        synergies = ", ".join(syn_list) if isinstance(syn_list, list) else str(syn_list)
+        alternatives = [map_hero_intel.get("best_hero", "Sauda"), "Sauda", "Quincy"]
+
+    # Filter alternatives so the hero itself is not in its own alternatives
+    alternatives = [a for a in alternatives if a != hero_name]
+    if not alternatives:
+        alternatives = ["Quincy", "Sauda"]
+
+    return {
+        "hero": hero_name,
+        "reason": reason,
+        "alternatives": alternatives,
+        "synergies": synergies
+    }
+

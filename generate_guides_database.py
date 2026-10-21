@@ -16,7 +16,7 @@ from map_data_advanced import ADVANCED_MAPS
 from map_data_expert import EXPERT_MAPS
 from map_data_medium import build_medium_strategy
 from map_data_hard import build_hard_strategy
-from heroes_data import get_best_hero_for_map
+from heroes_data import get_best_hero_for_map, get_strategy_hero_intel
 from btd6_economy import get_cash_available
 from btd6_replay import validate_strategy, normalize_map_strategies, assign_explicit_tower_ids, TowerReplayEngine
 
@@ -60,14 +60,20 @@ def compile_database(output_path=None):
         mdata["hero_synergies"] = hero_intel["synergies"]
 
         if "difficulties" in mdata:
-            if mdata["difficulties"].get("Easy"):
-                mdata["difficulties"]["Easy"]["best_hero_reason"] = hero_intel["reason"]
-                mdata["difficulties"]["Easy"]["hero_synergies"] = hero_intel["synergies"]
             mdata["difficulties"]["Medium"] = build_medium_strategy(mid, mdata)
-            if mdata["difficulties"].get("Medium"):
-                mdata["difficulties"]["Medium"]["best_hero_reason"] = hero_intel["reason"]
-                mdata["difficulties"]["Medium"]["hero_synergies"] = hero_intel["synergies"]
             mdata["difficulties"]["Hard"] = build_hard_strategy(mid, mdata)
+
+            # Assign hero tactical reason and synergies tailored to each difficulty's build hero
+            for diff in ["Easy", "Medium", "Hard"]:
+                diff_strat = mdata["difficulties"].get(diff)
+                if not diff_strat:
+                    continue
+                s_hero = diff_strat.get("recommended_hero") or hero_intel["best_hero"]
+                strat_hero_intel = get_strategy_hero_intel(s_hero, mid, mdata, difficulty=diff)
+                diff_strat["best_hero_reason"] = strat_hero_intel["reason"]
+                diff_strat["hero_synergies"] = strat_hero_intel["synergies"]
+                if not diff_strat.get("hero_alternatives"):
+                    diff_strat["hero_alternatives"] = strat_hero_intel["alternatives"]
 
         # Apply any saved user overrides for this map
         if mid in user_overrides:
