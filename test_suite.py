@@ -40,6 +40,7 @@ from btd6_economy import (
 )
 from btd6_replay import (
     validate_strategy,
+    validate_strategy_schema,
     TowerReplayEngine,
     TowerInstance,
     CANONICAL_HEROES,
@@ -1135,5 +1136,361 @@ class TestCleanDatabasePassesAllInvariants(unittest.TestCase):
         self.assertEqual(stats["difficulty_counts"]["Hard"], 87)
 
 
+class TestSuggestionsForCodingRegressions(unittest.TestCase):
+    """
+    Validates all 5 points and prioritized regression requirements from Suggestions_for_Coding.txt:
+    1. A Monkey Knowledge-dependent guide survives save, reload, and export/import.
+    2. Malformed imports return diagnostics without exceptions.
+    3. Mixed explicit/generated tower IDs never collide.
+    4. Every accepted strategy is safe for rendering and replay (strict field schemas).
+    5. Draft imports remain drafts after restarting.
+    6. Saved and shared guides record their execution assumptions (requirements, starting cash, game version).
+    """
+
+    def _create_valid_medium_strategy(self, starting_cash=650, mk_req=False):
+        steps = [
+            {"step_number": 1, "round": 1, "timing": "before_round", "action": "Place", "tower": "Dart Monkey", "upgrade": "0-0-0", "cost_estimate": 215, "placement": "Center"},
+            {"step_number": 2, "round": 4, "timing": "before_round", "action": "Place", "tower": "Ninja Monkey", "upgrade": "0-0-0", "cost_estimate": 540, "placement": "Near entrance"},
+            {"step_number": 3, "round": 10, "timing": "before_round", "action": "Upgrade", "tower": "Ninja Monkey", "upgrade": "1-0-1", "cost_estimate": 430, "placement": "Near entrance"},
+            {"step_number": 4, "round": 18, "timing": "before_round", "action": "Upgrade", "tower": "Ninja Monkey", "upgrade": "3-0-1", "cost_estimate": 920, "placement": "Near entrance"},
+            {"step_number": 5, "round": 24, "timing": "before_round", "action": "Upgrade", "tower": "Ninja Monkey", "upgrade": "4-0-1", "cost_estimate": 2970, "placement": "Near entrance"},
+            {"step_number": 6, "round": 27, "timing": "before_round", "action": "Place", "tower": "Alchemist", "upgrade": "2-0-0", "cost_estimate": 1405, "placement": "Near Ninja"},
+            {"step_number": 7, "round": 36, "timing": "before_round", "action": "Upgrade", "tower": "Alchemist", "upgrade": "3-0-0", "cost_estimate": 1350, "placement": "Near Ninja"},
+            {"step_number": 8, "round": 40, "timing": "before_round", "action": "Place", "tower": "Bomb Shooter", "upgrade": "0-3-0", "cost_estimate": 1930, "placement": "Bend"}
+        ]
+        strat = {
+            "difficulty": "Medium",
+            "mode": "Standard",
+            "rounds": "1-60",
+            "status": "Verified",
+            "recommended_hero": "Sauda",
+            "starting_cash": starting_cash,
+            "overview": "Tactical medium test strategy.",
+            "camo_handling": "Ninja 4-0-1",
+            "lead_handling": "Alchemist 2-0-0 buff",
+            "moab_handling": "Bomb Shooter 0-3-0 Mauler",
+            "why_it_works": "Synergized defense.",
+            "steps": steps
+        }
+        if mk_req:
+            strat["requirements"] = {
+                "monkey_knowledge": True,
+                "more_starting_cash": True,
+                "free_dart_monkey": False,
+                "required_starting_cash": 850,
+                "game_version": "v45.0"
+            }
+        return strat
+
+    def test_item1_monkey_knowledge_strategy_survives_save_and_reload(self):
+        """1. A Monkey Knowledge-dependent guide survives save, reload, and export/import."""
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            db_path = os.path.join(tmp_dir, "guides.json")
+            ov_path = os.path.join(tmp_dir, "user_overrides.json")
+
+            # Medium strategy with Gwendolin ($725 opening spend, starting cash $850)
+            strat = self._create_valid_medium_strategy(starting_cash=850, mk_req=True)
+            strat["steps"][0] = {
+                "step_number": 1,
+                "round": 1,
+                "timing": "before_round",
+                "action": "Place",
+                "tower": "Gwendolin",
+                "upgrade": "0-0-0",
+                "cost_estimate": 725,
+                "placement": "Center"
+            }
+            strat["steps"][1]["timing"] = "during_round"
+            strat["steps"][4]["round"] = 26
+            strat["steps"][5]["round"] = 30
+            strat["steps"][6]["round"] = 37
+            strat["recommended_hero"] = "Gwendolin"
+
+            # Base database with default Sauda strategy
+            base_db = {
+                "version": "1.3.0",
+                "maps": {
+                    "monkey_meadow": {
+                        "name": "Monkey Meadow",
+                        "category": "Beginner",
+                        "difficulties": {
+                            "Medium": self._create_valid_medium_strategy(starting_cash=650, mk_req=False)
+                        }
+                    }
+                }
+            }
+            with open(db_path, "w", encoding="utf-8") as f:
+                json.dump(base_db, f)
+
+            dm = DataManager(filepath=db_path, show_dialogs=False)
+            dm.overrides_filepath = ov_path
+
+            # Save the MK override
+            saved = dm.save_override("monkey_meadow", "Medium", strat)
+            self.assertTrue(saved, "Failed to save Monkey Knowledge override")
+
+            # Reload a fresh DataManager instance (loader defaults to MK=False)
+            dm_reloaded = DataManager(filepath=db_path, show_dialogs=False)
+            dm_reloaded.overrides_filepath = ov_path
+            dm_reloaded.load()
+
+            # Verify the MK override survived loading and is active
+            active_strat = dm_reloaded.database["maps"]["monkey_meadow"]["difficulties"]["Medium"]
+            self.assertEqual(active_strat["recommended_hero"], "Gwendolin")
+            self.assertEqual(active_strat["starting_cash"], 850)
+            self.assertIn("monkey_meadow", dm_reloaded.user_overrides)
+
+            # Subsequent save does not overwrite or drop the MK override
+            dm_reloaded.save()
+            dm_third = DataManager(filepath=db_path, show_dialogs=False)
+            dm_third.overrides_filepath = ov_path
+            dm_third.load()
+            self.assertEqual(
+                dm_third.database["maps"]["monkey_meadow"]["difficulties"]["Medium"]["recommended_hero"],
+                "Gwendolin"
+            )
+
+    def test_item2_malformed_imports_return_diagnostics_without_exceptions(self):
+        """2. Malformed imports return diagnostics without exceptions."""
+        # Test steps is None
+        bad_strat1 = self._create_valid_medium_strategy()
+        bad_strat1["steps"] = None
+        ok1, errs1 = validate_strategy_schema(bad_strat1)
+        self.assertFalse(ok1)
+        self.assertTrue(any("steps" in e.lower() for e in errs1))
+
+        # Test step with tower is None
+        bad_strat2 = self._create_valid_medium_strategy()
+        bad_strat2["steps"][0]["tower"] = None
+        ok2, errs2 = validate_strategy_schema(bad_strat2)
+        self.assertFalse(ok2)
+        self.assertTrue(any("tower" in e.lower() for e in errs2))
+
+        # Test assign_explicit_tower_ids does not crash on None tower
+        strat_with_none_tower = {"steps": [{"action": "Place", "tower": None}]}
+        try:
+            assign_explicit_tower_ids(strat_with_none_tower, "test_map", "Medium")
+        except Exception as e:
+            self.fail(f"assign_explicit_tower_ids raised exception on None tower: {e}")
+
+        # Test non-dict step
+        bad_strat3 = self._create_valid_medium_strategy()
+        bad_strat3["steps"][0] = "invalid_step_string"
+        ok3, errs3 = validate_strategy_schema(bad_strat3)
+        self.assertFalse(ok3)
+
+        # Test boolean step_number or round
+        bad_strat4 = self._create_valid_medium_strategy()
+        bad_strat4["steps"][0]["round"] = True
+        ok4, errs4 = validate_strategy_schema(bad_strat4)
+        self.assertFalse(ok4)
+
+    def test_item3_mixed_explicit_and_generated_tower_ids_never_collide(self):
+        """3. Mixed explicit and generated tower IDs never collide."""
+        engine = TowerReplayEngine(difficulty="Medium", start_round=1, max_round=40)
+
+        # 1. Place a Dart Monkey with explicit ID 'dart_monkey_1'
+        step1 = {
+            "step_number": 1,
+            "round": 1,
+            "timing": "before_round",
+            "action": "Place",
+            "tower": "Dart Monkey",
+            "upgrade": "0-0-0",
+            "tower_id": "dart_monkey_1",
+            "cost_estimate": 215,
+            "placement": "Center"
+        }
+        ok1, err1 = engine.apply_step(step1)
+        self.assertTrue(ok1, f"Step 1 failed: {err1}")
+
+        # 2. Place another Dart Monkey WITHOUT an ID
+        step2 = {
+            "step_number": 2,
+            "round": 1,
+            "timing": "before_round",
+            "action": "Place",
+            "tower": "Dart Monkey",
+            "upgrade": "0-0-0",
+            "cost_estimate": 215,
+            "placement": "Top"
+        }
+        ok2, err2 = engine.apply_step(step2)
+        self.assertTrue(ok2, f"Step 2 failed: {err2}")
+
+        # 3. Both placements succeed and the board contains TWO distinct towers
+        self.assertEqual(len(engine.active_towers), 2)
+        self.assertEqual(len(engine.all_towers), 2)
+        self.assertIn("dart_monkey_1", engine.active_towers)
+        self.assertIn("dart_monkey_2", engine.active_towers)
+        self.assertNotEqual(
+            engine.active_towers["dart_monkey_1"].placement,
+            engine.active_towers["dart_monkey_2"].placement
+        )
+
+        # Test assign_explicit_tower_ids collision avoidance
+        strat = {
+            "steps": [
+                {"action": "Place", "tower": "Dart Monkey", "tower_id": "map_easy_t1"},
+                {"action": "Place", "tower": "Dart Monkey"}
+            ]
+        }
+        assign_explicit_tower_ids(strat, "map", "Easy")
+        self.assertEqual(strat["steps"][0]["tower_id"], "map_easy_t1")
+        self.assertEqual(strat["steps"][1]["tower_id"], "map_easy_t2")
+
+    def test_item4_strict_field_type_and_schema_validation(self):
+        """4. Every accepted strategy is safe for rendering and replay (strict field validation)."""
+        # A list-valued tower_id is rejected gracefully without unhandled exception
+        bad_t_id = self._create_valid_medium_strategy()
+        bad_t_id["steps"][0]["tower_id"] = ["dart_1"]
+        ok, errs = validate_strategy_schema(bad_t_id)
+        self.assertFalse(ok)
+        self.assertTrue(any("tower_id" in e for e in errs))
+
+        # A numeric placement is rejected
+        bad_place = self._create_valid_medium_strategy()
+        bad_place["steps"][0]["placement"] = 12345
+        ok, errs = validate_strategy_schema(bad_place)
+        self.assertFalse(ok)
+        self.assertTrue(any("placement" in e for e in errs))
+
+        # A list-valued step_id is rejected
+        bad_s_id = self._create_valid_medium_strategy()
+        bad_s_id["steps"][0]["step_id"] = ["step_1"]
+        ok, errs = validate_strategy_schema(bad_s_id)
+        self.assertFalse(ok)
+        self.assertTrue(any("step_id" in e for e in errs))
+
+        # Duplicate step_id is rejected
+        dup_s_id = self._create_valid_medium_strategy()
+        dup_s_id["steps"][0]["step_id"] = "same_id"
+        dup_s_id["steps"][1]["step_id"] = "same_id"
+        ok, errs = validate_strategy_schema(dup_s_id)
+        self.assertFalse(ok)
+        self.assertTrue(any("duplicate step_id" in e for e in errs))
+
+        # "Various" is rejected for an Upgrade action
+        bad_upg = self._create_valid_medium_strategy()
+        bad_upg["steps"][2]["upgrade"] = "Various"
+        ok, errs = validate_strategy_schema(bad_upg)
+        self.assertFalse(ok)
+        self.assertTrue(any("upgrade" in e.lower() for e in errs))
+
+        # Database loader rejects candidate with list-valued tower_id
+        candidate_db = {
+            "version": "1.3.0",
+            "maps": {
+                "test_map": {
+                    "name": "Test Map",
+                    "difficulties": {
+                        "Medium": bad_t_id
+                    }
+                }
+            }
+        }
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            fpath = os.path.join(tmp_dir, "test_guides.json")
+            with open(fpath, "w", encoding="utf-8") as f:
+                json.dump(candidate_db, f)
+            dm = DataManager(filepath=fpath, show_dialogs=False)
+            self.assertFalse(dm.load())
+
+    def test_item5_draft_imports_remain_drafts_after_restart(self):
+        """5. Draft imports remain drafts after restarting."""
+        # Strategy lacking camo handling (tactical warning, but replay/economic valid)
+        draft_strat = self._create_valid_medium_strategy()
+        # Remove camo upgrading step so it lacks Camo on R24
+        draft_strat["steps"][4] = {
+            "step_number": 5, "round": 24, "timing": "before_round",
+            "action": "Place", "tower": "Bomb Shooter", "upgrade": "0-1-0",
+            "cost_estimate": 650, "placement": "Bend"
+        }
+        draft_strat["status"] = "Draft"
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            db_path = os.path.join(tmp_dir, "guides.json")
+            ov_path = os.path.join(tmp_dir, "user_overrides.json")
+
+            base_db = {
+                "version": "1.3.0",
+                "maps": {
+                    "monkey_meadow": {
+                        "name": "Monkey Meadow",
+                        "difficulties": {
+                            "Medium": self._create_valid_medium_strategy()
+                        }
+                    }
+                }
+            }
+            with open(db_path, "w", encoding="utf-8") as f:
+                json.dump(base_db, f)
+
+            dm = DataManager(filepath=db_path, show_dialogs=False)
+            dm.overrides_filepath = ov_path
+
+            # Save draft override
+            saved = dm.save_override("monkey_meadow", "Medium", draft_strat)
+            self.assertTrue(saved)
+
+            # Reload fresh DataManager
+            dm_reloaded = DataManager(filepath=db_path, show_dialogs=False)
+            dm_reloaded.overrides_filepath = ov_path
+            dm_reloaded.load()
+
+            loaded_strat = dm_reloaded.database["maps"]["monkey_meadow"]["difficulties"]["Medium"]
+            self.assertEqual(loaded_strat["status"], "Draft")
+            self.assertIn("monkey_meadow", dm_reloaded.user_overrides)
+
+    def test_item6_exported_strategy_records_assumptions(self):
+        """6. Saved and shared guides record their execution assumptions."""
+        strat = self._create_valid_medium_strategy(starting_cash=850, mk_req=True)
+        map_data = {
+            "name": "Monkey Meadow",
+            "category": "Beginner",
+            "terrain": "Grass",
+            "lanes": "Single Track",
+            "water": False
+        }
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            set_path = os.path.join(tmp_dir, "settings.json")
+            sm = SettingsManager(filepath=set_path)
+            app = BTD6GuideApp.__new__(BTD6GuideApp)
+            app.settings = sm
+            app.data_manager = DataManager(filepath=os.path.join(tmp_dir, "guides.json"), show_dialogs=False)
+            app.get_current_map_id = lambda: "monkey_meadow"
+            app.get_current_strategy = lambda md: strat
+            app.clipboard_clear = lambda: None
+            copied_text = []
+            app.clipboard_append = lambda txt: copied_text.append(txt)
+            app.update = lambda: None
+
+            # Test Markdown export
+            with patch("tkinter.messagebox.showinfo"):
+                app.export_markdown_to_clipboard(strat=strat, map_data=map_data)
+            self.assertTrue(len(copied_text) > 0)
+            md = copied_text[0]
+            self.assertIn("Requirements:", md)
+            self.assertIn("Starting Cash: $850", md)
+            self.assertIn("Monkey Knowledge: Enabled", md)
+
+            # Test HTML export
+            with patch("tkinter.messagebox.showinfo"), \
+                 patch("webbrowser.open"):
+                app.export_printable_html(strat=strat, map_data=map_data)
+                html_filename = "monkey_meadow_medium_guide.html"
+                html_path = os.path.join(os.path.dirname(__file__), html_filename)
+                self.assertTrue(os.path.exists(html_path))
+                with open(html_path, "r", encoding="utf-8") as f:
+                    written = f.read()
+                self.assertIn("$850", written)
+                self.assertIn("Monkey Knowledge", written)
+                self.assertIn("Game Version", written)
+                if os.path.exists(html_path):
+                    os.remove(html_path)
+
+
 if __name__ == "__main__":
     unittest.main()
+

@@ -107,10 +107,14 @@ class TowerReplayEngine:
     def _generate_tower_id(self, tower_name, explicit_id=None):
         if explicit_id:
             return str(explicit_id)
-        cnt = self.tower_counters.get(tower_name, 0) + 1
-        self.tower_counters[tower_name] = cnt
         clean_name = tower_name.lower().replace(" ", "_")
-        return f"{clean_name}_{cnt}"
+        cnt = self.tower_counters.get(tower_name, 0) + 1
+        cand_id = f"{clean_name}_{cnt}"
+        while cand_id in self.all_towers:
+            cnt += 1
+            cand_id = f"{clean_name}_{cnt}"
+        self.tower_counters[tower_name] = cnt
+        return cand_id
 
     def _find_tower_for_upgrade(self, tower_name, explicit_id=None, upg_tuple=None, placement=None):
         if explicit_id:
@@ -168,7 +172,7 @@ class TowerReplayEngine:
 
         s_num = step.get("step_number", step_index + 1)
         if not isinstance(s_num, int) or isinstance(s_num, bool):
-            err = f"steps[{step_index}].step_number must be an integer."
+            err = f"steps[{step_index}].step_number must be an integer, found {type(s_num).__name__}."
             self.errors.append(err)
             return False, err
 
@@ -207,14 +211,14 @@ class TowerReplayEngine:
 
         tower_raw = step.get("tower")
         if not isinstance(tower_raw, str) or not tower_raw.strip():
-            err = f"Step {s_num}: steps[{step_index}].tower must be a non-empty string."
+            err = f"Step {s_num}: steps[{step_index}].tower must be a non-empty string, found {type(tower_raw).__name__}."
             self.errors.append(err)
             return False, err
         tower = tower_raw.strip()
 
         upg_raw = step.get("upgrade", "0-0-0")
         if not isinstance(upg_raw, str):
-            err = f"Step {s_num}: steps[{step_index}].upgrade must be a string."
+            err = f"Step {s_num}: steps[{step_index}].upgrade must be a string, found {type(upg_raw).__name__}."
             self.errors.append(err)
             return False, err
         upg_str = upg_raw.strip()
@@ -226,15 +230,51 @@ class TowerReplayEngine:
             self.errors.append(err)
             return False, err
 
+        # Detailed string field checks
         explicit_id = step.get("tower_id")
-        placement = step.get("placement", "")
-        targeting = step.get("targeting", "First")
+        if explicit_id is not None:
+            if not isinstance(explicit_id, str) or not explicit_id.strip():
+                err = f"Step {s_num}: tower_id must be a non-empty string, found {type(explicit_id).__name__}."
+                self.errors.append(err)
+                return False, err
+            explicit_id = explicit_id.strip()
 
-        # 2. Crosspath Legality
-        if upg_str not in ("Various", "None") and not is_legal_crosspath(upg_str):
-            err = f"Step {s_num}: illegal crosspath '{upg_str}' for {tower}."
+        step_id = step.get("step_id")
+        if step_id is not None and (not isinstance(step_id, str) or not step_id.strip()):
+            err = f"Step {s_num}: step_id must be a non-empty string, found {type(step_id).__name__}."
             self.errors.append(err)
             return False, err
+
+        placement = step.get("placement", "")
+        if placement is not None and not isinstance(placement, str):
+            err = f"Step {s_num}: placement must be a string, found {type(placement).__name__}."
+            self.errors.append(err)
+            return False, err
+        placement = (placement or "").strip()
+
+        targeting = step.get("targeting", "First")
+        if targeting is not None and not isinstance(targeting, str):
+            err = f"Step {s_num}: targeting must be a string, found {type(targeting).__name__}."
+            self.errors.append(err)
+            return False, err
+        targeting = (targeting or "First").strip()
+
+        details = step.get("details")
+        if details is not None and not isinstance(details, str):
+            err = f"Step {s_num}: details must be a string, found {type(details).__name__}."
+            self.errors.append(err)
+            return False, err
+
+        # 2. Crosspath & Action Upgrades Legality
+        if act in ("Place", "Upgrade"):
+            if upg_str in ("Various", "None") or upg_tuple is None:
+                err = f"Step {s_num}: {act} action requires a concrete legal upgrade path (e.g. '0-0-0', '3-2-0'), found '{upg_str}'."
+                self.errors.append(err)
+                return False, err
+            if not is_legal_crosspath(upg_tuple):
+                err = f"Step {s_num}: illegal crosspath '{upg_str}' for {tower}."
+                self.errors.append(err)
+                return False, err
 
         # 3. Action Pre-Flight Verification & Transactional Execution
         action_cost = 0
@@ -490,30 +530,49 @@ def assign_explicit_tower_ids(strategy, map_id, diff):
     Ensures every placed tower has an explicit, persistent tower_id and all
     subsequent upgrade, target, and sell actions reference that tower_id.
     """
-    if not isinstance(strategy, dict) or not isinstance(strategy.get("steps"), list):
+    if not isinstance(strategy, dict):
         return
+    steps = strategy.get("steps")
+    if not isinstance(steps, list):
+        return
+
+    # Gather all existing tower_ids upfront to avoid any collisions
+    existing_ids = set()
+    for s in steps:
+        if isinstance(s, dict):
+            raw_id = s.get("tower_id")
+            if isinstance(raw_id, str) and raw_id.strip():
+                existing_ids.add(raw_id.strip())
 
     active_towers = {}  # tower_name -> list of dict(id, upgrade, placement)
     tower_counter = 0
 
-    for idx, s in enumerate(strategy["steps"]):
+    for idx, s in enumerate(steps):
         if not isinstance(s, dict):
             continue
         act = s.get("action")
-        tow = s.get("tower", "").strip()
-        if not tow:
+        tow = s.get("tower")
+        if not isinstance(tow, str) or not tow.strip():
             continue
+        tow = tow.strip()
 
         if act == "Place":
-            if not s.get("tower_id"):
-                tower_counter += 1
-                s["tower_id"] = f"{map_id}_{diff.lower()}_t{tower_counter}"
+            raw_id = s.get("tower_id")
+            if not isinstance(raw_id, str) or not raw_id.strip():
+                while True:
+                    tower_counter += 1
+                    cand = f"{map_id}_{diff.lower()}_t{tower_counter}"
+                    if cand not in existing_ids:
+                        s["tower_id"] = cand
+                        existing_ids.add(cand)
+                        break
             t_id = s["tower_id"]
-            upg = parse_upgrade(s.get("upgrade", "0-0-0"))
+            upg = parse_upgrade(s.get("upgrade", "0-0-0")) or (0, 0, 0)
+            place = s.get("placement", "")
             active_towers.setdefault(tow, []).append({
                 "id": t_id,
                 "upgrade": upg,
-                "placement": s.get("placement", "")
+                "placement": place if isinstance(place, str) else ""
             })
         elif act in ("Upgrade", "Target", "Sell"):
             if s.get("tower_id"):
@@ -544,28 +603,19 @@ def assign_explicit_tower_ids(strategy, map_id, diff):
                         candidates.remove(matched)
 
 
-def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats=True, monkey_knowledge=False):
+def validate_strategy_schema(strategy):
     """
-    Validates a complete strategy dictionary against all BTD6 structural, economic,
-    and tactical replay invariants.
-    Returns: (is_valid: bool, errors: list, warnings: list, stats: dict)
+    Validates structural schema and field types of a strategy object without
+    requiring replay simulation. Returns clean diagnostic error list.
     """
     errors = []
-    warnings = []
-    stats = {}
-
     if not isinstance(strategy, dict):
-        return False, ["Strategy object must be a JSON dictionary."], [], {}
+        return False, ["Strategy object must be a JSON dictionary."]
 
-    diff = diff_name or strategy.get("difficulty", "Easy")
+    diff = strategy.get("difficulty", "Easy")
     if diff not in ("Easy", "Medium", "Hard"):
-        return False, [f"Invalid strategy difficulty '{diff}'."], [], {}
+        errors.append(f"Invalid strategy difficulty '{diff}'.")
 
-    start_round = 3 if diff == "Hard" else 1
-    max_round = 40 if diff == "Easy" else (60 if diff == "Medium" else 80)
-    min_steps = 5 if diff == "Easy" else (8 if diff == "Medium" else 12)
-
-    # 1. Required metadata fields
     req_fields = [
         "difficulty", "mode", "rounds", "status", "recommended_hero",
         "starting_cash", "overview", "camo_handling", "lead_handling",
@@ -576,8 +626,108 @@ def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats
             errors.append(f"Strategy missing required field '{rf}'.")
 
     status = strategy.get("status", "Needs Review")
-    if status not in ("Playtested", "Structurally Validated", "Verified", "Needs Review"):
+    if status not in ("Playtested", "Structurally Validated", "Verified", "Needs Review", "Draft"):
         errors.append(f"Strategy has unrecognized status '{status}'.")
+
+    sc = strategy.get("starting_cash", 650)
+    if not isinstance(sc, (int, float)) or isinstance(sc, bool) or math.isnan(sc) or sc < 0:
+        errors.append(f"Strategy starting_cash '{sc}' must be a non-negative number.")
+
+    steps = strategy.get("steps")
+    if not isinstance(steps, list):
+        errors.append("Strategy 'steps' must be a JSON list.")
+        return False, errors
+
+    seen_step_ids = set()
+    for idx, s in enumerate(steps):
+        if not isinstance(s, dict):
+            errors.append(f"steps[{idx}] must be a JSON dictionary object, found {type(s).__name__}.")
+            continue
+
+        s_num = s.get("step_number", idx + 1)
+        if not isinstance(s_num, int) or isinstance(s_num, bool):
+            errors.append(f"steps[{idx}].step_number must be an integer, found {type(s_num).__name__}.")
+
+        r = s.get("round")
+        if not isinstance(r, int) or isinstance(r, bool):
+            errors.append(f"Step {s_num}: round must be an integer, found {type(r).__name__}.")
+
+        timing = s.get("timing", "before_round")
+        if timing not in ("before_round", "during_round", "after_round"):
+            errors.append(f"Step {s_num}: timing '{timing}' must be one of 'before_round', 'during_round', 'after_round'.")
+
+        act = s.get("action")
+        if not isinstance(act, str) or act not in ("Place", "Upgrade", "Target", "Ability", "Sell"):
+            errors.append(f"Step {s_num}: invalid action '{act}'. Allowed: Place, Upgrade, Target, Ability, Sell.")
+
+        tow = s.get("tower")
+        if not isinstance(tow, str) or not tow.strip():
+            errors.append(f"Step {s_num}: tower must be a non-empty string, found {type(tow).__name__}.")
+
+        upg = s.get("upgrade", "0-0-0")
+        if not isinstance(upg, str):
+            errors.append(f"Step {s_num}: upgrade must be a string, found {type(upg).__name__}.")
+        elif act in ("Place", "Upgrade"):
+            if upg.strip() in ("Various", "None") or parse_upgrade(upg.strip()) is None:
+                errors.append(f"Step {s_num}: {act} action requires a concrete legal upgrade path, found '{upg}'.")
+            elif not is_legal_crosspath(upg):
+                errors.append(f"Step {s_num}: illegal crosspath '{upg}' for {tow}.")
+
+        cost = s.get("cost_estimate", 0)
+        if not is_valid_numeric_cost(cost):
+            errors.append(f"Step {s_num}: cost_estimate '{cost}' must be a finite, non-negative numeric value.")
+
+        t_id = s.get("tower_id")
+        if t_id is not None and (not isinstance(t_id, str) or not t_id.strip()):
+            errors.append(f"Step {s_num}: tower_id must be a non-empty string, found {type(t_id).__name__}.")
+
+        s_id = s.get("step_id")
+        if s_id is not None:
+            if not isinstance(s_id, str) or not s_id.strip():
+                errors.append(f"Step {s_num}: step_id must be a non-empty string, found {type(s_id).__name__}.")
+            else:
+                s_id_clean = s_id.strip()
+                if s_id_clean in seen_step_ids:
+                    errors.append(f"Step {s_num}: duplicate step_id '{s_id_clean}' found in strategy.")
+                seen_step_ids.add(s_id_clean)
+
+        for str_field in ("placement", "details", "targeting", "round_range"):
+            val = s.get(str_field)
+            if val is not None and not isinstance(val, str):
+                errors.append(f"Step {s_num}: {str_field} must be a string, found {type(val).__name__}.")
+
+    return (len(errors) == 0), errors
+
+
+def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats=True, monkey_knowledge=None):
+    """
+    Validates a complete strategy dictionary against all BTD6 structural, economic,
+    and tactical replay invariants.
+    Returns: (is_valid: bool, errors: list, warnings: list, stats: dict)
+    """
+    errors = []
+    warnings = []
+    stats = {}
+
+    schema_valid, schema_errors = validate_strategy_schema(strategy)
+    if not schema_valid:
+        return False, schema_errors, warnings, stats
+
+    diff = diff_name or strategy.get("difficulty", "Easy")
+    start_round = 3 if diff == "Hard" else 1
+    max_round = 40 if diff == "Easy" else (60 if diff == "Medium" else 80)
+    min_steps = 5 if diff == "Easy" else (8 if diff == "Medium" else 12)
+
+    # Infer monkey knowledge from strategy requirements if not explicitly supplied
+    if monkey_knowledge is None:
+        req = strategy.get("requirements", {}) if isinstance(strategy, dict) else {}
+        monkey_knowledge = bool(
+            req.get("monkey_knowledge")
+            or req.get("more_starting_cash")
+            or req.get("free_dart_monkey")
+            or strategy.get("monkey_knowledge")
+            or (strategy.get("starting_cash", 650) == 850)
+        )
 
     starting_cash = strategy.get("starting_cash", 650)
     expected_cash = get_starting_cash(diff, monkey_knowledge=monkey_knowledge)
@@ -588,15 +738,14 @@ def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats
         if starting_cash != 650:
             errors.append(f"Starting cash is {starting_cash}, expected 650.")
 
-    steps = strategy.get("steps")
-    if not isinstance(steps, list):
-        errors.append("strategy['steps'] must be a JSON list.")
-        return False, errors, warnings, stats
-
-    if len(steps) < min_steps:
+    steps = strategy.get("steps", [])
+    status = strategy.get("status", "Needs Review")
+    if len(steps) < min_steps and status not in ("Draft", "Needs Review"):
         errors.append(f"{diff} strategy requires at least {min_steps} steps (found {len(steps)}).")
+    elif len(steps) < min_steps:
+        warnings.append(f"{diff} strategy has {len(steps)} steps (recommended minimum: {min_steps}).")
 
-    # 2. Replay Simulation
+    # Replay Simulation
     engine = TowerReplayEngine(difficulty=diff, start_round=start_round, max_round=max_round, monkey_knowledge=monkey_knowledge)
     for idx, s in enumerate(steps):
         success, err = engine.apply_step(s, step_index=idx)
@@ -606,41 +755,42 @@ def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats
     if not engine.has_opening_defense:
         errors.append(f"No defensive placement on starting round {start_round}.")
 
-    # 3. Tactical Capability Verification
-    if strict_threats:
-        # Round 24 Camo
-        if max_round >= 24:
-            cov24 = engine.evaluate_threat_coverage(24)
-            if not cov24["camo"]:
-                errors.append(f"Defense lacks Camo detection before Round 24 Camo bloon arrival.")
+    # Tactical Capability Verification
+    threat_issues = []
+    if max_round >= 24:
+        cov24 = engine.evaluate_threat_coverage(24)
+        if not cov24["camo"]:
+            threat_issues.append("Defense lacks Camo detection before Round 24 Camo bloon arrival.")
 
-        # Round 28 Lead
-        if max_round >= 28:
-            cov28 = engine.evaluate_threat_coverage(28)
-            if not cov28["lead"]:
-                errors.append(f"Defense lacks Lead popping power before Round 28 Lead arrival.")
+    if max_round >= 28:
+        cov28 = engine.evaluate_threat_coverage(28)
+        if not cov28["lead"]:
+            threat_issues.append("Defense lacks Lead popping power before Round 28 Lead arrival.")
 
-        # Round 40 MOAB
-        if max_round >= 40:
-            cov40 = engine.evaluate_threat_coverage(40)
-            if not cov40["moab"]:
-                errors.append(f"Defense lacks MOAB-class blimp damage for Round 40 MOAB.")
+    if max_round >= 40:
+        cov40 = engine.evaluate_threat_coverage(40)
+        if not cov40["moab"]:
+            threat_issues.append("Defense lacks MOAB-class blimp damage for Round 40 MOAB.")
 
-        # Round 60 BFB (Medium and Hard)
-        if max_round >= 60:
-            cov60 = engine.evaluate_threat_coverage(60)
-            if not cov60["bfb"]:
-                errors.append(f"Defense lacks sufficient blimp damage for Round 60 BFB.")
+    if max_round >= 60:
+        cov60 = engine.evaluate_threat_coverage(60)
+        if not cov60["bfb"]:
+            threat_issues.append("Defense lacks sufficient blimp damage for Round 60 BFB.")
 
-        # Round 63 Ceramics and Round 80 ZOMG (Hard)
-        if max_round >= 80:
-            cov63 = engine.evaluate_threat_coverage(63)
-            if not cov63["ceramic"]:
-                errors.append(f"Defense lacks heavy AoE / crowd control for Round 63 Ceramic rush.")
+    if max_round >= 80:
+        cov63 = engine.evaluate_threat_coverage(63)
+        if not cov63["ceramic"]:
+            threat_issues.append("Defense lacks heavy AoE / crowd control for Round 63 Ceramic rush.")
 
-            cov80 = engine.evaluate_threat_coverage(80)
-            if not cov80["zomg"]:
-                errors.append(f"Defense lacks endgame blimp destruction for Round 80 ZOMG.")
+        cov80 = engine.evaluate_threat_coverage(80)
+        if not cov80["zomg"]:
+            threat_issues.append("Defense lacks endgame blimp destruction for Round 80 ZOMG.")
+
+    if threat_issues:
+        if strict_threats:
+            errors.extend(threat_issues)
+        else:
+            warnings.extend(threat_issues)
 
     stats["total_steps"] = len(steps)
     stats["cumulative_cost"] = engine.cumulative_cost_spent

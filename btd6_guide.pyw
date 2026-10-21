@@ -26,7 +26,7 @@ from tkinter import ttk, messagebox, font, filedialog
 from heroes_data import HEROES_DATABASE, get_best_hero_for_map
 from threat_radar_data import get_round_data, check_strategy_defense_readiness, DANGER_ROUNDS
 from btd6_economy import parse_upgrade, is_legal_crosspath, get_cumulative_cash_ceiling
-from btd6_replay import validate_strategy, assign_explicit_tower_ids
+from btd6_replay import validate_strategy, assign_explicit_tower_ids, validate_strategy_schema
 
 USER_OVERRIDES_PATH = os.path.join(os.path.dirname(__file__), "user_overrides.json")
 
@@ -240,8 +240,37 @@ class DataManager:
                 return False, f"Map '{mid}' difficulties must be a JSON dictionary, found {type(diffs).__name__}."
             if isinstance(diffs, dict):
                 for diff_name, strat in diffs.items():
-                    if strat is not None and not isinstance(strat, dict):
-                        return False, f"Map '{mid}' difficulty '{diff_name}' must be a dictionary or null, found {type(strat).__name__}."
+                    if strat is not None:
+                        if not isinstance(strat, dict):
+                            return False, f"Map '{mid}' difficulty '{diff_name}' must be a dictionary or null, found {type(strat).__name__}."
+                        if "steps" in strat:
+                            steps = strat["steps"]
+                            if not isinstance(steps, list):
+                                return False, f"Map '{mid}' difficulty '{diff_name}' 'steps' must be a list, found {type(steps).__name__}."
+                            seen_sids = set()
+                            for idx, s in enumerate(steps):
+                                if not isinstance(s, dict):
+                                    return False, f"Map '{mid}' difficulty '{diff_name}' steps[{idx}] must be a dict, found {type(s).__name__}."
+                                s_id = s.get("step_id")
+                                if s_id is not None:
+                                    if not isinstance(s_id, str) or not s_id.strip():
+                                        return False, f"Map '{mid}' difficulty '{diff_name}' steps[{idx}].step_id must be a non-empty string."
+                                    if s_id.strip() in seen_sids:
+                                        return False, f"Map '{mid}' difficulty '{diff_name}' duplicate step_id '{s_id.strip()}'."
+                                    seen_sids.add(s_id.strip())
+                                t_id = s.get("tower_id")
+                                if t_id is not None and (not isinstance(t_id, str) or not t_id.strip()):
+                                    return False, f"Map '{mid}' difficulty '{diff_name}' steps[{idx}].tower_id must be a non-empty string."
+                                place = s.get("placement")
+                                if place is not None and not isinstance(place, str):
+                                    return False, f"Map '{mid}' difficulty '{diff_name}' steps[{idx}].placement must be a string."
+                                details = s.get("details")
+                                if details is not None and not isinstance(details, str):
+                                    return False, f"Map '{mid}' difficulty '{diff_name}' steps[{idx}].details must be a string."
+                                act = s.get("action")
+                                upg = s.get("upgrade")
+                                if act in ("Place", "Upgrade") and isinstance(upg, str) and upg.strip() in ("Various", "None"):
+                                    return False, f"Map '{mid}' difficulty '{diff_name}' steps[{idx}] cannot use '{upg}' for {act} action."
         return True, None
 
     def load(self):
@@ -281,12 +310,28 @@ class DataManager:
                         if mid in maps and isinstance(diffs, dict):
                             for diff, ov_strat in diffs.items():
                                 if diff in maps[mid].get("difficulties", {}):
-                                    is_valid, _, _, _ = validate_strategy(ov_strat, map_context=maps[mid], diff_name=diff)
+                                    req = ov_strat.get("requirements", {}) if isinstance(ov_strat, dict) else {}
+                                    ov_mk = bool(
+                                        req.get("monkey_knowledge")
+                                        or req.get("more_starting_cash")
+                                        or req.get("free_dart_monkey")
+                                        or (isinstance(ov_strat, dict) and ov_strat.get("monkey_knowledge"))
+                                        or (isinstance(ov_strat, dict) and ov_strat.get("starting_cash") == 850)
+                                    )
+                                    ov_status = ov_strat.get("status", "") if isinstance(ov_strat, dict) else ""
+                                    is_draft = ov_status in ("Draft", "Needs Review")
+                                    is_valid, val_errs, _, _ = validate_strategy(
+                                        ov_strat,
+                                        map_context=maps[mid],
+                                        diff_name=diff,
+                                        strict_threats=(not is_draft),
+                                        monkey_knowledge=ov_mk
+                                    )
                                     if is_valid:
                                         valid_overrides.setdefault(mid, {})[diff] = ov_strat
                                         maps[mid]["difficulties"][diff] = ov_strat
                                     else:
-                                        print(f"Warning: Rejected malformed user override for {mid} [{diff}]")
+                                        print(f"Warning: Rejected malformed user override for {mid} [{diff}]: {val_errs[:2]}")
                     self.user_overrides = valid_overrides
             except Exception as e:
                 print(f"Warning: Failed to load user overrides ({e})")
@@ -1965,16 +2010,22 @@ class BTD6GuideApp(tk.Tk):
             if not mid:
                 return
             map_data = self.data_manager.get_map(mid)
-        if strat is None:
+        if strat is None and map_data:
             strat = self.get_current_strategy(map_data)
         if not map_data or not strat:
             return
+        req = strat.get("requirements", {}) if isinstance(strat, dict) else {}
+        req_mk = bool(req.get("monkey_knowledge") or strat.get("starting_cash") == 850)
+        req_cash = req.get("required_starting_cash") or strat.get("starting_cash", 650)
+        mk_str = "Enabled (More Starting Cash)" if req_mk else "None / Standard"
+        game_ver = req.get("game_version", "v45.0")
 
         lines = [
             f"# {map_data.get('name')} — {strat.get('difficulty')} Mode (Rounds {strat.get('rounds')})",
             f"**Category:** {map_data.get('category')} | **Terrain:** {map_data.get('terrain')} | **Lanes:** {map_data.get('lanes')}",
             f"**👑 Optimal Hero:** {strat.get('recommended_hero')} (Alternatives: {', '.join(strat.get('hero_alternatives', []))})",
-            f"**Starting Cash:** ${strat.get('starting_cash', 650)} | **Status:** {strat.get('status')}",
+            f"**Starting Cash:** ${req_cash} | **Status:** {strat.get('status')} | **Game Version:** {game_ver}",
+            f"**Requirements:** Monkey Knowledge: {mk_str} | Min Starting Cash: ${req_cash}",
             "",
             "## 📖 Tactical Overview",
             strat.get("overview", ""),
@@ -2035,6 +2086,11 @@ class BTD6GuideApp(tk.Tk):
             return
 
         diff_name = strat.get("difficulty", "Easy")
+        req = strat.get("requirements", {}) if isinstance(strat, dict) else {}
+        req_mk = bool(req.get("monkey_knowledge") or strat.get("starting_cash") == 850)
+        req_cash = req.get("required_starting_cash") or strat.get("starting_cash", 650)
+        mk_display = "Required (+More Cash)" if req_mk else "Not Required"
+        game_ver = req.get("game_version", "v45.0")
         safe_mid = mid or map_data.get("id") or map_data.get("name", "strategy").lower().replace(" ", "_")
         html_filename = f"{safe_mid}_{diff_name.lower()}_guide.html"
         html_path = os.path.join(os.path.dirname(__file__), html_filename)
@@ -2108,7 +2164,9 @@ class BTD6GuideApp(tk.Tk):
         <div class="meta-item"><div class="meta-title">Recommended Hero</div><div class="meta-val">👑 {html.escape(str(strat.get('recommended_hero', '')))}</div></div>
         <div class="meta-item"><div class="meta-title">Terrain & Lanes</div><div class="meta-val">{html.escape(str(map_data.get('terrain', '')))} ({html.escape(str(map_data.get('lanes', '')))})</div></div>
         <div class="meta-item"><div class="meta-title">Water Support</div><div class="meta-val">{'Yes (Sub / Buccaneer)' if map_data.get('water') else 'No (Land Only)'}</div></div>
-        <div class="meta-item"><div class="meta-title">Starting Cash</div><div class="meta-val">${strat.get('starting_cash', 650)}</div></div>
+        <div class="meta-item"><div class="meta-title">Starting Cash</div><div class="meta-val">${req_cash}</div></div>
+        <div class="meta-item"><div class="meta-title">Monkey Knowledge</div><div class="meta-val">{mk_display}</div></div>
+        <div class="meta-item"><div class="meta-title">Game Version</div><div class="meta-val">{html.escape(str(game_ver))}</div></div>
     </div>
     <div class="card">
         <strong>Overview:</strong> {html.escape(str(strat.get('overview', '')))}
@@ -2211,15 +2269,27 @@ class BTD6GuideApp(tk.Tk):
         if not filepath:
             return
 
+        strat_req = copy.deepcopy(strat.get("requirements", {})) if isinstance(strat.get("requirements"), dict) else {}
+        is_mk = self.settings.is_monkey_knowledge()
+        strat_req["monkey_knowledge"] = strat_req.get("monkey_knowledge", is_mk)
+        strat_req["more_starting_cash"] = strat_req.get("more_starting_cash", strat.get("starting_cash") == 850)
+        strat_req["free_dart_monkey"] = strat_req.get("free_dart_monkey", False)
+        strat_req["required_starting_cash"] = strat_req.get("required_starting_cash", strat.get("starting_cash", 850 if is_mk else 650))
+        strat_req["game_version"] = strat_req.get("game_version", "v45.0")
+        strat_copy = copy.deepcopy(strat)
+        strat_copy["requirements"] = strat_req
+
         payload = {
             "format": "btd6guide",
-            "schema_version": "1.0",
+            "schema_version": "1.1",
             "exported_at": datetime.datetime.now().isoformat(),
             "map_id": mid,
             "map_name": map_data.get("name", mid),
             "category": map_data.get("category", "Beginner"),
             "difficulty": diff_name,
-            "strategy": copy.deepcopy(strat)
+            "game_version": "v45.0",
+            "requirements": strat_req,
+            "strategy": strat_copy
         }
 
         try:
@@ -2258,14 +2328,26 @@ class BTD6GuideApp(tk.Tk):
         if imported.get("format") == "btd6guide" and "strategy" in imported:
             target_mid = imported.get("map_id", "")
             target_map_name = imported.get("map_name", "")
-            strat = imported.get("strategy", {})
+            strat = imported.get("strategy")
         else:
             strat = imported
             target_mid = self.get_current_map_id()
             target_map_name = ""
 
         if not isinstance(strat, dict):
-            messagebox.showerror("Import Error", "Strategy data must be a dictionary.")
+            messagebox.showerror("Import Error", "Strategy data must be a JSON dictionary object.")
+            return
+
+        # 1. Structural Schema Validation BEFORE any mutation or ID generation
+        schema_valid, schema_errs = validate_strategy_schema(strat)
+        if not schema_valid:
+            err_msg = "\n• " + "\n• ".join(schema_errs[:6])
+            if len(schema_errs) > 6:
+                err_msg += f"\n... and {len(schema_errs) - 6} more errors."
+            messagebox.showerror(
+                "Import Error — Invalid Strategy Schema",
+                f"The imported strategy contains structural schema errors and cannot be imported:\n{err_msg}"
+            )
             return
 
         diff_key = strat.get("difficulty", "Easy")
@@ -2287,25 +2369,59 @@ class BTD6GuideApp(tk.Tk):
             messagebox.showerror("Map Not Found", f"Cannot match map ID '{target_mid}' in database.")
             return
 
+        # Assign stable step IDs and tower IDs
         for idx, s in enumerate(strat.get("steps", [])):
             if isinstance(s, dict) and "step_id" not in s:
                 s["step_id"] = f"{target_mid}_{diff_key.lower()}_s{s.get('step_number', idx + 1)}"
         assign_explicit_tower_ids(strat, target_mid, diff_key)
 
-        mk_enabled = self.settings.is_monkey_knowledge()
-        is_valid, val_errs, val_warns, _ = validate_strategy(
-            strat, map_context=map_data, diff_name=diff_key, monkey_knowledge=mk_enabled
+        # Detect requirements
+        req = strat.get("requirements", {}) if isinstance(strat.get("requirements"), dict) else {}
+        strat_mk = bool(
+            req.get("monkey_knowledge")
+            or req.get("more_starting_cash")
+            or req.get("free_dart_monkey")
+            or strat.get("monkey_knowledge")
+            or (strat.get("starting_cash", 650) == 850)
         )
-        if not is_valid:
-            err_msg = "\n• " + "\n• ".join(val_errs[:5])
-            if len(val_errs) > 5:
-                err_msg += f"\n... and {len(val_errs) - 5} more issues."
+        user_mk = self.settings.is_monkey_knowledge()
+        effective_mk = strat_mk or user_mk
+
+        # 2. Strict Replay Simulation (Game Rules & Economy)
+        replay_ok, rep_errs, _, _ = validate_strategy(
+            strat, map_context=map_data, diff_name=diff_key, strict_threats=False, monkey_knowledge=effective_mk
+        )
+        if not replay_ok:
+            err_msg = "\n• " + "\n• ".join(rep_errs[:6])
+            if len(rep_errs) > 6:
+                err_msg += f"\n... and {len(rep_errs) - 6} more errors."
+            messagebox.showerror(
+                "Strategy Invariant Error",
+                f"The imported strategy violates replay chronology or economic invariants and cannot be played:\n{err_msg}"
+            )
+            return
+
+        # 3. Tactical Capability Verification
+        tactical_ok, threat_errs, _, _ = validate_strategy(
+            strat, map_context=map_data, diff_name=diff_key, strict_threats=True, monkey_knowledge=effective_mk
+        )
+        if not tactical_ok:
+            err_msg = "\n• " + "\n• ".join(threat_errs[:5])
             proceed = messagebox.askyesno(
-                "Strategy Invariant Warning",
-                f"The imported strategy has validation warnings:\n{err_msg}\n\nDo you want to import it anyway into your custom overrides?"
+                "Tactical Warning — Import as Draft?",
+                f"The strategy satisfies all replay & economic invariants, but has tactical defense warnings:\n{err_msg}\n\n"
+                f"Would you like to import it as a Draft in your custom overrides?"
             )
             if not proceed:
                 return
+            strat["status"] = "Draft"
+
+        # Record requirements consistently with strategy
+        req["monkey_knowledge"] = effective_mk
+        req["more_starting_cash"] = effective_mk and (strat.get("starting_cash") == 850)
+        req["required_starting_cash"] = strat.get("starting_cash", 850 if effective_mk else 650)
+        req["game_version"] = req.get("game_version", "v45.0")
+        strat["requirements"] = req
 
         step_count = len(strat.get("steps", []))
         hero_rec = strat.get("recommended_hero", "Any")
@@ -3039,12 +3155,32 @@ class BTD6GuideApp(tk.Tk):
             # Ensure explicit tower_id across all draft steps
             assign_explicit_tower_ids(draft_strat, mid, diff_key)
 
+            # Store requirements with draft strategy
+            is_mk = self.settings.is_monkey_knowledge()
+            req = draft_strat.get("requirements", {}) if isinstance(draft_strat.get("requirements"), dict) else {}
+            req["monkey_knowledge"] = is_mk
+            req["more_starting_cash"] = is_mk and (draft_strat.get("starting_cash") == 850)
+            req["free_dart_monkey"] = req.get("free_dart_monkey", False)
+            req["required_starting_cash"] = draft_strat.get("starting_cash", 850 if is_mk else 650)
+            req["game_version"] = req.get("game_version", "v45.0")
+
+            # Check opening round spending: if opening defense exceeds 650 starting cash and MK is enabled
+            start_r = 3 if diff_key == "Hard" else 1
+            start_spend = sum(s.get("cost_estimate", 0) for s in draft_strat.get("steps", []) if isinstance(s, dict) and s.get("round") == start_r)
+            if start_spend > 650 and is_mk:
+                draft_strat["starting_cash"] = 850
+                req["more_starting_cash"] = True
+                req["required_starting_cash"] = 850
+            draft_strat["requirements"] = req
+
             # 2. Strict Replay, Economic & Threat Invariant Validation on Draft
+            is_draft = draft_strat.get("status") in ("Draft", "Needs Review")
             is_valid, val_errors, val_warns, _ = validate_strategy(
                 draft_strat,
                 map_context=map_data,
                 diff_name=diff_key,
-                monkey_knowledge=self.settings.is_monkey_knowledge()
+                strict_threats=(not is_draft),
+                monkey_knowledge=is_mk
             )
             if not is_valid:
                 err_msg = "\n• " + "\n• ".join(val_errors[:6])

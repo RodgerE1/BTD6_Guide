@@ -1,100 +1,93 @@
-This revision fixes most of the previous concrete failures, but it still has a broken “Add Step” action and several validation loopholes. The project is improving; the remaining work should focus on correctness and tests of actual UI callbacks.
-I reviewed the updated source, ran all 33 tests successfully, parsed 14 Python files, and performed additional targeted checks. The production database passes validation for all 261 strategies. I did not modify your project or test strategies inside BTD6.
-Confirmed improvements
-Previous finding	Current result
-Unchanged strategy cannot save	Fixed; I executed the actual save callback successfully
-Undefined map_id in save callback	Fixed
-Future-round upgrades count toward earlier defense	Fixed across different rounds
-Sold towers remain in historical defense	Fixed
-Unaffordable placement remains on board	Fixed for tower and spending state
-Duplicate IDs and mismatched tower types accepted	Explicit-ID checks added
-Invented hero names accepted	Exact-name validation added
-Overrides fail after modifying the main database	Single-file override persistence implemented
-Walkthrough ignores step IDs	UI now uses step IDs
-Displayed prices differ from canonical costs	No discrepancies found in the current generated database
-Timing absent from instructions	Before/during timing now displayed and exported
-Malformed root JSON crashes validation	Earlier root-level cases are handled
+This is the strongest revision so far. The major failures from the previous review are fixed, but the new Monkey Knowledge and import features have persistence and validation problems.
+I ran all 52 tests successfully, parsed 14 Python files, and repeated the previous failure checks. All 261 production strategies pass validation, and their displayed purchase costs match replay-calculated costs. I did not edit the source code or perform in-game playthroughs.
+Confirmed fixes
+Previous issue	Current result
+Add Step crashes on missing datetime	Fixed; the suite now invokes the actual UI callback
+Refund counted twice	Fixed; the previously accepted overspend is rejected
+After-round upgrades satisfy earlier combat	Fixed
+Rejected actions advance replay chronology	Fixed
+Basic Lead popping automatically satisfies ceramic coverage	Removed
+BFB/ZOMG checks fall back to generic MOAB damage	Removed
+Radar ignores selected difficulty	Fixed
+Radar conceals replay errors	Error reporting added
+Editable estimates inflate recorded investment	Canonical transaction accounting implemented
+Previously tested malformed map container crashes	Handled
 
 
-Remaining findings, in priority order
-1. High: adding a new step crashes with NameError.
-   [btd6_guide.pyw (line 2552)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2552)
-   The step editor generates an ID using:
-   datetime.datetime.now().timestamp()
-   But datetime is not imported.
-   I executed the actual save_step() callback with a new step and reproduced:
-   NameError: name 'datetime' is not defined
-   Existing steps with IDs can avoid this branch, which explains why other editing paths work.
-   Fix: generate new IDs with uuid.uuid4() and import uuid. Add a test that executes the actual Add Step callback, rather than simulating its intended behavior.
-2. High: refunds are counted twice, allowing unaffordable purchases.
-   [btd6_replay.py (line 320)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:320)
-   The affordability comparison subtracts refunds from spending and adds them to available cash:
-   cash_avail = earned_cash + refunds
-   if spent - refunds > cash_avail:
-   Confirmed reproduction using your economic model:
-   - Place a $200 Dart Monkey at R1.
-   - Sell it at R2 for $140.
-   - Buy an $800 Monkey Ace before R2.
-   The engine accepts this, although net spending becomes $860 against $771 available.
-   Fix: count refunds once:
-   spent <= earned_cash + refunds
-   Add a test where a sale permits one purchase but leaves a more expensive purchase unaffordable.
-3. High: historical coverage still ignores phases within a round.
-   [btd6_replay.py (line 47)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:47)
-   Upgrade history records timing, but get_upgrade_at_round() only compares round numbers.
-   I placed a Dart Monkey at R1 and scheduled its camo upgrade after R24. The engine still reported camo coverage for R24.
-   The same limitation affects placement and sale timing. Separately, the UI and exports label every timing other than during_round as Before Round, so an after_round action is displayed incorrectly.
-   Fix: query history using (round, phase), with an explicit ordering:
-   before_round → during_round → after_round
-   Evaluate defensive deadlines at the intended phase, enforce phase order within each round, and display all three values accurately.
-4. High: ceramic readiness has become too permissive again.
-   [btd6_replay.py (line 420)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:420)
-   Ceramic coverage now becomes true when a tower has any of:
-   - Ceramic crowd control
-   - Lead popping
-   - MOAB damage
-   - Hero classification
-   I confirmed that a lone Bomb Shooter 0-0-0 reports ceramic coverage at R63 solely because it can pop Lead.
-   This does not establish adequate ceramic damage or crowd control. The BFB and ZOMG checks also still fall back to the general MOAB capability.
-   Fix: preserve distinct capability requirements. Where the model cannot establish sufficient damage, return “coverage present; strength unverified” rather than treating the strategy as proven ready.
-5. Medium: failed actions still modify replay chronology.
-   [btd6_replay.py (line 170)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:170)
-   The engine advances last_round before completing validation.
-   Confirmed sequence:
-   - Attempt an invented tower placement at R30: rejected.
-   - Attempt a valid Dart Monkey placement at R1: rejected because the engine now thinks it reached R30.
-   Board state is transactional now, but chronology is not.
-   Fix: update last_round only in the successful commit block. Test every mutable state field after rejection, including counters, chronology, spending, refunds, and history.
-6. Medium: the loader still accepts malformed nested database content.
-   [btd6_guide.pyw (line 212)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:212)
-   The loader checks the root and maps container, but does not validate each bundled map before committing the database.
-   This file loads successfully:
-   {"maps": {"x": null}}
-   Calling get_statistics() afterward raises AttributeError.
-   Override validation is stronger than bundled-data loading, leaving inconsistent protection.
-   Fix: validate the complete candidate database before assigning self.database. On failure, keep the previous valid state and show a useful diagnostic.
-7. Medium: the radar still ignores the selected difficulty and replay errors.
-   [btd6_guide.pyw (line 2220)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2220)
-   The UI calls:
-   check_strategy_defense_readiness(round_number, steps)
-   Its default difficulty is Medium. Easy and Hard strategies therefore receive Medium economic replay rules.
-   The radar also does not expose failed replay actions to the user. It can display capability results for the surviving subset of a strategy without explaining which steps were rejected.
-   Fix: pass the selected difficulty and return replay errors alongside coverage. Display an invalid-plan message when replay fails.
-8. Medium: “canonical pricing” still permits arbitrary overestimates.
-   [btd6_replay.py (line 235)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:235)
-   Purchases now use:
-   max(canonical_cost, supplied_estimate)
-   This prevents underpricing but still allows an editable estimate to alter simulated spending and the recorded investment used for refunds.
-   The current generated database has zero price discrepancies, which is good. The underlying rule remains inconsistent with treating prices as authoritative.
-   Fix: calculate transaction costs exclusively from the pricing model. If a user needs additional spending—for obstacles or another expense—represent it as an explicit transaction rather than inflating a tower estimate.
-Testing changes I recommend next
-The suite has expanded from 24 to 33 tests, but some new tests still reproduce intended behavior instead of exercising the actual callback. For example, the editor-save test manually constructs a draft; it would not catch the new-step datetime failure.
-Add these focused regressions:
-- Actual Add Step callback succeeds.
-- Refunds cannot finance an otherwise unaffordable purchase.
-- An after-round upgrade cannot satisfy that round’s opening defense.
-- Rejected actions leave all replay state unchanged.
-- Invalid nested database data is rejected before rendering.
-- Radar receives the selected difficulty and reports replay errors.
-- Ceramic readiness cannot be satisfied solely by Lead popping.
-Overall assessment: the earlier editor-save, persistence, ID, and displayed-price problems are substantially improved. Fix the Add Step crash, double-counted refunds, and phase-aware coverage next; those currently have the clearest impact on usability and the credibility of validation.
+The tests now exercise more real application behavior, which is an important improvement.
+1. High priority: Monkey Knowledge strategies can save successfully and disappear on reload
+References: [editor validation (line 3043)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:3043), [override loading (line 284)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:284).
+The editor and importer validate with the current Monkey Knowledge setting. The loader validates saved overrides with the default setting—Monkey Knowledge disabled.
+I reproduced this with a modified Medium strategy:
+1. Change its opening to Gwendolin at $725.
+2. Validate with Monkey Knowledge enabled: passes.
+3. Save the override: succeeds.
+4. Reload: the loader rejects the override and restores the bundled Sauda strategy.
+The rejected override is also removed from the in-memory override collection. A subsequent save could overwrite the override file without that strategy.
+Recommended fix: store requirements with the strategy, such as:
+"requirements": {
+  "more_starting_cash": true,
+  "free_dart_monkey": false
+}
+Use those requirements consistently during editing, loading, generation, import, and export. The current UI setting should determine whether the user can follow a guide, not whether that guide survives loading.
+2. High priority: community import processes malformed data before validating it
+Reference: [btd6_guide.pyw (line 2289)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2289).
+The importer assigns IDs before checking the strategy’s schema.
+I executed the actual import method with these inputs:
+Imported content	Result
+"steps": null	TypeError: 'NoneType' object is not iterable
+A step with "tower": null	AttributeError inside ID assignment
+
+
+These should produce ordinary import-error messages.
+The importer also allows users to accept validation failures through “import anyway.” That activates a strategy immediately even though the loader may reject it at the next restart.
+Recommended fix:
+- Validate field types before normalization or ID assignment.
+- Separate structural errors from gameplay warnings.
+- Never activate structurally invalid content.
+- If incomplete guides are allowed, save them explicitly as drafts and support that status consistently on reload.
+3. Medium priority: mixed explicit and automatic tower IDs can overwrite a tower
+References: [ID generation (line 107)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:107), [duplicate checking (line 254)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:254).
+Explicit duplicate IDs are rejected, but automatically generated IDs are not checked against existing IDs.
+Confirmed reproduction:
+1. Place a Dart Monkey with explicit ID dart_monkey_1.
+2. Place another Dart Monkey without an ID.
+3. Both placements succeed.
+4. The board contains one tower, because the generated ID overwrites the first.
+This is relevant to mixed imported and manually edited strategies.
+Recommended fix: generate an unused ID, then check uniqueness regardless of its origin. Prefer UUIDs for newly created tower instances and require explicit IDs after migration.
+4. Medium priority: schema validation still misses important fields
+References: [replay field handling (line 229)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:229), [database loading (line 226)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:226).
+Additional probes found:
+- A list-valued tower_id crashes validation with TypeError.
+- A numeric placement passes validation.
+- A list-valued step_id passes validation.
+- "Various" is accepted for an Upgrade action.
+The latter can set a tower’s upgrade state to None, rather than a valid three-tier tuple.
+The database loader checks map and strategy containers, but still does not validate their complete contents before assigning the live database.
+Recommended fix: define action-specific schemas:
+- step_id and tower_id: nonempty strings.
+- placement, details, and other displayed text: strings.
+- Place/Upgrade: concrete legal upgrade tuples.
+- Composite instructions: explicit action types rather than "Various" bypasses.
+- Step IDs: unique within a strategy.
+Validate candidate data fully before replacing live state.
+5. Medium priority: saved and shared guides do not record their execution assumptions
+Reference: [btd6_guide.pyw (line 2214)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2214).
+The new sharing format includes a schema version, map, difficulty, and strategy, but does not record the Monkey Knowledge assumptions used to validate it.
+Consequently, two users can import the same file and get different validation results based on their local toggle. Markdown and HTML also use the strategy’s stored starting_cash, which may remain $650 while validation permits $850.
+Recommended fix: make requirements part of the exported strategy and display them clearly:
+- Required starting cash.
+- Required perks.
+- Game-data version.
+- Validation status and playtest evidence.
+This should use the same metadata that fixes override reload behavior.
+What I would change next
+Prioritize these regression tests:
+1. A Monkey Knowledge-dependent guide survives save, reload, and export/import.
+2. Malformed imports return diagnostics without exceptions.
+3. Mixed explicit/generated tower IDs never collide.
+4. Every accepted strategy is safe for rendering and replay.
+5. Draft imports remain drafts after restarting.
+The remaining architectural concern is still data authority: passing the application’s model is not proof of a winning strategy. The database currently contains 87 Verified, 174 Structurally Validated, and zero Playtested entries. Continue distinguishing software validation from demonstrated gameplay results.
+My assessment: the replay and persistence foundations are substantially better now. The next release should concentrate on consistent strategy requirements and strict input boundaries, rather than adding more features before saved and shared guides behave reliably.
