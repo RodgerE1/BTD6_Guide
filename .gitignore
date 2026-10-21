@@ -5,6 +5,7 @@ __pycache__/
 
 # Local user runtime settings & progress
 user_settings.json
+user_overrides.json
 
 # Environments & IDEs
 .vscode/

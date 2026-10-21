@@ -3,7 +3,7 @@ map_data_advanced.py
 Contains comprehensive, round-by-round Easy/Standard (R1-40) strategies for all 22 Advanced maps.
 """
 
-def create_step(step_number, round_range, round_num, action, tower, upgrade, placement, targeting, cost, details):
+def create_step(step_number, round_range, round_num, action, tower, upgrade, placement, targeting, cost, details, timing="before_round"):
     return {
         "step_number": step_number,
         "round_range": round_range,
@@ -14,7 +14,8 @@ def create_step(step_number, round_range, round_num, action, tower, upgrade, pla
         "placement": placement,
         "targeting": targeting,
         "cost_estimate": cost,
-        "details": details
+        "details": details,
+        "timing": timing
     }
 
 ADVANCED_MAPS = {
@@ -124,9 +125,9 @@ ADVANCED_MAPS = {
                     create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Sauda", "0-0-0", "At the primary shoreline bend where the beach path loops.", "First", 510, "Secures the beach entrance with zero leaks."),
                     create_step(2, "Rounds 1–10: Opening Defense", 5, "Place", "Monkey Buccaneer", "0-0-0", "In the ocean channel right next to the shoreline bend.", "First", 425, "Fires cannonballs and grapes across the beach."),
                     create_step(3, "Rounds 11–20: Expanding Defense", 11, "Upgrade", "Monkey Buccaneer", "0-1-0", "Ocean channel.", "First", 210, "Grape Shot fires 4 grapes."),
-                    create_step(4, "Rounds 11–20: Expanding Defense", 15, "Upgrade", "Monkey Buccaneer", "0-2-2", "Ocean channel.", "First", 680, "Hot Shot grants Lead-popping; Crow's Nest provides full Camo detection."),
+                    create_step(4, "Rounds 11–20: Expanding Defense", 15, "Upgrade", "Monkey Buccaneer", "0-2-0", "Ocean channel.", "First", 425, "Hot Shot grants Lead-popping; prepares path for Destroyer."),
                     create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Monkey Buccaneer", "3-2-0", "Ocean channel.", "First", 2510, "Destroyer unleashes rapid grape barrages."),
-                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 26, "Place", "Monkey Sub", "2-0-3", "In the ocean next to the sunken ship.", "First", 2360, "Triple Guns with Advanced Intel provides constant dart fire."),
+                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Place", "Monkey Sub", "2-0-3", "In the ocean next to the sunken ship.", "First", 2360, "Triple Guns with Advanced Intel provides constant dart fire."),
                     create_step(7, "Rounds 31–39: Final Preparation", 33, "Place", "Alchemist", "3-0-0", "On the sandy shore within range of Buccaneer.", "Close", 1885, "Berserker Brew boosts the Destroyer's fire rate and damage."),
                     create_step(8, "Round 40: MOAB Battle", 38, "Place", "Bomb Shooter", "0-3-0", "On the beach.", "Strong", 1530, "MOAB Mauler targets the blimp. The Destroyer and Sub effortlessly pop the MOAB and ceramic insides.")
                 ]
@@ -241,9 +242,9 @@ ADVANCED_MAPS = {
                     create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Sauda", "0-0-0", "At the first major road intersection near the shipping containers.", "First", 510, "Secures the road entrance with zero leaks."),
                     create_step(2, "Rounds 1–10: Opening Defense", 5, "Place", "Monkey Buccaneer", "0-0-0", "In the shipping canal right where the MOAB path emerges.", "First", 425, "Covers both the road and the MOAB canal."),
                     create_step(3, "Rounds 11–20: Expanding Defense", 11, "Upgrade", "Monkey Buccaneer", "0-1-0", "Shipping canal.", "First", 210, "Grape Shot fires 4 grapes."),
-                    create_step(4, "Rounds 11–20: Expanding Defense", 15, "Upgrade", "Monkey Buccaneer", "0-2-2", "Shipping canal.", "First", 680, "Hot Shot grants Lead-popping; Crow's Nest provides full Camo detection."),
+                    create_step(4, "Rounds 11–20: Expanding Defense", 15, "Upgrade", "Monkey Buccaneer", "0-2-0", "Shipping canal.", "First", 425, "Hot Shot grants Lead-popping; prepares path for Destroyer."),
                     create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Monkey Buccaneer", "3-2-0", "Shipping canal.", "First", 2510, "Destroyer unleashes rapid grape barrages."),
-                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 26, "Place", "Monkey Sub", "2-0-3", "In the shipping canal next to Buccaneer.", "First", 2360, "Triple Guns with Advanced Intel provides constant dart fire."),
+                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Place", "Monkey Sub", "2-0-3", "In the shipping canal next to Buccaneer.", "First", 2360, "Triple Guns with Advanced Intel provides constant dart fire."),
                     create_step(7, "Rounds 31–39: Final Preparation", 33, "Place", "Alchemist", "3-0-0", "On the dock pier within range of Buccaneer.", "Close", 1885, "Berserker Brew boosts the Destroyer's fire rate and damage."),
                     create_step(8, "Round 40: MOAB Battle", 38, "Place", "Bomb Shooter", "0-3-2", "At the MOAB canal mouth.", "Strong", 2040, "MOAB Mauler intercepts the Round 40 MOAB directly at its canal spawn. The Destroyer pops it in seconds.")
                 ]
@@ -281,7 +282,7 @@ ADVANCED_MAPS = {
                     create_step(2, "Rounds 1–10: Opening Defense", 5, "Place", "Monkey Sub", "0-0-0", "In the ocean water directly adjacent to the peninsula base.", "First", 275, "Provides fast dart attacks from the water."),
                     create_step(3, "Rounds 11–20: Expanding Defense", 11, "Upgrade", "Monkey Sub", "2-0-2", "Ocean water.", "First", 980, "Advanced Intel allows Sub to shoot anywhere towers have vision."),
                     create_step(4, "Rounds 11–20: Expanding Defense", 16, "Place", "Monkey Buccaneer", "0-0-0", "In the ocean next to the Sub.", "First", 425, "Adds grape and cannon fire."),
-                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Monkey Buccaneer", "0-2-2", "Ocean water.", "First", 890, "Hot Shot pops Leads on Round 28; Crow's Nest detects Camos."),
+                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Monkey Buccaneer", "0-2-0", "Ocean water.", "First", 635, "Hot Shot pops Leads on Round 28; prepares path for Destroyer."),
                     create_step(6, "Rounds 21–30: Camo and Lead Preparation", 26, "Upgrade", "Monkey Sub", "2-0-3", "Ocean water.", "First", 1105, "Triple Guns fires high-frequency darts."),
                     create_step(7, "Rounds 31–39: Final Preparation", 32, "Upgrade", "Monkey Sub", "2-0-4", "Ocean water.", "First", 2125, "Armor Piercing Darts inflicts heavy damage to ceramics and blimps."),
                     create_step(8, "Round 40: MOAB Battle", 37, "Upgrade", "Monkey Buccaneer", "3-2-0", "Ocean water.", "First", 2510, "Destroyer unleashes rapid grape volleys, shredding the MOAB upon entry.")
@@ -440,7 +441,7 @@ ADVANCED_MAPS = {
                     create_step(4, "Rounds 11–20: Expanding Defense", 17, "Place", "Dart Monkey", "0-0-0", "At the exit path where both canyon lanes merge.", "First", 170, "Adds cleanup darts at the exit."),
                     create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Sniper Monkey", "3-0-2", "Mesa platform.", "Strong", 2450, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot."),
                     create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Exit merger.", "First", 1275, "Crossbow provides high damage cleanup."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 32, "Place", "Bomb Shooter", "2-0-3", "At the exit merger.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons."),
+                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "At the exit merger.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons."),
                     create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "At the exit merger.", "Strong", 2040, "MOAB Mauler tears the Round 40 blimp apart. Sniper and Crossbow destroy the ceramics.")
                 ]
             },
@@ -479,7 +480,7 @@ ADVANCED_MAPS = {
                     create_step(4, "Rounds 11–20: Expanding Defense", 17, "Place", "Dart Monkey", "0-0-0", "Along one of the diagonal exits.", "First", 170, "Adds cleanup darts."),
                     create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Sniper Monkey", "3-0-2", "Central crossway.", "Strong", 2450, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot."),
                     create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Diagonal exit.", "First", 1275, "Crossbow provides high damage cleanup."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 32, "Place", "Bomb Shooter", "2-0-3", "In the central crossway.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons across all 4 lanes."),
+                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "In the central crossway.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons across all 4 lanes."),
                     create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "In the central crossway.", "Strong", 2040, "MOAB Mauler delivers heavy blimp damage. Sniper on Strong and Quincy destroy the MOAB.")
                 ]
             },

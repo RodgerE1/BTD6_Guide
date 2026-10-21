@@ -1,0 +1,776 @@
+"""
+btd6_replay.py
+Unified Replay Engine and Schema Validator for BTD6 Strategy Guides.
+Enforces invariant satisfaction across Editor, Database Validator, Radar, and Generator:
+1. Type & schema validation (rejecting malformed data gracefully).
+2. Deterministic tower replay engine keyed by tower_id.
+3. Canonical economic calculations, timing-aware cash curves, and 70% refund accounting.
+4. Non-finite / boolean numeric rejection.
+5. Strict tactical capability coverage (blimp tiers, ceramic CC, hero arrival tracking).
+"""
+
+import math
+from btd6_economy import (
+    ALL_VALID_TOWERS,
+    CANONICAL_HEROES,
+    CANONICAL_TOWERS,
+    DIFF_MULTIPLIERS,
+    get_action_canonical_cost,
+    get_cash_available,
+    get_cumulative_cash_ceiling,
+    get_hero_level_at_round,
+    get_starting_cash,
+    get_tower_capabilities,
+    get_transition_cost,
+    is_legal_crosspath,
+    is_valid_numeric_cost,
+    parse_upgrade,
+)
+
+
+PHASE_ORDER = {
+    "before_round": 0,
+    "during_round": 1,
+    "after_round": 2
+}
+
+
+class TowerInstance:
+    """Represents an active or historical tower instance on the tactical board."""
+    def __init__(self, tower_id, tower_name, upgrade_tuple, upg_str, placed_round, placement="Center", targeting="First", initial_cost=0, is_hero=False, placed_timing="before_round"):
+        self.tower_id = tower_id
+        self.tower_name = tower_name
+        self.upgrade = upgrade_tuple or (0, 0, 0)
+        self.upg_str = upg_str or "0-0-0"
+        self.placed_round = placed_round
+        self.placed_timing = placed_timing
+        self.placement = placement
+        self.targeting = targeting
+        self.total_invested = initial_cost
+        self.is_hero = is_hero
+        self.is_active = True
+        self.sold_round = None
+        self.sold_timing = None
+        self.upgrade_history = [(placed_round, placed_timing, self.upgrade, self.upg_str)]
+
+    def get_upgrade_at_round(self, at_round, at_timing="during_round"):
+        """Returns the upgrade tuple this tower possessed at or before (at_round, at_timing)."""
+        target_phase = (at_round, PHASE_ORDER.get(at_timing, 1))
+        effective_upg = (0, 0, 0)
+        for r, timing, upg_tup, _ in self.upgrade_history:
+            if (r, PHASE_ORDER.get(timing, 0)) <= target_phase:
+                effective_upg = upg_tup
+        return effective_upg
+
+    def is_present_at_round(self, at_round, at_timing="during_round"):
+        """Returns True if the tower was placed by (at_round, at_timing) and not sold by then."""
+        target_phase = (at_round, PHASE_ORDER.get(at_timing, 1))
+        placed_phase = (self.placed_round, PHASE_ORDER.get(self.placed_timing, 0))
+        if placed_phase > target_phase:
+            return False
+        if self.sold_round is not None:
+            sold_phase = (self.sold_round, PHASE_ORDER.get(self.sold_timing or "before_round", 0))
+            if sold_phase <= target_phase:
+                return False
+        return True
+
+    def __repr__(self):
+        return f"<TowerInstance id={self.tower_id} name={self.tower_name} upg={self.upg_str} invested={self.total_invested}>"
+
+
+class TowerReplayEngine:
+    """
+    Stateful replay engine simulating gameplay board transitions step-by-step.
+    Tracks active towers keyed by tower_id, canonical expenditures, refunds, and tactical buffs.
+    All transitions are strictly transactional: failed transitions leave board state untouched.
+    """
+    def __init__(self, difficulty="Medium", start_round=1, max_round=60, monkey_knowledge=False):
+        self.difficulty = difficulty
+        self.start_round = start_round
+        self.max_round = max_round
+        self.monkey_knowledge = bool(monkey_knowledge and difficulty != "CHIMPS")
+        self.free_dart_used = False
+        self.active_towers = {}         # tower_id -> TowerInstance
+        self.all_towers = {}            # tower_id -> TowerInstance (includes sold)
+        self.tower_counters = {}        # tower_name -> int count
+        self.cumulative_cost_spent = 0
+        self.cumulative_refunds = 0
+        self.opening_cost = 0
+        self.has_opening_defense = False
+        self.last_round = start_round
+        self.last_timing = "before_round"
+        self.has_committed_step = False
+        self.step_history = []
+        self.errors = []
+        self.warnings = []
+
+    def _generate_tower_id(self, tower_name, explicit_id=None):
+        if explicit_id:
+            return str(explicit_id)
+        cnt = self.tower_counters.get(tower_name, 0) + 1
+        self.tower_counters[tower_name] = cnt
+        clean_name = tower_name.lower().replace(" ", "_")
+        return f"{clean_name}_{cnt}"
+
+    def _find_tower_for_upgrade(self, tower_name, explicit_id=None, upg_tuple=None, placement=None):
+        if explicit_id:
+            if explicit_id not in self.active_towers:
+                return None, f"references nonexistent or inactive tower_id '{explicit_id}'."
+            cand = self.active_towers[explicit_id]
+            if cand.tower_name != tower_name:
+                return None, f"tower_id '{explicit_id}' is a '{cand.tower_name}', not a '{tower_name}'."
+            return cand, None
+
+        candidates = [t for t in self.active_towers.values() if t.tower_name == tower_name]
+        if not candidates:
+            return None, f"upgrading '{tower_name}' which was never placed on the board!"
+
+        # If placement specified and matches uniquely
+        if placement:
+            placement_matches = [t for t in candidates if t.placement and t.placement.strip() == placement.strip()]
+            if len(placement_matches) == 1:
+                return placement_matches[0], None
+
+        # Match candidate that is a valid upgrade progression (tiers >= existing)
+        if upg_tuple:
+            valid_prog = [t for t in candidates if all(u >= e for u, e in zip(upg_tuple, t.upgrade))]
+            if valid_prog:
+                # Sort descending by sum of existing tiers to upgrade the tower already furthest along this path
+                valid_prog.sort(key=lambda t: sum(t.upgrade), reverse=True)
+                return valid_prog[0], None
+
+        return candidates[0], None
+
+    def _find_tower_for_sale(self, tower_name, explicit_id=None):
+        if explicit_id:
+            if explicit_id not in self.active_towers:
+                return None, f"references nonexistent or inactive tower_id '{explicit_id}'."
+            cand = self.active_towers[explicit_id]
+            if cand.tower_name != tower_name:
+                return None, f"tower_id '{explicit_id}' is a '{cand.tower_name}', not a '{tower_name}'."
+            return cand, None
+
+        candidates = [t for t in self.active_towers.values() if t.tower_name == tower_name]
+        if not candidates:
+            return None, f"selling unplaced tower '{tower_name}'!"
+        return candidates[0], None
+
+    def apply_step(self, step, step_index=0):
+        """
+        Applies a single strategy step to the replay state.
+        Returns: (success: bool, error_msg: str or None)
+        """
+        # 1. Container and Field Type Validation
+        if not isinstance(step, dict):
+            err = f"steps[{step_index}] must be a JSON dictionary object, found {type(step).__name__}."
+            self.errors.append(err)
+            return False, err
+
+        s_num = step.get("step_number", step_index + 1)
+        if not isinstance(s_num, int) or isinstance(s_num, bool):
+            err = f"steps[{step_index}].step_number must be an integer."
+            self.errors.append(err)
+            return False, err
+
+        r = step.get("round")
+        if not isinstance(r, int) or isinstance(r, bool):
+            err = f"Step {s_num}: steps[{step_index}].round must be an integer, found {type(r).__name__}."
+            self.errors.append(err)
+            return False, err
+
+        if not (self.start_round <= r <= self.max_round):
+            err = f"Step {s_num}: round {r} outside legal range [{self.start_round}, {self.max_round}]."
+            self.errors.append(err)
+            return False, err
+
+        timing = step.get("timing", "before_round")
+        if timing not in ("before_round", "during_round", "after_round"):
+            err = f"Step {s_num}: timing '{timing}' must be one of 'before_round', 'during_round', 'after_round'."
+            self.errors.append(err)
+            return False, err
+
+        if self.has_committed_step:
+            if r < self.last_round:
+                err = f"Step {s_num}: round {r} regressed from previous round {self.last_round}."
+                self.errors.append(err)
+                return False, err
+            if r == self.last_round and PHASE_ORDER.get(timing, 0) < PHASE_ORDER.get(self.last_timing, 0):
+                err = f"Step {s_num}: timing '{timing}' regressed from previous timing '{self.last_timing}' in Round {r}."
+                self.errors.append(err)
+                return False, err
+
+        act = step.get("action")
+        if not isinstance(act, str) or act not in ("Place", "Upgrade", "Target", "Ability", "Sell"):
+            err = f"Step {s_num}: invalid action '{act}'. Allowed: Place, Upgrade, Target, Ability, Sell."
+            self.errors.append(err)
+            return False, err
+
+        tower_raw = step.get("tower")
+        if not isinstance(tower_raw, str) or not tower_raw.strip():
+            err = f"Step {s_num}: steps[{step_index}].tower must be a non-empty string."
+            self.errors.append(err)
+            return False, err
+        tower = tower_raw.strip()
+
+        upg_raw = step.get("upgrade", "0-0-0")
+        if not isinstance(upg_raw, str):
+            err = f"Step {s_num}: steps[{step_index}].upgrade must be a string."
+            self.errors.append(err)
+            return False, err
+        upg_str = upg_raw.strip()
+        upg_tuple = parse_upgrade(upg_str)
+
+        cost_val = step.get("cost_estimate", 0)
+        if not is_valid_numeric_cost(cost_val):
+            err = f"Step {s_num}: cost_estimate '{cost_val}' must be a finite, non-negative numeric value."
+            self.errors.append(err)
+            return False, err
+
+        explicit_id = step.get("tower_id")
+        placement = step.get("placement", "")
+        targeting = step.get("targeting", "First")
+
+        # 2. Crosspath Legality
+        if upg_str not in ("Various", "None") and not is_legal_crosspath(upg_str):
+            err = f"Step {s_num}: illegal crosspath '{upg_str}' for {tower}."
+            self.errors.append(err)
+            return False, err
+
+        # 3. Action Pre-Flight Verification & Transactional Execution
+        action_cost = 0
+        refund_amount = 0
+        target_tower = None
+        new_opening_cost = self.opening_cost
+
+        if act == "Place":
+            # Exact canonical hero validation (rejects invented heroes like 'Quincy Imaginary Cannon')
+            is_hero = tower in CANONICAL_HEROES
+            is_valid = tower in ALL_VALID_TOWERS or is_hero
+            if not is_valid:
+                err = f"Step {s_num}: unrecognized or invented tower '{tower}' cannot be placed."
+                self.errors.append(err)
+                return False, err
+
+            if explicit_id and explicit_id in self.all_towers:
+                err = f"Step {s_num}: duplicate tower_id '{explicit_id}' already placed on the board."
+                self.errors.append(err)
+                return False, err
+
+            free_dart_eligible = (
+                self.monkey_knowledge
+                and not self.free_dart_used
+                and tower == "Dart Monkey"
+                and upg_tuple == (0, 0, 0)
+            )
+            canon_cost = 0 if free_dart_eligible else get_action_canonical_cost(tower, (0, 0, 0), upg_tuple, "Place", self.difficulty)
+            action_cost = canon_cost
+
+            starting_cash_limit = get_starting_cash(self.difficulty, self.monkey_knowledge)
+            if r == self.start_round:
+                new_opening_cost += action_cost
+                if new_opening_cost > starting_cash_limit:
+                    err = f"Step {s_num}: opening cost ${new_opening_cost} exceeds ${starting_cash_limit} starting cash on Round {self.start_round}."
+                    self.errors.append(err)
+                    return False, err
+
+        elif act == "Upgrade":
+            matched, find_err = self._find_tower_for_upgrade(tower, explicit_id, upg_tuple, placement)
+            if not matched:
+                err = f"Step {s_num}: {find_err}"
+                self.errors.append(err)
+                return False, err
+
+            if upg_tuple:
+                # Check downgrade
+                if any(u < e for u, e in zip(upg_tuple, matched.upgrade)):
+                    err = f"Step {s_num}: upgrading '{tower}' to {upg_str} drops levels from {matched.upg_str}!"
+                    self.errors.append(err)
+                    return False, err
+
+                canon_upg_cost = get_action_canonical_cost(tower, matched.upgrade, upg_tuple, "Upgrade", self.difficulty)
+                action_cost = canon_upg_cost
+
+            if r == self.start_round:
+                new_opening_cost += action_cost
+                starting_cash_limit = get_starting_cash(self.difficulty, self.monkey_knowledge)
+                if new_opening_cost > starting_cash_limit:
+                    err = f"Step {s_num}: opening cost ${new_opening_cost} exceeds ${starting_cash_limit} starting cash on Round {self.start_round}."
+                    self.errors.append(err)
+                    return False, err
+            target_tower = matched
+
+        elif act == "Sell":
+            matched, find_err = self._find_tower_for_sale(tower, explicit_id)
+            if not matched:
+                err = f"Step {s_num}: {find_err}"
+                self.errors.append(err)
+                return False, err
+
+            refund_amount = int(round(matched.total_invested * 0.70))
+            target_tower = matched
+
+        elif act == "Target":
+            if explicit_id:
+                if explicit_id not in self.active_towers:
+                    err = f"Step {s_num}: targeting command references nonexistent or inactive tower_id '{explicit_id}'."
+                    self.errors.append(err)
+                    return False, err
+                if self.active_towers[explicit_id].tower_name != tower:
+                    err = f"Step {s_num}: targeting command references tower_id '{explicit_id}' which is a '{self.active_towers[explicit_id].tower_name}', not a '{tower}'."
+                    self.errors.append(err)
+                    return False, err
+            else:
+                has_matching = any(t.tower_name == tower for t in self.active_towers.values())
+                if not has_matching:
+                    err = f"Step {s_num}: targeting command references unplaced tower '{tower}'."
+                    self.errors.append(err)
+                    return False, err
+
+        elif act == "Ability":
+            hero_on_board = any(t.is_hero for t in self.active_towers.values())
+            has_exact = any(t.tower_name == tower for t in self.active_towers.values())
+
+            composite_valid = False
+            if "Hero" in tower and hero_on_board:
+                sub_tower = tower.replace("& Hero", "").replace("Hero &", "").strip()
+                if sub_tower in ("Defense Fleet", "Fleet", "Radar Scanner & Defense", "Crowd Control"):
+                    composite_valid = True
+                elif any(t.tower_name == sub_tower for t in self.active_towers.values()):
+                    composite_valid = True
+
+            if not has_exact and not composite_valid:
+                err = f"Step {s_num}: ability command references unplaced or unavailable tower/hero '{tower}'."
+                self.errors.append(err)
+                return False, err
+
+        # 4. Economic Accounting & Cash Ceilings
+        starting_cash_limit = get_starting_cash(self.difficulty, self.monkey_knowledge)
+        if r == self.start_round and (action_cost > starting_cash_limit or int(cost_val) > starting_cash_limit):
+            err = f"Step {s_num}: opening cost ${max(action_cost, int(cost_val))} exceeds ${starting_cash_limit} starting cash on Round {self.start_round}."
+            self.errors.append(err)
+            return False, err
+
+        new_cum_spent = self.cumulative_cost_spent + action_cost
+        new_cum_refunds = self.cumulative_refunds + refund_amount
+        earned_cash = get_cash_available(self.difficulty, r, timing=timing, monkey_knowledge=self.monkey_knowledge)
+        cash_avail = earned_cash + self.cumulative_refunds
+
+        # Reject if either canonical cumulative spending or declared estimate exceeds available cash
+        effective_check_cost = max(new_cum_spent, self.cumulative_cost_spent + int(cost_val))
+
+        if effective_check_cost > cash_avail:
+            earned_during = get_cash_available(self.difficulty, r, timing="during_round")
+            cash_during = earned_during + self.cumulative_refunds
+            if timing == "before_round" and effective_check_cost <= cash_during:
+                err = (
+                    f"Step {s_num}: cumulative cost ${effective_check_cost:,} exceeds cash available "
+                    f"before Round {r} (${cash_avail:,}). Step depends on income earned during Round {r} and must specify timing: 'during_round'."
+                )
+            else:
+                err = (
+                    f"Step {s_num}: cumulative cost ${effective_check_cost:,} exceeds max available cash "
+                    f"${cash_avail:,} at Round {r} ({timing})."
+                )
+            self.errors.append(err)
+            return False, err
+
+        # 5. Commit Transaction (Mutate board state ONLY after all checks succeed)
+        self.has_committed_step = True
+        self.last_round = r
+        self.last_timing = timing
+        self.cumulative_cost_spent = new_cum_spent
+        self.cumulative_refunds = new_cum_refunds
+        if r == self.start_round:
+            self.has_opening_defense = True
+            self.opening_cost = new_opening_cost
+
+        if act == "Place":
+            if free_dart_eligible:
+                self.free_dart_used = True
+            t_id = self._generate_tower_id(tower, explicit_id)
+            inst = TowerInstance(
+                tower_id=t_id,
+                tower_name=tower,
+                upgrade_tuple=upg_tuple,
+                upg_str=upg_str,
+                placed_round=r,
+                placement=placement,
+                targeting=targeting,
+                initial_cost=action_cost,
+                is_hero=is_hero,
+                placed_timing=timing
+            )
+            self.active_towers[t_id] = inst
+            self.all_towers[t_id] = inst
+
+        elif act == "Upgrade":
+            target_tower.upgrade = upg_tuple
+            target_tower.upg_str = upg_str
+            target_tower.total_invested += action_cost
+            target_tower.upgrade_history.append((r, timing, upg_tuple, upg_str))
+
+        elif act == "Sell":
+            target_tower.sold_round = r
+            target_tower.sold_timing = timing
+            target_tower.is_active = False
+            if target_tower.tower_id in self.active_towers:
+                del self.active_towers[target_tower.tower_id]
+
+        self.step_history.append({
+            "step_number": s_num,
+            "round": r,
+            "action": act,
+            "tower": tower,
+            "upgrade": upg_str,
+            "cost": action_cost,
+            "refund": refund_amount,
+            "timing": timing
+        })
+        return True, None
+
+    def evaluate_threat_coverage(self, at_round, at_timing="during_round"):
+        """
+        Evaluates planned capability coverage up to (at_round, at_timing) using the historical replay board.
+        Accurately queries the active board and tower upgrades as they existed at (at_round, at_timing).
+        Returns: dict(camo, lead, moab, bfb, zomg, ceramic)
+        """
+        # Reconstruct active board up to at_round using historical presence
+        board = [t for t in self.all_towers.values() if t.is_present_at_round(at_round, at_timing)]
+
+        # Check support synergies at at_round
+        has_village_camo = any(t.tower_name == "Monkey Village" and t.get_upgrade_at_round(at_round, at_timing)[1] >= 2 for t in board)
+        has_sub_decamo = any(t.tower_name == "Monkey Sub" and t.get_upgrade_at_round(at_round, at_timing)[0] >= 3 for t in board)
+
+        # Etienne UAV global camo buff at Level 8 (tracked based on arrival round!)
+        etienne_towers = [t for t in board if t.tower_name == "Etienne"]
+        etienne_global_camo = any(get_hero_level_at_round("Etienne", t.placed_round, at_round) >= 8 for t in etienne_towers)
+        has_global_camo = has_village_camo or has_sub_decamo or etienne_global_camo
+
+        has_alch_lead_buff = any(t.tower_name == "Alchemist" and t.get_upgrade_at_round(at_round, at_timing)[0] >= 2 for t in board)
+        has_mib = any(t.tower_name == "Monkey Village" and t.get_upgrade_at_round(at_round, at_timing)[1] >= 3 for t in board)
+        has_lead_buff = has_alch_lead_buff or has_mib
+
+        camo = False
+        lead = False
+        moab = False
+        bfb = False
+        zomg = False
+        ceramic = False
+
+        for t in board:
+            hero_lvl = get_hero_level_at_round(t.tower_name, t.placed_round, at_round) if t.is_hero else None
+            curr_upg = t.get_upgrade_at_round(at_round, at_timing)
+            caps = get_tower_capabilities(t.tower_name, curr_upg, hero_level=hero_lvl)
+
+            if caps["camo"] or has_global_camo:
+                camo = True
+            if caps["lead"] or has_lead_buff:
+                lead = True
+            if caps["moab_damage"]:
+                moab = True
+            if caps.get("bfb_damage", False):
+                bfb = True
+            if caps.get("zomg_damage", False):
+                zomg = True
+            if caps.get("ceramic_cc", False):
+                ceramic = True
+
+        return {
+            "camo": camo,
+            "lead": lead,
+            "moab": moab,
+            "bfb": bfb,
+            "zomg": zomg,
+            "ceramic": ceramic
+        }
+
+
+def assign_explicit_tower_ids(strategy, map_id, diff):
+    """
+    Ensures every placed tower has an explicit, persistent tower_id and all
+    subsequent upgrade, target, and sell actions reference that tower_id.
+    """
+    if not isinstance(strategy, dict) or not isinstance(strategy.get("steps"), list):
+        return
+
+    active_towers = {}  # tower_name -> list of dict(id, upgrade, placement)
+    tower_counter = 0
+
+    for idx, s in enumerate(strategy["steps"]):
+        if not isinstance(s, dict):
+            continue
+        act = s.get("action")
+        tow = s.get("tower", "").strip()
+        if not tow:
+            continue
+
+        if act == "Place":
+            if not s.get("tower_id"):
+                tower_counter += 1
+                s["tower_id"] = f"{map_id}_{diff.lower()}_t{tower_counter}"
+            t_id = s["tower_id"]
+            upg = parse_upgrade(s.get("upgrade", "0-0-0"))
+            active_towers.setdefault(tow, []).append({
+                "id": t_id,
+                "upgrade": upg,
+                "placement": s.get("placement", "")
+            })
+        elif act in ("Upgrade", "Target", "Sell"):
+            if s.get("tower_id"):
+                continue
+            candidates = active_towers.get(tow, [])
+            if candidates:
+                matched = None
+                place = s.get("placement", "")
+                if place:
+                    p_matches = [c for c in candidates if c["placement"] and c["placement"].strip() == place.strip()]
+                    if len(p_matches) == 1:
+                        matched = p_matches[0]
+                if not matched and act == "Upgrade":
+                    upg = parse_upgrade(s.get("upgrade", "0-0-0"))
+                    valid_prog = [c for c in candidates if all(u >= e for u, e in zip(upg, c["upgrade"]))]
+                    if valid_prog:
+                        # Sort descending by sum of existing tiers to pick the tower furthest along this path
+                        valid_prog.sort(key=lambda c: sum(c["upgrade"]), reverse=True)
+                        matched = valid_prog[0]
+                if not matched:
+                    matched = candidates[0]
+
+                s["tower_id"] = matched["id"]
+                if act == "Upgrade":
+                    matched["upgrade"] = parse_upgrade(s.get("upgrade", "0-0-0"))
+                elif act == "Sell":
+                    if matched in candidates:
+                        candidates.remove(matched)
+
+
+def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats=True, monkey_knowledge=False):
+    """
+    Validates a complete strategy dictionary against all BTD6 structural, economic,
+    and tactical replay invariants.
+    Returns: (is_valid: bool, errors: list, warnings: list, stats: dict)
+    """
+    errors = []
+    warnings = []
+    stats = {}
+
+    if not isinstance(strategy, dict):
+        return False, ["Strategy object must be a JSON dictionary."], [], {}
+
+    diff = diff_name or strategy.get("difficulty", "Easy")
+    if diff not in ("Easy", "Medium", "Hard"):
+        return False, [f"Invalid strategy difficulty '{diff}'."], [], {}
+
+    start_round = 3 if diff == "Hard" else 1
+    max_round = 40 if diff == "Easy" else (60 if diff == "Medium" else 80)
+    min_steps = 5 if diff == "Easy" else (8 if diff == "Medium" else 12)
+
+    # 1. Required metadata fields
+    req_fields = [
+        "difficulty", "mode", "rounds", "status", "recommended_hero",
+        "starting_cash", "overview", "camo_handling", "lead_handling",
+        "moab_handling", "why_it_works", "steps"
+    ]
+    for rf in req_fields:
+        if rf not in strategy:
+            errors.append(f"Strategy missing required field '{rf}'.")
+
+    status = strategy.get("status", "Needs Review")
+    if status not in ("Playtested", "Structurally Validated", "Verified", "Needs Review"):
+        errors.append(f"Strategy has unrecognized status '{status}'.")
+
+    starting_cash = strategy.get("starting_cash", 650)
+    expected_cash = get_starting_cash(diff, monkey_knowledge=monkey_knowledge)
+    if monkey_knowledge:
+        if starting_cash not in (650, expected_cash):
+            errors.append(f"Starting cash is {starting_cash}, expected 650 or {expected_cash}.")
+    else:
+        if starting_cash != 650:
+            errors.append(f"Starting cash is {starting_cash}, expected 650.")
+
+    steps = strategy.get("steps")
+    if not isinstance(steps, list):
+        errors.append("strategy['steps'] must be a JSON list.")
+        return False, errors, warnings, stats
+
+    if len(steps) < min_steps:
+        errors.append(f"{diff} strategy requires at least {min_steps} steps (found {len(steps)}).")
+
+    # 2. Replay Simulation
+    engine = TowerReplayEngine(difficulty=diff, start_round=start_round, max_round=max_round, monkey_knowledge=monkey_knowledge)
+    for idx, s in enumerate(steps):
+        success, err = engine.apply_step(s, step_index=idx)
+        if not success and err:
+            errors.append(err)
+
+    if not engine.has_opening_defense:
+        errors.append(f"No defensive placement on starting round {start_round}.")
+
+    # 3. Tactical Capability Verification
+    if strict_threats:
+        # Round 24 Camo
+        if max_round >= 24:
+            cov24 = engine.evaluate_threat_coverage(24)
+            if not cov24["camo"]:
+                errors.append(f"Defense lacks Camo detection before Round 24 Camo bloon arrival.")
+
+        # Round 28 Lead
+        if max_round >= 28:
+            cov28 = engine.evaluate_threat_coverage(28)
+            if not cov28["lead"]:
+                errors.append(f"Defense lacks Lead popping power before Round 28 Lead arrival.")
+
+        # Round 40 MOAB
+        if max_round >= 40:
+            cov40 = engine.evaluate_threat_coverage(40)
+            if not cov40["moab"]:
+                errors.append(f"Defense lacks MOAB-class blimp damage for Round 40 MOAB.")
+
+        # Round 60 BFB (Medium and Hard)
+        if max_round >= 60:
+            cov60 = engine.evaluate_threat_coverage(60)
+            if not cov60["bfb"]:
+                errors.append(f"Defense lacks sufficient blimp damage for Round 60 BFB.")
+
+        # Round 63 Ceramics and Round 80 ZOMG (Hard)
+        if max_round >= 80:
+            cov63 = engine.evaluate_threat_coverage(63)
+            if not cov63["ceramic"]:
+                errors.append(f"Defense lacks heavy AoE / crowd control for Round 63 Ceramic rush.")
+
+            cov80 = engine.evaluate_threat_coverage(80)
+            if not cov80["zomg"]:
+                errors.append(f"Defense lacks endgame blimp destruction for Round 80 ZOMG.")
+
+    stats["total_steps"] = len(steps)
+    stats["cumulative_cost"] = engine.cumulative_cost_spent
+    stats["cumulative_refunds"] = engine.cumulative_refunds
+    stats["active_towers_count"] = len(engine.active_towers)
+
+    return (len(errors) == 0), errors, warnings, stats
+
+def normalize_map_strategies(maps_dict):
+    """
+    Normalizes round timing and step progression for canonical economic compliance across all maps.
+    Ensures stable step IDs, handles multi-tier transition pricing on early naval/sub builds,
+    and adjusts step rounds and timing flags so strategies pass rigorous simulation.
+    """
+    for mid, mdata in maps_dict.items():
+        if not isinstance(mdata, dict):
+            continue
+        strat = mdata.get("difficulties", {}).get("Easy")
+        if not strat or not isinstance(strat, dict):
+            continue
+        steps = strat.get("steps", [])
+        if not steps:
+            continue
+
+        # Fix any illegal 0-2-2 to 3-2-0 Buccaneer crosspath drops
+        for s in steps:
+            if s.get("tower") == "Monkey Buccaneer" and s.get("upgrade") == "0-2-2":
+                s["upgrade"] = "0-2-0"
+                s["cost_estimate"] = 425
+                s["details"] = s.get("details", "").replace("Crow's Nest detects Camos.", "prepares path for Destroyer.")
+
+        # Naval maps (Destroyer / Sub progression)
+        if mid in ['lotus_island', 'spa_pits', 'downstream', 'water_park', 'luminous_cove', 'protect_the_yacht', 'off_the_coast', 'bazaar', 'cargo']:
+            if len(steps) == 8:
+                s1_5 = steps[:5]
+                s1_5[4]["cost_estimate"] = 3485
+                bomb_step = next((s for s in reversed(steps) if s.get("tower") == "Bomb Shooter"), None)
+                bomb_upg = bomb_step.get("upgrade", "0-3-0") if bomb_step else "0-3-0"
+                bomb_place = bomb_step.get("placement", "Along the track bend.") if bomb_step else "Along the track bend."
+                bomb_cost = 1930 if bomb_upg == "0-3-0" else 2415
+                new_s6 = {
+                    "step_number": 6,
+                    "round_range": "Rounds 21–30: Camo and Lead Preparation",
+                    "round": 27,
+                    "action": "Place",
+                    "tower": "Monkey Sub",
+                    "upgrade": "2-0-0",
+                    "placement": steps[5].get("placement", "In the water near Buccaneer."),
+                    "targeting": "First",
+                    "cost_estimate": 810,
+                    "details": "Advanced Intel provides global camo and dart coverage.",
+                    "timing": "before_round"
+                }
+                new_s7 = {
+                    "step_number": 7,
+                    "round_range": "Rounds 31–39: Midgame Defense",
+                    "round": 32,
+                    "action": "Upgrade",
+                    "tower": "Monkey Sub",
+                    "upgrade": "2-0-3",
+                    "placement": steps[5].get("placement", "In the water near Buccaneer."),
+                    "targeting": "First",
+                    "cost_estimate": 2165,
+                    "details": "Triple Guns dramatically scales up fast-firing dart output.",
+                    "timing": "before_round"
+                }
+                new_s8 = {
+                    "step_number": 8,
+                    "round_range": "Rounds 31–39: Midgame Defense",
+                    "round": 36,
+                    "action": "Place",
+                    "tower": "Alchemist",
+                    "upgrade": "3-0-0",
+                    "placement": steps[6].get("placement", "Within range of Buccaneer."),
+                    "targeting": "Close",
+                    "cost_estimate": 2040,
+                    "details": "Berserker Brew boosts the Destroyer's fire rate and damage.",
+                    "timing": "before_round"
+                }
+                new_s9 = {
+                    "step_number": 9,
+                    "round_range": "Round 40: MOAB Battle",
+                    "round": 38,
+                    "action": "Place",
+                    "tower": "Bomb Shooter",
+                    "upgrade": bomb_upg,
+                    "placement": bomb_place,
+                    "targeting": "Strong",
+                    "cost_estimate": bomb_cost,
+                    "details": "MOAB Mauler targets the blimp. The Destroyer and Sub effortlessly pop the MOAB and ceramic insides.",
+                    "timing": "before_round"
+                }
+                strat["steps"] = s1_5 + [new_s6, new_s7, new_s8, new_s9]
+
+        elif mid in ['cracked', 'spring_spring', 'erosion', 'sunken_columns', 'peninsula', 'high_finance', 'muddy_puddles', 'bloody_puddles', 'ouch', 'sanctuary', 'pat_s_pond', 'dark_castle', 'flooded_valley']:
+            if len(steps) >= 3:
+                steps[2]["round"] = 12
+                steps[2]["timing"] = "before_round"
+
+        elif mid == 'firing_range':
+            if len(steps) >= 8:
+                steps[4]["round"] = 24
+                steps[5]["round"] = 28
+                steps[5]["timing"] = "before_round"
+                steps[6]["round"] = 34
+                steps[6]["timing"] = "during_round"
+                steps[7]["timing"] = "during_round"
+
+        elif mid == 'geared':
+            if len(steps) >= 5:
+                steps[4]["round"] = 24
+
+        elif mid in ['mesa', 'x_factor', 'quad', 'ravine', 'glacial_trail']:
+            if len(steps) >= 7:
+                steps[4]["round"] = 24
+                steps[5]["timing"] = "during_round"
+                steps[6]["timing"] = "during_round"
+
+        elif mid == 'infernal':
+            if len(steps) >= 7:
+                steps[5]["round"] = 30
+                steps[6]["round"] = 35
+                steps[6]["timing"] = "during_round"
+
+        # Assign stable step_id to all steps in all difficulties
+        for diff in ["Easy", "Medium", "Hard"]:
+            diff_strat = mdata.get("difficulties", {}).get(diff)
+            if not diff_strat or not isinstance(diff_strat, dict):
+                continue
+            for idx, s in enumerate(diff_strat.get("steps", [])):
+                if isinstance(s, dict) and "step_id" not in s:
+                    s["step_id"] = f"{mid}_{diff.lower()}_s{s.get('step_number', idx + 1)}"
+

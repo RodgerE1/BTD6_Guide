@@ -15,12 +15,20 @@ Features:
 import json
 import os
 import sys
+import copy
+import html
+import uuid
+import datetime
 import webbrowser
 import tkinter as tk
-from tkinter import ttk, messagebox, font
+from tkinter import ttk, messagebox, font, filedialog
 
 from heroes_data import HEROES_DATABASE, get_best_hero_for_map
 from threat_radar_data import get_round_data, check_strategy_defense_readiness, DANGER_ROUNDS
+from btd6_economy import parse_upgrade, is_legal_crosspath, get_cumulative_cash_ceiling
+from btd6_replay import validate_strategy, assign_explicit_tower_ids
+
+USER_OVERRIDES_PATH = os.path.join(os.path.dirname(__file__), "user_overrides.json")
 
 # Enable High-DPI awareness on Windows for crisp typography
 try:
@@ -125,12 +133,14 @@ class SettingsManager:
     """Manages persistent user settings, selected map, font scaling, and step progress."""
     def __init__(self, filepath="user_settings.json"):
         self.filepath = os.path.join(os.path.dirname(__file__), filepath)
+        self.last_save_error = None
         self.data = {
             "last_map_id": "monkey_meadow",
             "last_difficulty": "Easy",
             "font_size_offset": 0,
             "always_on_top": False,
-            "progress": {}  # key -> list of completed step_numbers
+            "monkey_knowledge": True,
+            "progress": {}  # key -> list of completed step_ids or step_numbers
         }
         self.load()
 
@@ -139,81 +149,213 @@ class SettingsManager:
             try:
                 with open(self.filepath, "r", encoding="utf-8") as f:
                     saved = json.load(f)
-                    self.data.update(saved)
-            except Exception:
-                pass
+                    if isinstance(saved, dict):
+                        self.data.update(saved)
+                    else:
+                        self.last_save_error = ValueError("Invalid settings format: root JSON must be a dictionary.")
+            except Exception as e:
+                self.last_save_error = e
 
     def save(self):
+        tmp_path = self.filepath + ".tmp"
         try:
-            with open(self.filepath, "w", encoding="utf-8") as f:
+            with open(tmp_path, "w", encoding="utf-8") as f:
                 json.dump(self.data, f, indent=2)
-        except Exception:
-            pass
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, self.filepath)
+            self.last_save_error = None
+            return True
+        except Exception as e:
+            self.last_save_error = e
+            if os.path.exists(tmp_path):
+                try:
+                    os.remove(tmp_path)
+                except Exception:
+                    pass
+            return False
 
     def _pkey(self, map_id, diff="Easy"):
         return f"{map_id}_{diff.lower()}"
 
+    def is_monkey_knowledge(self):
+        return bool(self.data.get("monkey_knowledge", True))
+
+    def set_monkey_knowledge(self, enabled):
+        self.data["monkey_knowledge"] = bool(enabled)
+        self.save()
+
     def get_progress(self, map_id, diff="Easy"):
         pk = self._pkey(map_id, diff)
-        if pk in self.data.get("progress", {}):
-            return set(self.data["progress"][pk])
-        # Fallback to map_id for backward compatibility
-        return set(self.data.get("progress", {}).get(map_id, []))
+        return set(self.data.get("progress", {}).get(pk, []))
 
-    def set_step_progress(self, map_id, step_num, completed, diff="Easy"):
+    def set_step_progress(self, map_id, step_key, completed, diff="Easy"):
+        """Accepts either a string step_id (recommended) or integer step_num for robust progress tracking."""
         if "progress" not in self.data:
             self.data["progress"] = {}
         pk = self._pkey(map_id, diff)
-        curr = set(self.data["progress"].get(pk, self.data["progress"].get(map_id, [])))
+        curr = set(self.data["progress"].get(pk, []))
         if completed:
-            curr.add(step_num)
+            curr.add(step_key)
         else:
-            curr.discard(step_num)
+            curr.discard(step_key)
         self.data["progress"][pk] = list(curr)
-        self.save()
+        return self.save()
 
     def reset_progress(self, map_id, diff="Easy"):
         if "progress" in self.data:
             pk = self._pkey(map_id, diff)
             if pk in self.data["progress"]:
                 self.data["progress"][pk] = []
-            if map_id in self.data["progress"]:
-                self.data["progress"][map_id] = []
-            self.save()
+            return self.save()
+        return True
 
 
 class DataManager:
-    """Handles loading, querying, and updating the local guides.json database."""
-    def __init__(self, filepath="guides.json"):
+    """Handles loading, querying, and updating the local guides.json database with separate user overrides."""
+    def __init__(self, filepath="guides.json", show_dialogs=True):
         self.filepath = os.path.join(os.path.dirname(__file__), filepath)
-        self.database = {}
+        self.overrides_filepath = USER_OVERRIDES_PATH
+        self.show_dialogs = show_dialogs
+        self.database = {"version": "1.3.0", "maps": {}}
+        self.user_overrides = {}
+        self.last_save_error = None
+        self.last_load_error = None
         self.load()
+
+    def _validate_candidate_database(self, candidate):
+        """Rigorous validation of candidate database schema before assignment."""
+        if not isinstance(candidate, dict):
+            return False, f"Database root must be a JSON dictionary object, found {type(candidate).__name__}."
+        maps = candidate.get("maps")
+        if not isinstance(maps, dict):
+            return False, f"Database 'maps' field must be a JSON dictionary object, found {type(maps).__name__}."
+        for mid, mdata in maps.items():
+            if not isinstance(mid, str):
+                return False, f"Map ID key must be a string, found {type(mid).__name__}."
+            if not isinstance(mdata, dict):
+                return False, f"Map '{mid}' data must be a JSON dictionary object, found {type(mdata).__name__}."
+            diffs = mdata.get("difficulties")
+            if diffs is not None and not isinstance(diffs, dict):
+                return False, f"Map '{mid}' difficulties must be a JSON dictionary, found {type(diffs).__name__}."
+            if isinstance(diffs, dict):
+                for diff_name, strat in diffs.items():
+                    if strat is not None and not isinstance(strat, dict):
+                        return False, f"Map '{mid}' difficulty '{diff_name}' must be a dictionary or null, found {type(strat).__name__}."
+        return True, None
 
     def load(self):
         if not os.path.exists(self.filepath):
-            messagebox.showerror("Database Missing", f"Could not find strategy database:\n{self.filepath}\n\nPlease run generate_guides_database.py first.")
+            if self.show_dialogs:
+                try:
+                    messagebox.showerror("Database Missing", f"Could not find strategy database:\n{self.filepath}\n\nPlease run generate_guides_database.py first.")
+                except Exception:
+                    pass
             return False
         try:
             with open(self.filepath, "r", encoding="utf-8") as f:
-                self.database = json.load(f)
-            return True
+                loaded = json.load(f)
+            is_valid, val_err = self._validate_candidate_database(loaded)
+            if not is_valid:
+                raise ValueError(val_err)
+            self.database = loaded
+            self.last_load_error = None
         except Exception as e:
-            messagebox.showerror("Database Error", f"Failed to load guides.json:\n{e}")
+            self.last_load_error = str(e)
+            if self.show_dialogs:
+                try:
+                    messagebox.showerror("Database Error", f"Failed to load guides.json:\n{e}")
+                except Exception:
+                    pass
             return False
 
+        # Load custom user overrides, validate them, and merge into live database
+        if os.path.exists(self.overrides_filepath):
+            try:
+                with open(self.overrides_filepath, "r", encoding="utf-8") as f:
+                    loaded_ov = json.load(f)
+                if isinstance(loaded_ov, dict):
+                    valid_overrides = {}
+                    maps = self.database.get("maps", {})
+                    for mid, diffs in loaded_ov.items():
+                        if mid in maps and isinstance(diffs, dict):
+                            for diff, ov_strat in diffs.items():
+                                if diff in maps[mid].get("difficulties", {}):
+                                    is_valid, _, _, _ = validate_strategy(ov_strat, map_context=maps[mid], diff_name=diff)
+                                    if is_valid:
+                                        valid_overrides.setdefault(mid, {})[diff] = ov_strat
+                                        maps[mid]["difficulties"][diff] = ov_strat
+                                    else:
+                                        print(f"Warning: Rejected malformed user override for {mid} [{diff}]")
+                    self.user_overrides = valid_overrides
+            except Exception as e:
+                print(f"Warning: Failed to load user overrides ({e})")
+        return True
+
     def save(self):
+        tmp_path = self.filepath + ".tmp"
+        bak_path = self.filepath + ".bak"
         try:
-            bak_path = self.filepath + ".bak"
             if os.path.exists(self.filepath):
                 with open(self.filepath, "r", encoding="utf-8") as src, open(bak_path, "w", encoding="utf-8") as dst:
                     dst.write(src.read())
 
-            with open(self.filepath, "w", encoding="utf-8") as f:
+            with open(tmp_path, "w", encoding="utf-8") as f:
                 json.dump(self.database, f, indent=2, ensure_ascii=False)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, self.filepath)
+            self.last_save_error = None
             return True
         except Exception as e:
-            messagebox.showerror("Save Error", f"Failed to save guides.json:\n{e}")
+            self.last_save_error = e
+            if os.path.exists(tmp_path):
+                try:
+                    os.remove(tmp_path)
+                except Exception:
+                    pass
+            if self.show_dialogs:
+                try:
+                    messagebox.showerror("Save Error", f"Failed to save guides.json:\n{e}")
+                except Exception:
+                    pass
             return False
+
+    def save_override(self, map_id, diff, strat_dict):
+        """Saves user edit into user_overrides.json atomically first, then commits to in-memory state."""
+        overrides_copy = copy.deepcopy(self.user_overrides)
+        if map_id not in overrides_copy:
+            overrides_copy[map_id] = {}
+        overrides_copy[map_id][diff] = strat_dict
+
+        # Save to user_overrides.json atomically
+        ov_tmp = self.overrides_filepath + ".tmp"
+        try:
+            with open(ov_tmp, "w", encoding="utf-8") as f:
+                json.dump(overrides_copy, f, indent=2, ensure_ascii=False)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(ov_tmp, self.overrides_filepath)
+        except Exception as e:
+            self.last_save_error = e
+            if os.path.exists(ov_tmp):
+                try:
+                    os.remove(ov_tmp)
+                except Exception:
+                    pass
+            if self.show_dialogs:
+                try:
+                    messagebox.showerror("Save Error", f"Failed to save user_overrides.json:\n{e}")
+                except Exception:
+                    pass
+            return False
+
+        # Only after disk write succeeds, update live state
+        self.user_overrides = overrides_copy
+        if "maps" in self.database and map_id in self.database["maps"]:
+            if "difficulties" in self.database["maps"][map_id]:
+                self.database["maps"][map_id]["difficulties"][diff] = strat_dict
+        return True
 
     def get_maps(self):
         return self.database.get("maps", {})
@@ -224,16 +366,16 @@ class DataManager:
     def get_statistics(self):
         maps = self.get_maps()
         total = len(maps)
-        easy_verified = sum(1 for m in maps.values() if m.get("difficulties", {}).get("Easy", {}).get("status") == "Verified")
-        med_verified = sum(1 for m in maps.values() if m.get("difficulties", {}).get("Medium", {}).get("status") == "Verified")
-        hard_verified = sum(1 for m in maps.values() if m.get("difficulties", {}).get("Hard", {}).get("status") == "Verified")
+        playtested = sum(1 for m in maps.values() for d in m.get("difficulties", {}).values() if d and d.get("status") == "Playtested")
+        struct_val = sum(1 for m in maps.values() for d in m.get("difficulties", {}).values() if d and d.get("status") in ("Structurally Validated", "Verified"))
+        needs_rev = sum(1 for m in maps.values() for d in m.get("difficulties", {}).values() if d and d.get("status") == "Needs Review")
         counts = {
             "Beginner": sum(1 for m in maps.values() if m.get("category") == "Beginner"),
             "Intermediate": sum(1 for m in maps.values() if m.get("category") == "Intermediate"),
             "Advanced": sum(1 for m in maps.values() if m.get("category") == "Advanced"),
             "Expert": sum(1 for m in maps.values() if m.get("category") == "Expert")
         }
-        return total, easy_verified, med_verified, hard_verified, counts
+        return total, playtested, struct_val, needs_rev, counts
 
 
 class BTD6GuideApp(tk.Tk):
@@ -273,6 +415,7 @@ class BTD6GuideApp(tk.Tk):
         self.is_topmost_pinned = self.settings.data.get("always_on_top", False)
         self.saved_geometry = "1240x860"
         self.current_overlay_step = 1
+        self.btn_mk = None
 
         if self.is_topmost_pinned:
             self.attributes("-topmost", True)
@@ -352,10 +495,24 @@ class BTD6GuideApp(tk.Tk):
         self.bind_all("<Right>", self.on_hotkey_right)
         self.bind_all("<Left>", self.on_hotkey_left)
         self.bind_all("<space>", self.on_hotkey_space)
+        self.bind_all("<Return>", self.on_hotkey_right)
+        self.bind_all("<Key-n>", self.on_hotkey_right)
+        self.bind_all("<Key-N>", self.on_hotkey_right)
+        self.bind_all("<BackSpace>", self.on_hotkey_left)
+        self.bind_all("<Key-p>", self.on_hotkey_left)
+        self.bind_all("<Key-P>", self.on_hotkey_left)
         self.bind_all("<Key-t>", self.on_hotkey_t)
         self.bind_all("<Key-T>", self.on_hotkey_t)
         self.bind_all("<Key-r>", self.on_hotkey_r)
         self.bind_all("<Key-R>", self.on_hotkey_r)
+        self.bind_all("<Key-m>", self.on_hotkey_m)
+        self.bind_all("<Key-M>", self.on_hotkey_m)
+
+    def on_hotkey_m(self, event=None):
+        if self._is_text_focused():
+            return
+        self.toggle_monkey_knowledge()
+        return "break"
 
     def _is_text_focused(self):
         f = self.focus_get()
@@ -438,10 +595,10 @@ class BTD6GuideApp(tk.Tk):
         subtitle_lbl.pack(side="left")
 
         # Right: Database Statistics Badge
-        total, easy_v, med_v, hard_v, _ = self.data_manager.get_statistics()
+        total, playtested, struct_val, needs_rev, _ = self.data_manager.get_statistics()
         self.stats_label = tk.Label(
             header_frame,
-            text=f"📊 {total} Maps  •  Easy ({easy_v}), Medium ({med_v}), Hard ({hard_v}) 100% Verified  •  100% Offline",
+            text=f"📊 {total} Maps ({total * 3} Strats)  •  {struct_val} Structurally Validated  •  {playtested} Playtested  •  100% Offline",
             font=("Segoe UI", 9, "bold"),
             bg=THEME["card"],
             fg=THEME["accent_teal"],
@@ -686,6 +843,58 @@ class BTD6GuideApp(tk.Tk):
         )
         btn_print_html.pack(side="left", padx=2)
 
+        # Export Guide File Button
+        btn_export = tk.Button(
+            row2,
+            text="📁 Export Guide",
+            font=("Segoe UI", 8),
+            bg=THEME["card"],
+            fg=THEME["accent_orange"],
+            activebackground=THEME["card_hover"],
+            activeforeground=THEME["accent_orange"],
+            relief="flat",
+            padx=6,
+            pady=3,
+            cursor="hand2",
+            command=self.export_strategy_file
+        )
+        btn_export.pack(side="left", padx=2)
+
+        # Import Guide File Button
+        btn_import = tk.Button(
+            row2,
+            text="📥 Import Guide",
+            font=("Segoe UI", 8),
+            bg=THEME["card"],
+            fg=THEME["accent_purple"],
+            activebackground=THEME["card_hover"],
+            activeforeground=THEME["accent_purple"],
+            relief="flat",
+            padx=6,
+            pady=3,
+            cursor="hand2",
+            command=self.import_strategy_file
+        )
+        btn_import.pack(side="left", padx=2)
+
+        # Monkey Knowledge Toggle Button
+        self.btn_mk = tk.Button(
+            row2,
+            text="🧠 MK: ON",
+            font=("Segoe UI", 8, "bold"),
+            bg="#263b2a",
+            fg=THEME["accent_green"],
+            activebackground="#314f36",
+            activeforeground=THEME["accent_green"],
+            relief="flat",
+            padx=7,
+            pady=3,
+            cursor="hand2",
+            command=self.toggle_monkey_knowledge
+        )
+        self.btn_mk.pack(side="left", padx=2)
+        self.update_mk_button_style()
+
     def build_walkthrough_bar(self, parent):
         walk_frame = tk.Frame(parent, bg=THEME["card"], padx=16, pady=8, highlightbackground=THEME["card_border"], highlightthickness=1)
         walk_frame.pack(side="top", fill="x", padx=16, pady=(0, 8))
@@ -735,7 +944,7 @@ class BTD6GuideApp(tk.Tk):
         self.progress_label.pack(side="left", padx=4)
 
         # Hotkey guide note
-        lbl_hints = tk.Label(walk_frame, text="[Hotkeys: ← / → / Space / F11 HUD]", font=("Segoe UI", 8), bg=THEME["card"], fg=THEME["text_dim"])
+        lbl_hints = tk.Label(walk_frame, text="[Hotkeys: ← / → / Space / F11 HUD (Requires Window Focus)]", font=("Segoe UI", 8), bg=THEME["card"], fg=THEME["text_dim"])
         lbl_hints.pack(side="left", padx=(16, 0))
 
         # Reset Progress button
@@ -869,14 +1078,17 @@ class BTD6GuideApp(tk.Tk):
         # Determine active step (first uncompleted step)
         active_step = None
         for step in steps:
-            if step.get("step_number") not in completed:
+            sid = step.get("step_id", f"{mid}_{diff_key.lower()}_s{step.get('step_number', 1)}")
+            s_num = step.get("step_number")
+            if sid not in completed and s_num not in completed:
                 active_step = step
                 break
         if not active_step and steps:
             active_step = steps[-1]
 
         snum = active_step.get("step_number", 1) if active_step else 1
-        is_done = snum in completed
+        sid = active_step.get("step_id", f"{mid}_{diff_key.lower()}_s{snum}") if active_step else f"{mid}_{diff_key.lower()}_s{snum}"
+        is_done = (sid in completed) or (snum in completed)
 
         # 1. HUD Top Bar
         top_bar = tk.Frame(self.overlay_container, bg="#11111b", padx=12, pady=8)
@@ -927,14 +1139,18 @@ class BTD6GuideApp(tk.Tk):
             step_hdr = tk.Frame(hud_body, bg=THEME["bg_dark"])
             step_hdr.pack(fill="x", pady=(0, 6))
 
+            done_count = sum(
+                1 for s in steps
+                if (s.get("step_id") in completed) or (s.get("step_number") in completed)
+            )
             tk.Label(step_hdr, text=f"STEP {snum} OF {total_steps}", font=("Segoe UI", 9, "bold"), bg=THEME["bg_dark"], fg=THEME["text_dim"]).pack(side="left")
-            pct = int((len(completed) / total_steps) * 100) if total_steps > 0 else 0
-            tk.Label(step_hdr, text=f"{len(completed)}/{total_steps} Done ({pct}%)", font=("Segoe UI", 8), bg=THEME["bg_dark"], fg=THEME["accent_green"]).pack(side="right")
+            pct = int((done_count / total_steps) * 100) if total_steps > 0 else 0
+            tk.Label(step_hdr, text=f"{done_count}/{total_steps} Done ({pct}%)", font=("Segoe UI", 8), bg=THEME["bg_dark"], fg=THEME["accent_green"]).pack(side="right")
 
             # Progress bar
             pbar = ttk.Progressbar(hud_body, orient="horizontal", mode="determinate")
             pbar["maximum"] = total_steps
-            pbar["value"] = len(completed)
+            pbar["value"] = done_count
             pbar.pack(fill="x", pady=(0, 8))
 
             # Round & Tower Badge Row
@@ -944,6 +1160,15 @@ class BTD6GuideApp(tk.Tk):
             # Round
             r_num = active_step.get("round", 1)
             tk.Label(badge_box, text=f"ROUND {r_num}", font=("Segoe UI", 10, "bold"), bg=THEME["accent_blue"], fg=THEME["bg_dark"], padx=8, pady=2).pack(side="left", padx=(0, 6))
+
+            # Timing Badge
+            timing = active_step.get("timing", "before_round")
+            if timing == "during_round":
+                tk.Label(badge_box, text="⚡ MID-ROUND", font=("Segoe UI", 8, "bold"), bg=THEME["accent_orange"], fg=THEME["bg_dark"], padx=6, pady=2).pack(side="left", padx=(0, 6))
+            elif timing == "after_round":
+                tk.Label(badge_box, text="🏁 AFTER ROUND", font=("Segoe UI", 8, "bold"), bg="#3b4261", fg="#a9b1d6", padx=6, pady=2).pack(side="left", padx=(0, 6))
+            else:
+                tk.Label(badge_box, text="⏱️ BEFORE", font=("Segoe UI", 8, "bold"), bg="#313244", fg="#8d99ae", padx=6, pady=2).pack(side="left", padx=(0, 6))
 
             # Action
             act = active_step.get("action", "Place")
@@ -960,7 +1185,11 @@ class BTD6GuideApp(tk.Tk):
             # Cost
             cost = active_step.get("cost_estimate", 0)
             cost_str = f"~${cost:,}" if cost > 0 else "FREE"
-            tk.Label(badge_box, text=f"💰 {cost_str}", font=("Segoe UI", 9, "bold"), bg=THEME["card"], fg=THEME["accent_yellow"]).pack(side="right")
+            if timing == "during_round" and cost > 0:
+                cost_lbl = f"💰 {cost_str} (Buy at ${cost:,})"
+            else:
+                cost_lbl = f"💰 {cost_str}"
+            tk.Label(badge_box, text=cost_lbl, font=("Segoe UI", 9, "bold"), bg=THEME["card"], fg=THEME["accent_yellow"]).pack(side="right")
 
             # Landmark Placement Box
             place_box = tk.Frame(hud_body, bg=THEME["bg_dark"])
@@ -990,7 +1219,7 @@ class BTD6GuideApp(tk.Tk):
         btn_next = tk.Button(ctrl_bar, text="Next ▶ (→)", font=("Segoe UI", 9, "bold"), bg=THEME["accent_blue"], fg=THEME["bg_dark"], relief="flat", padx=10, pady=3, cursor="hand2", command=self.step_next)
         btn_next.pack(side="left", padx=2)
 
-        tk.Label(ctrl_bar, text="Hotkeys: Space / ← / →", font=("Segoe UI", 8), bg="#11111b", fg=THEME["text_dim"]).pack(side="right")
+        tk.Label(ctrl_bar, text="Hotkeys: Space / ← / → (Requires Window Focus)", font=("Segoe UI", 8), bg="#11111b", fg=THEME["text_dim"]).pack(side="right")
 
     # =========================================================================
     # FILTERING & SELECTION
@@ -1099,8 +1328,8 @@ class BTD6GuideApp(tk.Tk):
 
     def reload_database(self):
         if self.data_manager.load():
-            total, easy_v, med_v, hard_v, _ = self.data_manager.get_statistics()
-            self.stats_label.configure(text=f"📊 {total} Maps  •  Easy ({easy_v}), Medium ({med_v}), Hard ({hard_v}) 100% Verified  •  100% Offline")
+            total, playtested, struct_val, needs_rev, _ = self.data_manager.get_statistics()
+            self.stats_label.configure(text=f"📊 {total} Maps ({total * 3} Strats)  •  {struct_val} Structurally Validated  •  {playtested} Playtested  •  100% Offline")
             self.filter_maps()
             self.render_guide()
             messagebox.showinfo("Database Reloaded", "Successfully reloaded guides.json with Easy, Medium & Hard strategies!")
@@ -1171,16 +1400,34 @@ class BTD6GuideApp(tk.Tk):
         badge_cat = tk.Label(title_row, text=f" {cat.upper()} ", font=self.font_badge, bg=cat_color, fg=THEME["bg_dark"], padx=6, pady=2)
         badge_cat.pack(side="left", padx=(0, 8))
 
-        # Verification Status Badge (100% Verified)
+        # Verification Status Badge (Dynamic based on strategy status)
+        raw_status = strat.get("status", "Structurally Validated")
+        if raw_status == "Playtested":
+            st_text = " 🏆 PLAYTESTED "
+            st_fg = THEME["accent_green"]
+            st_bg = "#1e3527"
+        elif raw_status == "Verified":
+            st_text = " ✔ VERIFIED "
+            st_fg = THEME["accent_green"]
+            st_bg = "#2a2e3d"
+        elif raw_status == "Structurally Validated":
+            st_text = " ⚙ STRUCTURALLY VALIDATED "
+            st_fg = THEME["accent_blue"]
+            st_bg = "#1e263d"
+        else:
+            st_text = f" ⚠ {raw_status.upper()} "
+            st_fg = THEME["accent_yellow"]
+            st_bg = "#352e1e"
+
         badge_status = tk.Label(
             title_row,
-            text=" ✔ VERIFIED STRATEGY ",
+            text=st_text,
             font=self.font_badge,
-            bg="#2a2e3d",
-            fg=THEME["accent_green"],
+            bg=st_bg,
+            fg=st_fg,
             padx=8,
             pady=2,
-            highlightbackground=THEME["accent_green"],
+            highlightbackground=st_fg,
             highlightthickness=1
         )
         badge_status.pack(side="left", padx=(0, 8))
@@ -1191,14 +1438,15 @@ class BTD6GuideApp(tk.Tk):
         rounds_badge.pack(side="right")
 
         # Hero Intelligence Box
-        hero = strat.get("recommended_hero", map_data.get("best_hero", "Sauda"))
+        hero = map_data.get("best_hero", "Sauda")
         h_info = HEROES_DATABASE.get(hero, {})
         h_icon = h_info.get("icon", "👑")
         h_title = h_info.get("title", "Hero")
-        alts = strat.get("hero_alternatives", map_data.get("hero_alternatives", []))
+        alts = map_data.get("hero_alternatives", strat.get("hero_alternatives", []))
         alts_str = ", ".join(alts) if alts else "None"
-        reason = strat.get("best_hero_reason", map_data.get("best_hero_reason", ""))
-        synergies = strat.get("hero_synergies", map_data.get("hero_synergies", ""))
+        reason = map_data.get("best_hero_reason", strat.get("best_hero_reason", ""))
+        synergies = map_data.get("hero_synergies", strat.get("hero_synergies", ""))
+        strat_hero = strat.get("recommended_hero", hero)
 
         hero_box = tk.Frame(card, bg="#1a1b2b", padx=14, pady=10, highlightbackground=THEME["card_border"], highlightthickness=1)
         hero_box.pack(fill="x", pady=(10, 0))
@@ -1231,7 +1479,9 @@ class BTD6GuideApp(tk.Tk):
         h_sub.pack(fill="x", pady=(2, 0))
         tk.Label(h_sub, text=f"🔄 Viable Alternatives: {alts_str}", font=self.font_small, bg="#1a1b2b", fg=THEME["text_muted"]).pack(side="left", padx=(0, 20))
         if synergies:
-            tk.Label(h_sub, text=f"⚡ Synergies: {synergies}", font=self.font_small, bg="#1a1b2b", fg=THEME["accent_green"]).pack(side="left")
+            tk.Label(h_sub, text=f"⚡ Synergies: {synergies}", font=self.font_small, bg="#1a1b2b", fg=THEME["accent_green"]).pack(side="left", padx=(0, 20))
+        if strat_hero and strat_hero != hero:
+            tk.Label(h_sub, text=f"🎯 Guide Build Hero: {strat_hero}", font=self.font_small, bg="#1a1b2b", fg=THEME["accent_teal"]).pack(side="left")
 
         # Sub-row: Starting Cash, Price Multiplier
         info_row = tk.Frame(card, bg=THEME["card"])
@@ -1281,7 +1531,7 @@ class BTD6GuideApp(tk.Tk):
         t_row = tk.Frame(card, bg=THEME["card"])
         t_row.pack(fill="x", pady=(0, 8))
 
-        tk.Label(t_row, text="🗺️ TACTICAL PLACEMENT MINIMAP & TRACK FLOW", font=self.font_heading, bg=THEME["card"], fg=THEME["accent_teal"]).pack(side="left")
+        tk.Label(t_row, text="🗺️ STEP PROGRESSION & TACTICAL TIMELINE", font=self.font_heading, bg=THEME["card"], fg=THEME["accent_teal"]).pack(side="left")
         tk.Label(t_row, text="📍 Click any numbered pin to jump directly to that step", font=self.font_small, bg=THEME["card"], fg=THEME["text_dim"]).pack(side="right")
 
         # Minimap Canvas
@@ -1459,25 +1709,26 @@ class BTD6GuideApp(tk.Tk):
                 tk.Label(hdr_frame, text=f"📌 {round_range.upper()}", font=self.font_heading, bg="#1a1b26", fg=header_color).pack(side="left")
 
             # Step Card Frame
-            is_done = snum in completed_steps
+            sid = step.get("step_id", f"{mid}_{diff_key.lower()}_s{snum}")
+            is_done = (sid in completed_steps) or (snum in completed_steps)
             step_bg = THEME["step_done_bg"] if is_done else "#222336"
             step_frame = tk.Frame(card, bg=step_bg, padx=12, pady=10, highlightbackground=THEME["card_border"], highlightthickness=1)
             step_frame.pack(fill="x", pady=4)
 
-            # Row 1: Checkbox + Badges (Round, Action, Tower, Upgrade, Targeting, Cost)
+            # Row 1: Checkbox + Badges (Round, Timing, Action, Tower, Upgrade, Targeting, Cost)
             badge_row = tk.Frame(step_frame, bg=step_bg)
             badge_row.pack(fill="x", pady=(0, 4))
 
             # Completion Checkbutton
             var = tk.BooleanVar(value=is_done)
-            self.step_checkbox_vars[snum] = var
+            self.step_checkbox_vars[sid] = var
             chk = tk.Checkbutton(
                 badge_row,
                 variable=var,
                 bg=step_bg,
                 activebackground=step_bg,
                 selectcolor=THEME["bg_dark"],
-                command=lambda s=snum, v=var: self.toggle_step_completed(mid, s, v.get())
+                command=lambda s=sid, v=var: self.toggle_step_completed(mid, s, v.get())
             )
             chk.pack(side="left", padx=(0, 6))
 
@@ -1487,6 +1738,15 @@ class BTD6GuideApp(tk.Tk):
             # Round Badge
             round_num = step.get("round", 1)
             tk.Label(badge_row, text=f"ROUND {round_num}", font=self.font_badge, bg=THEME["accent_blue"], fg=THEME["bg_dark"], padx=6, pady=1).pack(side="left", padx=(0, 6))
+
+            # Timing Badge (Before Round vs During Round vs After Round)
+            timing = step.get("timing", "before_round")
+            if timing == "during_round":
+                tk.Label(badge_row, text="⚡ DURING ROUND", font=self.font_badge, bg=THEME["accent_orange"], fg=THEME["bg_dark"], padx=6, pady=1).pack(side="left", padx=(0, 6))
+            elif timing == "after_round":
+                tk.Label(badge_row, text="🏁 AFTER ROUND", font=self.font_badge, bg="#3b4261", fg="#a9b1d6", padx=6, pady=1).pack(side="left", padx=(0, 6))
+            else:
+                tk.Label(badge_row, text="⏱️ BEFORE ROUND", font=self.font_badge, bg="#2b2d42", fg="#8d99ae", padx=6, pady=1).pack(side="left", padx=(0, 6))
 
             # Action Badge (Place / Upgrade / Target / Ability)
             action = step.get("action", "Place")
@@ -1516,10 +1776,14 @@ class BTD6GuideApp(tk.Tk):
             targeting = step.get("targeting", "First")
             tk.Label(badge_row, text=f"🎯 {targeting}", font=self.font_small, bg="#181825", fg=THEME["text_muted"], padx=6, pady=1).pack(side="left", padx=(0, 8))
 
-            # Cost Pill
+            # Cost Pill & Trigger
             cost = step.get("cost_estimate", 0)
             cost_str = f"~${cost:,}" if cost > 0 else "FREE"
-            tk.Label(badge_row, text=f"💰 {cost_str}", font=self.font_body_bold, bg="#181825", fg=THEME["accent_yellow"], padx=8, pady=1).pack(side="right")
+            if timing == "during_round" and cost > 0:
+                cost_lbl = f"💰 {cost_str} (Buy when cash reaches ${cost:,})"
+            else:
+                cost_lbl = f"💰 {cost_str}"
+            tk.Label(badge_row, text=cost_lbl, font=self.font_body_bold, bg="#181825", fg=THEME["accent_yellow"], padx=8, pady=1).pack(side="right")
 
             # Row 2: Landmark Placement Instruction
             placement = step.get("placement", "")
@@ -1537,9 +1801,16 @@ class BTD6GuideApp(tk.Tk):
                 tk.Label(det_row, text="💡 Details:", font=self.font_body_bold, bg=step_bg, fg=THEME["accent_teal"]).pack(side="left", padx=(0, 4))
                 tk.Label(det_row, text=details, font=self.font_body, bg=step_bg, fg=THEME["text_muted"], justify="left", wraplength=980).pack(side="left")
 
-    def toggle_step_completed(self, mid, step_num, is_done):
+    def toggle_step_completed(self, mid, step_key, is_done):
         diff_key = self.get_selected_diff_key()
-        self.settings.set_step_progress(mid, step_num, is_done, diff_key)
+        self.settings.set_step_progress(mid, step_key, is_done, diff_key)
+        # Clear legacy numeric key if toggled off
+        if not is_done and isinstance(step_key, str) and "_s" in step_key:
+            try:
+                legacy_num = int(step_key.split("_s")[-1])
+                self.settings.set_step_progress(mid, legacy_num, False, diff_key)
+            except Exception:
+                pass
         strat = self.get_current_strategy()
         self.update_progress_display(mid, strat)
         if self.is_overlay_mode:
@@ -1549,8 +1820,15 @@ class BTD6GuideApp(tk.Tk):
 
     def step_toggle_num(self, mid, step_num):
         diff_key = self.get_selected_diff_key()
+        strat = self.get_current_strategy()
+        if not strat:
+            return
+        steps = strat.get("steps", [])
+        matched_step = next((s for s in steps if s.get("step_number") == step_num), None)
+        sid = matched_step.get("step_id", f"{mid}_{diff_key.lower()}_s{step_num}") if matched_step else f"{mid}_{diff_key.lower()}_s{step_num}"
         curr = self.settings.get_progress(mid, diff_key)
-        self.toggle_step_completed(mid, step_num, step_num not in curr)
+        is_done = (sid in curr) or (step_num in curr)
+        self.toggle_step_completed(mid, sid, not is_done)
 
     def step_toggle_current(self):
         mid = self.get_current_map_id()
@@ -1564,12 +1842,14 @@ class BTD6GuideApp(tk.Tk):
         completed = self.settings.get_progress(mid, diff_key)
 
         for step in steps:
+            sid = step.get("step_id", f"{mid}_{diff_key.lower()}_s{step.get('step_number', 1)}")
             snum = step.get("step_number")
-            if snum not in completed:
-                self.toggle_step_completed(mid, snum, True)
+            if sid not in completed and snum not in completed:
+                self.toggle_step_completed(mid, sid, True)
                 return
         if steps:
-            self.toggle_step_completed(mid, steps[-1].get("step_number"), False)
+            last_sid = steps[-1].get("step_id", f"{mid}_{diff_key.lower()}_s{steps[-1].get('step_number', len(steps))}")
+            self.toggle_step_completed(mid, last_sid, False)
 
     def step_next(self):
         mid = self.get_current_map_id()
@@ -1582,15 +1862,21 @@ class BTD6GuideApp(tk.Tk):
         steps = strat.get("steps", [])
         completed = self.settings.get_progress(mid, diff_key)
 
-        for step in steps:
+        next_idx = 0
+        for idx, step in enumerate(steps):
+            sid = step.get("step_id", f"{mid}_{diff_key.lower()}_s{step.get('step_number', 1)}")
             snum = step.get("step_number")
-            if snum not in completed:
-                self.settings.set_step_progress(mid, snum, True, diff_key)
+            if sid not in completed and snum not in completed:
+                self.settings.set_step_progress(mid, sid, True, diff_key)
+                next_idx = min(len(steps) - 1, idx + 1)
                 break
         if self.is_overlay_mode:
             self.render_overlay_hud()
         else:
             self.render_guide()
+            if hasattr(self, "canvas") and self.canvas.winfo_exists() and len(steps) > 1:
+                scroll_pos = max(0.0, min(1.0, (next_idx - 1) / max(1, len(steps))))
+                self.canvas.yview_moveto(scroll_pos)
 
     def step_prev(self):
         mid = self.get_current_map_id()
@@ -1600,14 +1886,28 @@ class BTD6GuideApp(tk.Tk):
         if not strat:
             return
         diff_key = self.get_selected_diff_key()
-        completed = sorted(list(self.settings.get_progress(mid, diff_key)))
-        if completed:
-            last_done = completed[-1]
-            self.settings.set_step_progress(mid, last_done, False, diff_key)
+        steps = strat.get("steps", [])
+        completed = self.settings.get_progress(mid, diff_key)
+
+        prev_idx = 0
+        for idx, step in enumerate(reversed(steps)):
+            sid = step.get("step_id", f"{mid}_{diff_key.lower()}_s{step.get('step_number', 1)}")
+            snum = step.get("step_number")
+            if sid in completed or snum in completed:
+                if sid in completed:
+                    self.settings.set_step_progress(mid, sid, False, diff_key)
+                if snum in completed:
+                    self.settings.set_step_progress(mid, snum, False, diff_key)
+                rev_idx = len(steps) - 1 - idx
+                prev_idx = max(0, rev_idx - 1)
+                break
         if self.is_overlay_mode:
             self.render_overlay_hud()
         else:
             self.render_guide()
+            if hasattr(self, "canvas") and self.canvas.winfo_exists() and len(steps) > 1:
+                scroll_pos = max(0.0, min(1.0, prev_idx / max(1, len(steps))))
+                self.canvas.yview_moveto(scroll_pos)
 
     def reset_current_map_progress(self):
         mid = self.get_current_map_id()
@@ -1625,12 +1925,16 @@ class BTD6GuideApp(tk.Tk):
         diff_key = self.get_selected_diff_key()
         steps = strat.get("steps", [])
         total = len(steps)
-        completed = len(self.settings.get_progress(mid, diff_key))
-        pct = int((completed / total) * 100) if total > 0 else 0
+        completed = self.settings.get_progress(mid, diff_key)
+        done_count = sum(
+            1 for s in steps
+            if (s.get("step_id") in completed) or (s.get("step_number") in completed)
+        )
+        pct = int((done_count / total) * 100) if total > 0 else 0
 
         self.progress_bar["maximum"] = total
-        self.progress_bar["value"] = completed
-        self.progress_label.configure(text=f"{completed} / {total} Steps Completed ({pct}%)")
+        self.progress_bar["value"] = done_count
+        self.progress_label.configure(text=f"{done_count} / {total} Steps Completed ({pct}%)")
 
     def render_why_it_works_card(self, strat):
         card = tk.Frame(self.scrollable_frame, bg=THEME["card"], padx=20, pady=14, highlightbackground=THEME["card_border"], highlightthickness=1)
@@ -1655,12 +1959,14 @@ class BTD6GuideApp(tk.Tk):
     # =========================================================================
     # EXPORT & COMMUNITY SHARING
     # =========================================================================
-    def export_markdown_to_clipboard(self):
+    def export_markdown_to_clipboard(self, strat=None, map_data=None):
         mid = self.get_current_map_id()
-        if not mid:
-            return
-        map_data = self.data_manager.get_map(mid)
-        strat = self.get_current_strategy(map_data)
+        if map_data is None:
+            if not mid:
+                return
+            map_data = self.data_manager.get_map(mid)
+        if strat is None:
+            strat = self.get_current_strategy(map_data)
         if not map_data or not strat:
             return
 
@@ -1684,14 +1990,23 @@ class BTD6GuideApp(tk.Tk):
         lines.extend([
             "",
             "## 📋 Step-by-Step Strategy",
-            "| Step | Round | Action | Tower | Upgrade | Targeting | Cost | Placement & Details |",
-            "| :---: | :---: | :---: | :--- | :---: | :---: | :---: | :--- |"
+            "| Step | Round | Timing | Action | Tower | Upgrade | Targeting | Cost | Placement & Details |",
+            "| :---: | :---: | :---: | :--- | :---: | :---: | :---: | :---: | :--- |"
         ])
 
         for s in strat.get("steps", []):
             cost_str = f"${s.get('cost_estimate', 0):,}" if s.get('cost_estimate', 0) > 0 else "Free"
+            timing_val = s.get("timing", "before_round")
+            if timing_val == "during_round":
+                timing_str = "During Round"
+            elif timing_val == "after_round":
+                timing_str = "After Round"
+            else:
+                timing_str = "Before Round"
             notes = f"**{s.get('placement', '')}** — {s.get('details', '')}"
-            lines.append(f"| {s.get('step_number')} | R{s.get('round')} | {s.get('action')} | {s.get('tower')} | `{s.get('upgrade')}` | {s.get('targeting')} | {cost_str} | {notes} |")
+            if s.get("timing") == "during_round" and s.get("cost_estimate", 0) > 0:
+                notes += f" *(Buy when cash reaches ${s.get('cost_estimate', 0):,})*"
+            lines.append(f"| {s.get('step_number')} | R{s.get('round')} | {timing_str} | {s.get('action')} | {s.get('tower')} | `{s.get('upgrade')}` | {s.get('targeting')} | {cost_str} | {notes} |")
 
         lines.extend([
             "",
@@ -1708,33 +2023,52 @@ class BTD6GuideApp(tk.Tk):
         self.update()
         messagebox.showinfo("Exported to Clipboard", f"Successfully copied full Markdown guide for '{map_data.get('name')}' ({strat.get('difficulty')} Mode) to your clipboard!\n\nReady to paste into Discord, Reddit, or Steam.")
 
-    def export_printable_html(self):
+    def export_printable_html(self, strat=None, map_data=None):
         mid = self.get_current_map_id()
-        if not mid:
-            return
-        map_data = self.data_manager.get_map(mid)
-        strat = self.get_current_strategy(map_data)
+        if map_data is None:
+            if not mid:
+                return
+            map_data = self.data_manager.get_map(mid)
+        if strat is None:
+            strat = self.get_current_strategy(map_data)
         if not map_data or not strat:
             return
 
         diff_name = strat.get("difficulty", "Easy")
-        html_filename = f"{mid}_{diff_name.lower()}_guide.html"
+        safe_mid = mid or map_data.get("id") or map_data.get("name", "strategy").lower().replace(" ", "_")
+        html_filename = f"{safe_mid}_{diff_name.lower()}_guide.html"
         html_path = os.path.join(os.path.dirname(__file__), html_filename)
 
         step_rows = []
         for s in strat.get("steps", []):
-            cost_str = f"${s.get('cost_estimate', 0):,}" if s.get('cost_estimate', 0) > 0 else "FREE"
-            act_class = s.get('action', 'Place').lower()
+            cost_val = s.get('cost_estimate', 0)
+            cost_str = f"${cost_val:,}" if isinstance(cost_val, (int, float)) and cost_val > 0 else "FREE"
+            act_raw = str(s.get('action', 'Place')).strip().lower()
+            act_class = act_raw if act_raw in {"place", "upgrade", "target", "ability", "sell"} else "place"
+            timing_val = s.get("timing", "before_round")
+            if timing_val == "during_round":
+                timing_display = "During Round"
+                timing_class = "during"
+            elif timing_val == "after_round":
+                timing_display = "After Round"
+                timing_class = "after"
+            else:
+                timing_display = "Before Round"
+                timing_class = "before"
+            timing_badge = f'<span class="badge badge-{timing_class}">{timing_display}</span>'
+            trigger_note = f'<br><span style="color:#d97706; font-size:0.85em; font-weight:bold;">⚡ Action Trigger: Buy when cash reaches ${cost_val:,}</span>' if timing_val == "during_round" and isinstance(cost_val, (int, float)) and cost_val > 0 else ""
+
             step_rows.append(f"""
             <tr>
-                <td style="font-weight:bold; text-align:center;">{s.get('step_number')}</td>
-                <td style="font-weight:bold; color:#1e88e5; text-align:center;">R{s.get('round')}</td>
-                <td><span class="badge badge-{act_class}">{s.get('action')}</span></td>
-                <td style="font-weight:bold;">{s.get('tower')}</td>
-                <td style="font-family:monospace; font-weight:bold; text-align:center;">[{s.get('upgrade')}]</td>
-                <td>{s.get('targeting')}</td>
+                <td style="font-weight:bold; text-align:center;">{html.escape(str(s.get('step_number', '')))}</td>
+                <td style="font-weight:bold; color:#1e88e5; text-align:center;">R{html.escape(str(s.get('round', '')))}</td>
+                <td style="text-align:center;">{timing_badge}</td>
+                <td><span class="badge badge-{act_class}">{html.escape(str(s.get('action', '')))}</span></td>
+                <td style="font-weight:bold;">{html.escape(str(s.get('tower', '')))}</td>
+                <td style="font-family:monospace; font-weight:bold; text-align:center;">[{html.escape(str(s.get('upgrade', '')))}]</td>
+                <td>{html.escape(str(s.get('targeting', '')))}</td>
                 <td style="font-weight:bold; color:#e65100; text-align:right;">{cost_str}</td>
-                <td><strong>{s.get('placement')}</strong><br><span style="color:#555; font-size:0.9em;">{s.get('details')}</span></td>
+                <td><strong>{html.escape(str(s.get('placement', '')))}</strong><br><span style="color:#555; font-size:0.9em;">{html.escape(str(s.get('details', '')))}</span>{trigger_note}</td>
             </tr>
             """)
 
@@ -1742,7 +2076,7 @@ class BTD6GuideApp(tk.Tk):
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>BTD6 Guide — {map_data.get('name')} ({diff_name} Mode)</title>
+<title>BTD6 Guide — {html.escape(str(map_data.get('name', '')))} ({html.escape(str(diff_name))} Mode)</title>
 <style>
     body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 24px; color: #222; background: #fff; line-height: 1.5; }}
     h1 {{ color: #1e88e5; margin-bottom: 4px; }}
@@ -1759,35 +2093,39 @@ class BTD6GuideApp(tk.Tk):
     .badge-upgrade {{ background: #ff9800; }}
     .badge-target {{ background: #00bcd4; }}
     .badge-ability {{ background: #e91e63; }}
+    .badge-before {{ background: #546e7a; }}
+    .badge-during {{ background: #ff9800; }}
+    .badge-after {{ background: #3949ab; }}
     .card {{ background: #f9fbfd; border-left: 4px solid #1e88e5; padding: 12px 16px; margin-bottom: 16px; }}
     @media print {{ body {{ margin: 0; }} button {{ display: none; }} }}
 </style>
 </head>
 <body>
     <button onclick="window.print()" style="float:right; padding:8px 16px; font-weight:bold; cursor:pointer; background:#1e88e5; color:#fff; border:none; border-radius:4px;">🖨️ Print / Save as PDF</button>
-    <h1>🎈 {map_data.get('name')}</h1>
-    <div class="subtitle">{map_data.get('category')} Map — {diff_name} / Standard (Rounds {strat.get('rounds')}) — 100% Offline Guide</div>
+    <h1>🎈 {html.escape(str(map_data.get('name', '')))}</h1>
+    <div class="subtitle">{html.escape(str(map_data.get('category', '')))} Map — {html.escape(str(diff_name))} / Standard (Rounds {html.escape(str(strat.get('rounds', '')))}) — 100% Offline Guide</div>
     <div class="meta-box">
-        <div class="meta-item"><div class="meta-title">Recommended Hero</div><div class="meta-val">👑 {strat.get('recommended_hero')}</div></div>
-        <div class="meta-item"><div class="meta-title">Terrain & Lanes</div><div class="meta-val">{map_data.get('terrain')} ({map_data.get('lanes')})</div></div>
+        <div class="meta-item"><div class="meta-title">Recommended Hero</div><div class="meta-val">👑 {html.escape(str(strat.get('recommended_hero', '')))}</div></div>
+        <div class="meta-item"><div class="meta-title">Terrain & Lanes</div><div class="meta-val">{html.escape(str(map_data.get('terrain', '')))} ({html.escape(str(map_data.get('lanes', '')))})</div></div>
         <div class="meta-item"><div class="meta-title">Water Support</div><div class="meta-val">{'Yes (Sub / Buccaneer)' if map_data.get('water') else 'No (Land Only)'}</div></div>
         <div class="meta-item"><div class="meta-title">Starting Cash</div><div class="meta-val">${strat.get('starting_cash', 650)}</div></div>
     </div>
     <div class="card">
-        <strong>Overview:</strong> {strat.get('overview')}
+        <strong>Overview:</strong> {html.escape(str(strat.get('overview', '')))}
     </div>
     <div class="card" style="border-left-color: #9c27b0;">
         <strong>Tactical Checkpoints:</strong>
-        <div>👁️ <strong>Camo:</strong> {strat.get('camo_handling')}</div>
-        <div>🛡️ <strong>Lead:</strong> {strat.get('lead_handling')}</div>
-        <div>💥 <strong>MOAB / Blimp:</strong> {strat.get('moab_handling')}</div>
+        <div>👁️ <strong>Camo:</strong> {html.escape(str(strat.get('camo_handling', '')))}</div>
+        <div>🛡️ <strong>Lead:</strong> {html.escape(str(strat.get('lead_handling', '')))}</div>
+        <div>💥 <strong>MOAB / Blimp:</strong> {html.escape(str(strat.get('moab_handling', '')))}</div>
     </div>
     <h2>Round-by-Round Step Walkthrough</h2>
     <table>
         <thead>
             <tr>
                 <th style="width:40px; text-align:center;">#</th>
-                <th style="width:70px; text-align:center;">Round</th>
+                <th style="width:60px; text-align:center;">Round</th>
+                <th style="width:90px; text-align:center;">Timing</th>
                 <th style="width:70px;">Action</th>
                 <th style="width:130px;">Tower</th>
                 <th style="width:70px; text-align:center;">Upgrade</th>
@@ -1801,16 +2139,202 @@ class BTD6GuideApp(tk.Tk):
         </tbody>
     </table>
     <div class="card" style="border-left-color: #4caf50;">
-        <strong>Why It Works:</strong> {strat.get('why_it_works')}
+        <strong>Why It Works:</strong> {html.escape(str(strat.get('why_it_works', '')))}
     </div>
 </body>
 </html>"""
+        tmp_path = html_path + ".tmp"
         try:
-            with open(html_path, "w", encoding="utf-8") as f:
+            with open(tmp_path, "w", encoding="utf-8") as f:
                 f.write(html_content)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, html_path)
             webbrowser.open(f"file:///{html_path.replace(os.sep, '/')}")
         except Exception as e:
+            if os.path.exists(tmp_path):
+                try:
+                    os.remove(tmp_path)
+                except Exception:
+                    pass
             messagebox.showerror("Export Error", f"Failed to generate printable cheat sheet:\n{e}")
+
+    def update_mk_button_style(self):
+        if not hasattr(self, "btn_mk") or not self.btn_mk:
+            return
+        is_on = self.settings.is_monkey_knowledge()
+        if is_on:
+            self.btn_mk.configure(
+                text="🧠 MK: ON",
+                bg="#263b2a",
+                fg=THEME["accent_green"],
+                activebackground="#314f36",
+                activeforeground=THEME["accent_green"]
+            )
+        else:
+            self.btn_mk.configure(
+                text="🧠 MK: OFF",
+                bg="#3a2727",
+                fg=THEME["accent_red"],
+                activebackground="#4a3232",
+                activeforeground=THEME["accent_red"]
+            )
+
+    def toggle_monkey_knowledge(self):
+        new_val = not self.settings.is_monkey_knowledge()
+        self.settings.set_monkey_knowledge(new_val)
+        self.update_mk_button_style()
+        self.render_guide()
+
+    def export_strategy_file(self):
+        mid = self.get_current_map_id()
+        if not mid:
+            return
+        map_data = self.data_manager.get_map(mid)
+        strat = self.get_current_strategy(map_data)
+        if not map_data or not strat:
+            messagebox.showwarning("Export Incomplete", "No active strategy found to export.")
+            return
+
+        diff_name = strat.get("difficulty", "Easy")
+        default_fn = f"{mid}_{diff_name.lower()}.btd6guide"
+        filepath = filedialog.asksaveasfilename(
+            title="Export BTD6 Strategy Guide",
+            defaultextension=".btd6guide",
+            initialfile=default_fn,
+            filetypes=[
+                ("BTD6 Strategy Guide", "*.btd6guide"),
+                ("JSON Files", "*.json"),
+                ("All Files", "*.*")
+            ]
+        )
+        if not filepath:
+            return
+
+        payload = {
+            "format": "btd6guide",
+            "schema_version": "1.0",
+            "exported_at": datetime.datetime.now().isoformat(),
+            "map_id": mid,
+            "map_name": map_data.get("name", mid),
+            "category": map_data.get("category", "Beginner"),
+            "difficulty": diff_name,
+            "strategy": copy.deepcopy(strat)
+        }
+
+        try:
+            with open(filepath, "w", encoding="utf-8") as f:
+                json.dump(payload, f, indent=2)
+            messagebox.showinfo(
+                "Export Complete",
+                f"Successfully exported strategy for '{map_data.get('name')}' ({diff_name} Mode)!\n\nSaved to: {filepath}"
+            )
+        except Exception as e:
+            messagebox.showerror("Export Error", f"Failed to save strategy file:\n{e}")
+
+    def import_strategy_file(self):
+        filepath = filedialog.askopenfilename(
+            title="Import BTD6 Strategy Guide",
+            filetypes=[
+                ("BTD6 Strategy Guide", "*.btd6guide"),
+                ("JSON Files", "*.json"),
+                ("All Files", "*.*")
+            ]
+        )
+        if not filepath:
+            return
+
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                imported = json.load(f)
+        except Exception as e:
+            messagebox.showerror("File Error", f"Could not read or parse JSON file:\n{e}")
+            return
+
+        if not isinstance(imported, dict):
+            messagebox.showerror("Import Error", "Invalid file structure: root must be a JSON dictionary.")
+            return
+
+        if imported.get("format") == "btd6guide" and "strategy" in imported:
+            target_mid = imported.get("map_id", "")
+            target_map_name = imported.get("map_name", "")
+            strat = imported.get("strategy", {})
+        else:
+            strat = imported
+            target_mid = self.get_current_map_id()
+            target_map_name = ""
+
+        if not isinstance(strat, dict):
+            messagebox.showerror("Import Error", "Strategy data must be a dictionary.")
+            return
+
+        diff_key = strat.get("difficulty", "Easy")
+        if diff_key not in ("Easy", "Medium", "Hard"):
+            diff_key = self.get_selected_diff_key()
+            strat["difficulty"] = diff_key
+
+        if not target_mid and target_map_name:
+            for m_id, m_data in self.data_manager.get_maps().items():
+                if m_data.get("name", "").strip().lower() == target_map_name.strip().lower():
+                    target_mid = m_id
+                    break
+
+        if not target_mid:
+            target_mid = self.get_current_map_id()
+
+        map_data = self.data_manager.get_map(target_mid)
+        if not map_data:
+            messagebox.showerror("Map Not Found", f"Cannot match map ID '{target_mid}' in database.")
+            return
+
+        for idx, s in enumerate(strat.get("steps", [])):
+            if isinstance(s, dict) and "step_id" not in s:
+                s["step_id"] = f"{target_mid}_{diff_key.lower()}_s{s.get('step_number', idx + 1)}"
+        assign_explicit_tower_ids(strat, target_mid, diff_key)
+
+        mk_enabled = self.settings.is_monkey_knowledge()
+        is_valid, val_errs, val_warns, _ = validate_strategy(
+            strat, map_context=map_data, diff_name=diff_key, monkey_knowledge=mk_enabled
+        )
+        if not is_valid:
+            err_msg = "\n• " + "\n• ".join(val_errs[:5])
+            if len(val_errs) > 5:
+                err_msg += f"\n... and {len(val_errs) - 5} more issues."
+            proceed = messagebox.askyesno(
+                "Strategy Invariant Warning",
+                f"The imported strategy has validation warnings:\n{err_msg}\n\nDo you want to import it anyway into your custom overrides?"
+            )
+            if not proceed:
+                return
+
+        step_count = len(strat.get("steps", []))
+        hero_rec = strat.get("recommended_hero", "Any")
+        confirm = messagebox.askyesno(
+            "Confirm Strategy Import",
+            f"Import custom guide for '{map_data.get('name')}' ({diff_key} Mode)?\n\n"
+            f"• Steps: {step_count}\n"
+            f"• Recommended Hero: {hero_rec}\n"
+            f"• Overview: {strat.get('overview', '')[:100]}...\n\n"
+            f"This will be saved to your local overrides and activated immediately."
+        )
+        if not confirm:
+            return
+
+        if self.data_manager.save_override(target_mid, diff_key, strat):
+            self.selected_map_name.set(map_data.get("name"))
+            if diff_key == "Hard":
+                self.selected_difficulty.set("Hard (Rounds 3–80)")
+            elif diff_key == "Medium":
+                self.selected_difficulty.set("Medium (Rounds 1–60)")
+            else:
+                self.selected_difficulty.set("Easy (Rounds 1–40)")
+            self.render_guide()
+            messagebox.showinfo(
+                "Import Successful",
+                f"Imported and activated custom strategy for '{map_data.get('name')}' ({diff_key} Mode)!"
+            )
+        else:
+            messagebox.showerror("Save Error", "Failed to write override to disk.")
 
     # =========================================================================
     # ITEM 4: HERO ROSTER MODAL
@@ -2003,9 +2527,23 @@ class BTD6GuideApp(tk.Tk):
             if strat and strat.get("steps"):
                 c3 = tk.Frame(body, bg=THEME["card"], padx=16, pady=12, highlightbackground=THEME["card_border"], highlightthickness=1)
                 c3.pack(fill="x", pady=(0, 10))
-                tk.Label(c3, text=f"🛡️ DEFENSE READINESS FOR '{map_data.get('name')}' ({strat.get('difficulty')} MODE)", font=self.font_heading, bg=THEME["card"], fg=THEME["accent_green"]).pack(anchor="w", pady=(0, 8))
+                strat_diff = strat.get("difficulty", "Medium")
+                tk.Label(c3, text=f"🛡️ DEFENSE READINESS FOR '{map_data.get('name')}' ({strat_diff} MODE)", font=self.font_heading, bg=THEME["card"], fg=THEME["accent_green"]).pack(anchor="w", pady=(0, 8))
 
-                readiness = check_strategy_defense_readiness(r, strat.get("steps", []))
+                readiness = check_strategy_defense_readiness(
+                    r, strat.get("steps", []),
+                    difficulty=strat_diff,
+                    monkey_knowledge=self.settings.is_monkey_knowledge()
+                )
+
+                if readiness.get("replay_errors"):
+                    err_box = tk.Frame(c3, bg="#2a151b", padx=12, pady=8, highlightbackground="#f38ba8", highlightthickness=1)
+                    err_box.pack(fill="x", pady=(0, 10))
+                    tk.Label(err_box, text="⚠️ Invalid Strategy Plan / Replay Errors:", font=self.font_body_bold, bg="#2a151b", fg="#f38ba8").pack(anchor="w")
+                    for r_err in readiness["replay_errors"][:3]:
+                        tk.Label(err_box, text=f"• {r_err}", font=self.font_small, bg="#2a151b", fg="#f5c2e7").pack(anchor="w")
+                    if len(readiness["replay_errors"]) > 3:
+                        tk.Label(err_box, text=f"... and {len(readiness['replay_errors']) - 3} more errors", font=self.font_small, bg="#2a151b", fg="#f5c2e7").pack(anchor="w")
 
                 checks = [
                     ("Camo Defense", readiness["camo_ready"], readiness["camo_towers"], "Round 24, 33, 42, 59, 78 require Camo detection."),
@@ -2095,8 +2633,8 @@ class BTD6GuideApp(tk.Tk):
         f_status = tk.Frame(form, bg=THEME["bg"])
         f_status.pack(fill="x", pady=4)
         tk.Label(f_status, text="Verification Status:", font=("Segoe UI", 9, "bold"), bg=THEME["bg"], fg=THEME["text_primary"], width=20, anchor="w").pack(side="left")
-        status_var = tk.StringVar(value=strat.get("status", "Verified"))
-        status_cb = ttk.Combobox(f_status, textvariable=status_var, values=["Verified", "Needs Review"], state="readonly", width=18)
+        status_var = tk.StringVar(value=strat.get("status", "Structurally Validated"))
+        status_cb = ttk.Combobox(f_status, textvariable=status_var, values=["Playtested", "Structurally Validated", "Needs Review"], state="readonly", width=22)
         status_cb.pack(side="left")
 
         # Hero
@@ -2172,11 +2710,22 @@ class BTD6GuideApp(tk.Tk):
             if target == "visual":
                 try:
                     parsed = json.loads(txt_steps.get("1.0", "end-1c"))
-                    if isinstance(parsed, list):
-                        working_steps.clear()
-                        working_steps.extend(parsed)
-                except Exception:
-                    pass
+                    if not isinstance(parsed, list):
+                        raise ValueError("Steps must be a JSON array of step objects.")
+                    for idx, s in enumerate(parsed):
+                        if not isinstance(s, dict):
+                            raise ValueError(f"Step at index {idx} must be a JSON object (dictionary), found {type(s).__name__}.")
+                        tow = s.get("tower")
+                        if not isinstance(tow, str) or not tow.strip():
+                            raise ValueError(f"Step at index {idx} must have a non-empty string 'tower'.")
+                        r = s.get("round")
+                        if not isinstance(r, int) or isinstance(r, bool):
+                            raise ValueError(f"Step at index {idx} must have an integer 'round', found {type(r).__name__}.")
+                    working_steps.clear()
+                    working_steps.extend(parsed)
+                except Exception as ex:
+                    messagebox.showerror("JSON Syntax Error", f"Cannot switch to visual builder with invalid JSON:\n{ex}\n\nPlease correct the JSON syntax before switching.")
+                    return
                 current_editor_mode.set("visual")
                 btn_vis_mode.configure(bg=THEME["accent_blue"], fg=THEME["bg_dark"], font=("Segoe UI", 8, "bold"))
                 btn_json_mode.configure(bg=THEME["card"], fg=THEME["text_muted"], font=("Segoe UI", 8))
@@ -2302,6 +2851,15 @@ class BTD6GuideApp(tk.Tk):
             cost_var = tk.IntVar(value=step_data.get("cost_estimate", 0))
             tk.Entry(cost_frame, textvariable=cost_var, width=12, font=("Segoe UI", 9)).pack(side="left")
 
+            # Purchase Timing
+            timing_frame = tk.Frame(body_f, bg=THEME["bg"])
+            timing_frame.pack(fill="x", pady=3)
+            tk.Label(timing_frame, text="Purchase Timing:", font=("Segoe UI", 9, "bold"), bg=THEME["bg"], fg=THEME["text_primary"], width=16, anchor="w").pack(side="left")
+            timing_var = tk.StringVar(value=step_data.get("timing", "before_round"))
+            timing_cb = ttk.Combobox(timing_frame, textvariable=timing_var, values=["before_round", "during_round", "after_round"], state="readonly", width=14)
+            timing_cb.pack(side="left")
+            tk.Label(timing_frame, text="  (before_round = Start | during_round = Mid-round | after_round = End of Round)", font=self.font_small, bg=THEME["bg"], fg=THEME["text_dim"]).pack(side="left")
+
             # Placement
             pl_frame = tk.Frame(body_f, bg=THEME["bg"])
             pl_frame.pack(fill="x", pady=3)
@@ -2329,8 +2887,12 @@ class BTD6GuideApp(tk.Tk):
                     "placement": pl_var.get().strip(),
                     "targeting": tgt_var.get(),
                     "cost_estimate": cost_var.get(),
-                    "details": txt_det.get("1.0", "end-1c").strip()
+                    "details": txt_det.get("1.0", "end-1c").strip(),
+                    "timing": timing_var.get(),
+                    "step_id": step_data.get("step_id") or f"{mid}_{diff_key.lower()}_s{len(working_steps) + 1}_{uuid.uuid4().hex[:8]}"
                 }
+                if step_data.get("tower_id"):
+                    new_entry["tower_id"] = step_data.get("tower_id")
                 if is_new:
                     working_steps.append(new_entry)
                 else:
@@ -2416,8 +2978,37 @@ class BTD6GuideApp(tk.Tk):
         btn_bar = tk.Frame(editor, bg=THEME["bg_dark"], padx=16, pady=10)
         btn_bar.pack(side="bottom", fill="x")
 
-        tk.Button(btn_bar, text="📋 Copy Markdown", font=("Segoe UI", 9), bg=THEME["card"], fg=THEME["text_primary"], relief="flat", padx=10, pady=3, cursor="hand2", command=self.export_markdown_to_clipboard).pack(side="left", padx=4)
-        tk.Button(btn_bar, text="📄 Printable HTML", font=("Segoe UI", 9), bg=THEME["card"], fg=THEME["accent_teal"], relief="flat", padx=10, pady=3, cursor="hand2", command=self.export_printable_html).pack(side="left", padx=4)
+        def get_draft_strategy():
+            if current_editor_mode.get() == "json":
+                try:
+                    f_steps = json.loads(txt_steps.get("1.0", "end-1c"))
+                    if not isinstance(f_steps, list):
+                        f_steps = working_steps
+                except Exception:
+                    f_steps = working_steps
+            else:
+                f_steps = working_steps
+
+            draft = copy.deepcopy(strat)
+            draft.update({
+                "difficulty": diff_key,
+                "mode": strat.get("mode", "Standard"),
+                "rounds": strat.get("rounds", "1-40"),
+                "status": status_var.get(),
+                "recommended_hero": hero_var.get().strip(),
+                "overview": txt_overview.get("1.0", "end-1c").strip(),
+                "camo_handling": txt_camo.get("1.0", "end-1c").strip(),
+                "lead_handling": txt_lead.get("1.0", "end-1c").strip(),
+                "moab_handling": txt_moab.get("1.0", "end-1c").strip(),
+                "why_it_works": txt_why.get("1.0", "end-1c").strip(),
+                "steps": f_steps
+            })
+            if "starting_cash" not in draft:
+                draft["starting_cash"] = 650
+            return draft
+
+        tk.Button(btn_bar, text="📋 Copy Markdown", font=("Segoe UI", 9), bg=THEME["card"], fg=THEME["text_primary"], relief="flat", padx=10, pady=3, cursor="hand2", command=lambda: self.export_markdown_to_clipboard(strat=get_draft_strategy(), map_data=map_data)).pack(side="left", padx=4)
+        tk.Button(btn_bar, text="📄 Printable HTML", font=("Segoe UI", 9), bg=THEME["card"], fg=THEME["accent_teal"], relief="flat", padx=10, pady=3, cursor="hand2", command=lambda: self.export_printable_html(strat=get_draft_strategy(), map_data=map_data)).pack(side="left", padx=4)
 
         def save_changes():
             if current_editor_mode.get() == "json":
@@ -2431,19 +3022,46 @@ class BTD6GuideApp(tk.Tk):
             else:
                 final_steps = working_steps
 
-            strat["status"] = status_var.get()
-            strat["recommended_hero"] = hero_var.get().strip()
-            strat["overview"] = txt_overview.get("1.0", "end-1c").strip()
-            strat["camo_handling"] = txt_camo.get("1.0", "end-1c").strip()
-            strat["lead_handling"] = txt_lead.get("1.0", "end-1c").strip()
-            strat["moab_handling"] = txt_moab.get("1.0", "end-1c").strip()
-            strat["why_it_works"] = txt_why.get("1.0", "end-1c").strip()
-            strat["steps"] = final_steps
+            # 1. Step Count Requirement
+            min_steps = 5 if diff_key == "Easy" else (8 if diff_key == "Medium" else 12)
+            if len(final_steps) < min_steps:
+                messagebox.showerror("Validation Failed", f"{diff_key} strategy requires at least {min_steps} steps (found {len(final_steps)}).")
+                return
 
-            if self.data_manager.save():
-                messagebox.showinfo("Saved", f"{diff_key} strategy updated and saved to guides.json successfully!")
+            draft_strat = get_draft_strategy()
+            draft_strat["steps"] = final_steps
+
+            # Ensure stable step_id on all steps
+            for idx, s in enumerate(draft_strat.get("steps", [])):
+                if isinstance(s, dict) and "step_id" not in s:
+                    s["step_id"] = f"{mid}_{diff_key.lower()}_s{s.get('step_number', idx + 1)}"
+
+            # Ensure explicit tower_id across all draft steps
+            assign_explicit_tower_ids(draft_strat, mid, diff_key)
+
+            # 2. Strict Replay, Economic & Threat Invariant Validation on Draft
+            is_valid, val_errors, val_warns, _ = validate_strategy(
+                draft_strat,
+                map_context=map_data,
+                diff_name=diff_key,
+                monkey_knowledge=self.settings.is_monkey_knowledge()
+            )
+            if not is_valid:
+                err_msg = "\n• " + "\n• ".join(val_errors[:6])
+                if len(val_errors) > 6:
+                    err_msg += f"\n... and {len(val_errors) - 6} more errors."
+                messagebox.showerror("Strategy Validation Failed", f"Strategy cannot be saved due to invariant violations:{err_msg}\n\nPlease correct these issues before saving.")
+                return
+
+            # 3. Save override to disk first, then commit to live state only upon success
+            if self.data_manager.save_override(mid, diff_key, draft_strat):
+                strat.clear()
+                strat.update(draft_strat)
+                messagebox.showinfo("Saved", f"{diff_key} strategy updated and saved successfully! Custom edits are preserved in user_overrides.json.")
                 self.render_guide()
                 editor.destroy()
+            else:
+                messagebox.showerror("Save Error", "Failed to save strategy override to disk. Live database was not modified.")
 
         btn_save = tk.Button(btn_bar, text="💾 Save Changes to Database", font=("Segoe UI", 10, "bold"), bg=THEME["accent_green"], fg=THEME["bg_dark"], padx=16, pady=4, cursor="hand2", command=save_changes)
         btn_save.pack(side="right", padx=6)

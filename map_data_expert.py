@@ -3,7 +3,7 @@ map_data_expert.py
 Contains comprehensive, round-by-round Easy/Standard (R1-40) strategies for all 13 Expert maps.
 """
 
-def create_step(step_number, round_range, round_num, action, tower, upgrade, placement, targeting, cost, details):
+def create_step(step_number, round_range, round_num, action, tower, upgrade, placement, targeting, cost, details, timing="before_round"):
     return {
         "step_number": step_number,
         "round_range": round_range,
@@ -14,7 +14,8 @@ def create_step(step_number, round_range, round_num, action, tower, upgrade, pla
         "placement": placement,
         "targeting": targeting,
         "cost_estimate": cost,
-        "details": details
+        "details": details,
+        "timing": timing
     }
 
 EXPERT_MAPS = {
@@ -283,7 +284,7 @@ EXPERT_MAPS = {
                     create_step(4, "Rounds 11–20: Expanding Defense", 17, "Place", "Dart Monkey", "0-0-0", "At one of the corner crossings.", "First", 170, "Adds cleanup darts."),
                     create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Sniper Monkey", "3-0-2", "Center map.", "Strong", 2450, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot."),
                     create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Corner crossing.", "First", 1275, "Crossbow provides high damage cleanup."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 32, "Place", "Bomb Shooter", "2-0-3", "In the center map.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons across all 4 lanes."),
+                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "In the center map.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons across all 4 lanes."),
                     create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "In the center map.", "Strong", 2040, "MOAB Mauler delivers heavy blimp damage. Sniper on Strong and Quincy destroy the MOAB.")
                 ]
             },
@@ -322,7 +323,7 @@ EXPERT_MAPS = {
                     create_step(4, "Rounds 11–20: Expanding Defense", 17, "Place", "Dart Monkey", "0-0-0", "At the exit of the wooden bridge.", "First", 170, "Adds cleanup darts."),
                     create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Sniper Monkey", "3-0-2", "Cliff ledge.", "Strong", 2450, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot."),
                     create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Bridge exit.", "First", 1275, "Crossbow provides high damage cleanup."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 32, "Place", "Bomb Shooter", "2-0-3", "At the bridge exit.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons."),
+                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "At the bridge exit.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons."),
                     create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "At the bridge entrance.", "Strong", 2040, "MOAB Mauler delivers heavy blimp damage. Sniper on Strong and Quincy destroy the MOAB.")
                 ]
             },
@@ -478,7 +479,7 @@ EXPERT_MAPS = {
                     create_step(4, "Rounds 11–20: Expanding Defense", 17, "Place", "Dart Monkey", "0-0-0", "At the trail exit shelf.", "First", 170, "Adds third staggered tower for freeze cycle redundancy."),
                     create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Sniper Monkey", "3-0-2", "Lower ice shelf.", "Strong", 2450, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot."),
                     create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Exit shelf.", "First", 1275, "Crossbow provides high damage cleanup."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 32, "Place", "Bomb Shooter", "2-0-3", "Near the trail bend.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons."),
+                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "Near the trail bend.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons."),
                     create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "Near the trail entrance.", "Strong", 2040, "MOAB Mauler delivers heavy blimp damage. Sniper on Strong and Quincy destroy the MOAB.")
                 ]
             },

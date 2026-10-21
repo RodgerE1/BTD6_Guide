@@ -3,7 +3,7 @@ map_data_beginner.py
 Contains comprehensive, round-by-round Easy/Standard (R1-40) strategies for all 26 Beginner maps.
 """
 
-def create_step(step_number, round_range, round_num, action, tower, upgrade, placement, targeting, cost, details):
+def create_step(step_number, round_range, round_num, action, tower, upgrade, placement, targeting, cost, details, timing="before_round"):
     return {
         "step_number": step_number,
         "round_range": round_range,
@@ -14,7 +14,8 @@ def create_step(step_number, round_range, round_num, action, tower, upgrade, pla
         "placement": placement,
         "targeting": targeting,
         "cost_estimate": cost,
-        "details": details
+        "details": details,
+        "timing": timing
     }
 
 BEGINNER_MAPS = {
@@ -116,7 +117,7 @@ BEGINNER_MAPS = {
                 "hero_alternatives": ["Quincy", "Admiral Brickell"],
                 "starting_cash": 650,
                 "overview": "Winding cobblestone streets wrap around a central water pond and village houses. The pond offers ideal positioning for Buccaneer and Sub, while the main crossroads is an ideal killzone.",
-                "camo_handling": "Sauda handles Round 24. Buccaneer upgraded to 0-2-2 (Crow's Nest) spots all camos effortlessly.",
+                "camo_handling": "Sauda handles Round 24 naturally. Buccaneer provides high-damage support.",
                 "lead_handling": "Buccaneer's Hot Shot (0-2-0) or Sauda's level 3 ability destroys Lead Bloons on Round 28.",
                 "moab_handling": "Monkey Buccaneer upgraded to 3-2-0 Destroyer unleashes a barrage of flaming darts and grapes that tears the Round 40 MOAB apart.",
                 "why_it_works": "The central pond gives the Buccaneer 360-degree coverage over 3 separate track segments, creating maximum firing uptime.",
@@ -125,7 +126,7 @@ BEGINNER_MAPS = {
                     create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Sauda", "0-0-0", "At the main crossroad turn just southwest of the central pond.", "First", 510, "Anchors the early defense, catching bloons as they turn the corner."),
                     create_step(2, "Rounds 1–10: Opening Defense", 5, "Place", "Monkey Buccaneer", "0-0-0", "In the center of the village pond.", "First", 425, "Provides long-range dual-cannon fire across multiple track lanes."),
                     create_step(3, "Rounds 11–20: Expanding Defense", 11, "Upgrade", "Monkey Buccaneer", "0-1-0", "Village pond.", "First", 210, "Grape Shot fires 4 sharp grapes with every attack."),
-                    create_step(4, "Rounds 11–20: Expanding Defense", 15, "Upgrade", "Monkey Buccaneer", "0-2-2", "Village pond.", "First", 680, "Hot Shot pops Leads with fire; Crow's Nest grants full Camo vision."),
+                    create_step(4, "Rounds 11–20: Expanding Defense", 15, "Upgrade", "Monkey Buccaneer", "0-2-0", "Village pond.", "First", 425, "Hot Shot pops Leads with fire; prepares path for Destroyer."),
                     create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Monkey Buccaneer", "3-2-0", "Village pond.", "First", 2510, "Destroyer attacks 5x faster, shredding dense bloon waves and Round 28 Leads."),
                     create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Place", "Alchemist", "2-0-0", "On the grass bank next to the pond, within range of Buccaneer.", "Strong", 1050, "Acidic Mixture Dip boosts grape damage and range."),
                     create_step(7, "Rounds 31–39: Final Preparation", 33, "Place", "Bomb Shooter", "2-0-3", "At the hairpin bend south of the pond.", "Close", 2150, "Cluster Bombs eradicate grouped rainbow and ceramic bloons."),
@@ -515,7 +516,7 @@ BEGINNER_MAPS = {
                     create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Sauda", "0-0-0", "At the first major loop intersection west of the pond.", "First", 510, "Easily holds early waves with zero leaks."),
                     create_step(2, "Rounds 1–10: Opening Defense", 5, "Place", "Monkey Buccaneer", "0-0-0", "In the center of the ornamental park pond.", "First", 425, "Covers both the entrance and exit park paths."),
                     create_step(3, "Rounds 11–20: Expanding Defense", 11, "Upgrade", "Monkey Buccaneer", "0-1-0", "Park pond.", "First", 210, "Grape Shot adds 4 sharp grapes per shot."),
-                    create_step(4, "Rounds 11–20: Expanding Defense", 15, "Upgrade", "Monkey Buccaneer", "0-2-2", "Park pond.", "First", 680, "Hot Shot grants Lead-popping; Crow's Nest grants Camo vision."),
+                    create_step(4, "Rounds 11–20: Expanding Defense", 15, "Upgrade", "Monkey Buccaneer", "0-2-0", "Park pond.", "First", 425, "Hot Shot grants Lead-popping; prepares path for Destroyer."),
                     create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Monkey Buccaneer", "3-2-0", "Park pond.", "First", 2510, "Destroyer attacks at rapid-fire speed, clearing swarms and Round 28 Leads."),
                     create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Place", "Alchemist", "2-0-0", "On the grass shoreline next to the pond.", "Strong", 1050, "Acidic Mixture Dip buffs the Buccaneer's grape volleys."),
                     create_step(7, "Rounds 31–39: Final Preparation", 33, "Place", "Bomb Shooter", "2-0-3", "Along the southern path curve.", "Close", 2150, "Recursive cluster clears any grouped bloons."),
@@ -554,11 +555,12 @@ BEGINNER_MAPS = {
                     create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Sauda", "0-0-0", "On the central sandbank where the path loops between two lotus flowers.", "First", 510, "Chops all early bloons as they cross the sand bridge."),
                     create_step(2, "Rounds 1–10: Opening Defense", 5, "Place", "Monkey Buccaneer", "0-0-0", "In the ocean lagoon directly above the central sandbank.", "First", 425, "Fires cannonballs and darts across the island."),
                     create_step(3, "Rounds 11–20: Expanding Defense", 11, "Upgrade", "Monkey Buccaneer", "0-1-0", "Ocean lagoon.", "First", 210, "Grape Shot fires 4 grapes."),
-                    create_step(4, "Rounds 11–20: Expanding Defense", 15, "Upgrade", "Monkey Buccaneer", "0-2-2", "Ocean lagoon.", "First", 680, "Hot Shot grants Lead-popping; Crow's Nest provides full Camo detection."),
-                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Monkey Buccaneer", "3-2-0", "Ocean lagoon.", "First", 2510, "Destroyer unleashes rapid grape barrages."),
-                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 26, "Place", "Monkey Sub", "2-0-3", "In the lagoon next to Buccaneer.", "First", 2360, "Triple Guns with Advanced Intel provides constant long-range dart fire."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 33, "Place", "Alchemist", "3-0-0", "On the sandbank within range of Buccaneer.", "Close", 1885, "Berserker Brew boosts the Destroyer's fire rate and damage."),
-                    create_step(8, "Round 40: MOAB Battle", 38, "Place", "Bomb Shooter", "0-3-0", "On the lower sandbank.", "Strong", 1530, "MOAB Mauler targets the blimp. The Destroyer and Sub effortlessly pop the MOAB and ceramic insides.")
+                    create_step(4, "Rounds 11–20: Expanding Defense", 15, "Upgrade", "Monkey Buccaneer", "0-2-0", "Ocean lagoon.", "First", 425, "Hot Shot grants Lead-popping; prepares path for Destroyer."),
+                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Monkey Buccaneer", "3-2-0", "Ocean lagoon.", "First", 3485, "Destroyer unleashes rapid grape barrages."),
+                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Place", "Monkey Sub", "2-0-0", "In the lagoon next to Buccaneer.", "First", 810, "Advanced Intel provides global camo and dart coverage."),
+                    create_step(7, "Rounds 31–39: Midgame Defense", 32, "Upgrade", "Monkey Sub", "2-0-3", "In the lagoon next to Buccaneer.", "First", 2165, "Triple Guns dramatically scales up fast-firing dart output."),
+                    create_step(8, "Rounds 31–39: Midgame Defense", 36, "Place", "Alchemist", "3-0-0", "On the sandbank within range of Buccaneer.", "Close", 2040, "Berserker Brew boosts the Destroyer's fire rate and damage."),
+                    create_step(9, "Round 40: MOAB Battle", 38, "Place", "Bomb Shooter", "0-3-0", "On the lower sandbank.", "Strong", 1930, "MOAB Mauler targets the blimp. The Destroyer and Sub effortlessly pop the MOAB and ceramic insides.")
                 ]
             },
             "Medium": None, "Hard": None, "Impoppable": None, "CHIMPS": None
@@ -944,11 +946,12 @@ BEGINNER_MAPS = {
                     create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Sauda", "0-0-0", "At the stone walkway bend between the two main hot spring pools.", "First", 510, "Controls the walkway with dual-lane reach."),
                     create_step(2, "Rounds 1–10: Opening Defense", 5, "Place", "Monkey Buccaneer", "0-0-0", "In the central mineral bath pool.", "First", 425, "Fires cannonballs and darts across the walkways."),
                     create_step(3, "Rounds 11–20: Expanding Defense", 11, "Upgrade", "Monkey Buccaneer", "0-1-0", "Mineral bath pool.", "First", 210, "Grape Shot fires 4 grapes."),
-                    create_step(4, "Rounds 11–20: Expanding Defense", 15, "Upgrade", "Monkey Buccaneer", "0-2-2", "Mineral bath pool.", "First", 680, "Hot Shot grants Lead-popping; Crow's Nest provides full Camo detection."),
-                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Monkey Buccaneer", "3-2-0", "Mineral bath pool.", "First", 2510, "Destroyer unleashes rapid grape barrages."),
-                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 26, "Place", "Monkey Sub", "2-0-3", "In the adjacent pool.", "First", 2360, "Triple Guns with Advanced Intel provides constant dart fire."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 33, "Place", "Alchemist", "3-0-0", "On the stone bank within range of Buccaneer.", "Close", 1885, "Berserker Brew boosts the Destroyer's fire rate and damage."),
-                    create_step(8, "Round 40: MOAB Battle", 38, "Place", "Bomb Shooter", "0-3-0", "On the walkway.", "Strong", 1530, "MOAB Mauler targets the blimp. The Destroyer and Sub effortlessly pop the MOAB and ceramic insides.")
+                    create_step(4, "Rounds 11–20: Expanding Defense", 15, "Upgrade", "Monkey Buccaneer", "0-2-0", "Mineral bath pool.", "First", 425, "Hot Shot grants Lead-popping; prepares path for Destroyer."),
+                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Monkey Buccaneer", "3-2-0", "Mineral bath pool.", "First", 3485, "Destroyer unleashes rapid grape barrages."),
+                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Place", "Monkey Sub", "2-0-0", "In the adjacent pool.", "First", 810, "Advanced Intel provides global camo and dart coverage."),
+                    create_step(7, "Rounds 31–39: Midgame Defense", 32, "Upgrade", "Monkey Sub", "2-0-3", "In the adjacent pool.", "First", 2165, "Triple Guns dramatically scales up fast-firing dart output."),
+                    create_step(8, "Rounds 31–39: Midgame Defense", 36, "Place", "Alchemist", "3-0-0", "On the stone bank within range of Buccaneer.", "Close", 2040, "Berserker Brew boosts the Destroyer's fire rate and damage."),
+                    create_step(9, "Round 40: MOAB Battle", 38, "Place", "Bomb Shooter", "0-3-0", "On the walkway.", "Strong", 1930, "MOAB Mauler targets the blimp. The Destroyer and Sub effortlessly pop the MOAB and ceramic insides.")
                 ]
             },
             "Medium": None, "Hard": None, "Impoppable": None, "CHIMPS": None

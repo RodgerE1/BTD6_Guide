@@ -38,109 +38,119 @@ DANGER_ROUNDS = {
     100: {"flag": "☠️ THE BAD (BIG AIRSHIP OF DOOM)", "type": "BAD", "severity": "MAXIMUM", "note": "The final boss (20,000 HP). Completely IMMUNE to all stuns, knockbacks, slows, and hooks! Spawns 2 ZOMGs and 3 DDTs upon destruction."}
 }
 
+from btd6_economy import (
+    CANONICAL_HEROES,
+    CANONICAL_TOWERS,
+    ROUND_INCOME_TABLE,
+    get_hero_level_at_round,
+    get_tower_capabilities,
+    parse_upgrade,
+)
+from btd6_replay import TowerReplayEngine
+
 # Standard wave bloon composition breakdown (Rounds 1–100)
-# Structure: {round_num: {"bloons": [{"type": "Red", "count": 20, "camo": False, "regrow": False, "fortified": False}], "rbe": int, "cash": int}}
+# Structure: {round_num: {"bloons": [...], "rbe": int, "cash": int}}
 ROUND_COMPOSITION = {
-    1: {"bloons": [{"type": "Red", "count": 20}], "rbe": 20, "cash": 121},
-    2: {"bloons": [{"type": "Red", "count": 35}], "rbe": 35, "cash": 137},
-    3: {"bloons": [{"type": "Red", "count": 25}, {"type": "Blue", "count": 5}], "rbe": 35, "cash": 138},
-    4: {"bloons": [{"type": "Red", "count": 35}, {"type": "Blue", "count": 18}], "rbe": 71, "cash": 175},
-    5: {"bloons": [{"type": "Red", "count": 5}, {"type": "Blue", "count": 27}], "rbe": 59, "cash": 164},
-    6: {"bloons": [{"type": "Red", "count": 15}, {"type": "Blue", "count": 15}, {"type": "Green", "count": 4}], "rbe": 57, "cash": 163},
-    7: {"bloons": [{"type": "Red", "count": 20}, {"type": "Blue", "count": 20}, {"type": "Green", "count": 5}], "rbe": 75, "cash": 182},
-    8: {"bloons": [{"type": "Red", "count": 10}, {"type": "Blue", "count": 26}, {"type": "Green", "count": 14}], "rbe": 104, "cash": 213},
-    9: {"bloons": [{"type": "Green", "count": 30}], "rbe": 90, "cash": 201},
-    10: {"bloons": [{"type": "Blue", "count": 102}], "rbe": 204, "cash": 319},
-    11: {"bloons": [{"type": "Red", "count": 10}, {"type": "Blue", "count": 10}, {"type": "Green", "count": 12}, {"type": "Yellow", "count": 3}], "rbe": 78, "cash": 197},
-    12: {"bloons": [{"type": "Blue", "count": 15}, {"type": "Green", "count": 10}, {"type": "Yellow", "count": 5}], "rbe": 80, "cash": 201},
-    13: {"bloons": [{"type": "Blue", "count": 50}, {"type": "Green", "count": 23}], "rbe": 169, "cash": 293},
-    14: {"bloons": [{"type": "Red", "count": 49}, {"type": "Blue", "count": 15}, {"type": "Green", "count": 10}, {"type": "Yellow", "count": 9}], "rbe": 145, "cash": 273},
-    15: {"bloons": [{"type": "Red", "count": 20}, {"type": "Blue", "count": 15}, {"type": "Green", "count": 12}, {"type": "Yellow", "count": 5}, {"type": "Pink", "count": 3}], "rbe": 121, "cash": 253},
-    16: {"bloons": [{"type": "Green", "count": 40}, {"type": "Yellow", "count": 8}], "rbe": 152, "cash": 286},
-    17: {"bloons": [{"type": "Yellow", "count": 12}], "rbe": 48, "cash": 187},
-    18: {"bloons": [{"type": "Green", "count": 80}], "rbe": 240, "cash": 384},
-    19: {"bloons": [{"type": "Green", "count": 10}, {"type": "Yellow", "count": 4}, {"type": "Pink", "count": 7}], "rbe": 81, "cash": 231},
-    20: {"bloons": [{"type": "Black", "count": 6}], "rbe": 66, "cash": 224},
-    21: {"bloons": [{"type": "Yellow", "count": 40}, {"type": "Pink", "count": 14}], "rbe": 230, "cash": 396},
-    22: {"bloons": [{"type": "White", "count": 16}], "rbe": 176, "cash": 350},
-    23: {"bloons": [{"type": "Black", "count": 7}, {"type": "White", "count": 7}], "rbe": 154, "cash": 333},
-    24: {"bloons": [{"type": "Blue", "count": 1}, {"type": "Green", "count": 1, "camo": True}], "rbe": 5, "cash": 186},
-    25: {"bloons": [{"type": "Yellow", "count": 25}, {"type": "Purple", "count": 1}], "rbe": 111, "cash": 296},
-    26: {"bloons": [{"type": "Pink", "count": 23}, {"type": "Zebra", "count": 4}], "rbe": 207, "cash": 395},
-    27: {"bloons": [{"type": "Red", "count": 100}, {"type": "Blue", "count": 60}], "rbe": 220, "cash": 412},
-    28: {"bloons": [{"type": "Lead", "count": 6}], "rbe": 138, "cash": 336},
-    29: {"bloons": [{"type": "Yellow", "count": 50}, {"type": "Regrow Yellow", "count": 15}], "rbe": 260, "cash": 465},
-    30: {"bloons": [{"type": "Lead", "count": 9}], "rbe": 207, "cash": 417},
-    31: {"bloons": [{"type": "Black", "count": 8}, {"type": "Zebra", "count": 8}], "rbe": 272, "cash": 487},
-    32: {"bloons": [{"type": "Black", "count": 15}, {"type": "White", "count": 20}], "rbe": 385, "cash": 607},
-    33: {"bloons": [{"type": "Red", "count": 13, "camo": True}, {"type": "Yellow", "count": 1, "camo": True}], "rbe": 17, "cash": 251},
-    34: {"bloons": [{"type": "Yellow", "count": 140}, {"type": "Zebra", "count": 5}], "rbe": 675, "cash": 921},
-    35: {"bloons": [{"type": "Pink", "count": 35}, {"type": "Rainbow", "count": 18}], "rbe": 895, "cash": 1157},
-    36: {"bloons": [{"type": "Pink", "count": 140}, {"type": "Green", "count": 7, "camo": True}], "rbe": 721, "cash": 985},
-    37: {"bloons": [{"type": "Black", "count": 25}, {"type": "White", "count": 25}, {"type": "Lead", "count": 7}, {"type": "White", "count": 10, "camo": True}], "rbe": 821, "cash": 1093},
-    38: {"bloons": [{"type": "White", "count": 42}, {"type": "Zebra", "count": 17}, {"type": "Lead", "count": 14}], "rbe": 1158, "cash": 1458},
-    39: {"bloons": [{"type": "Black", "count": 10}, {"type": "White", "count": 10}, {"type": "Rainbow", "count": 18}], "rbe": 1064, "cash": 1369},
-    40: {"bloons": [{"type": "MOAB", "count": 1}], "rbe": 616, "cash": 928},
-    41: {"bloons": [{"type": "Black", "count": 60}], "rbe": 660, "cash": 984},
-    42: {"bloons": [{"type": "Rainbow", "count": 6, "camo": True}], "rbe": 282, "cash": 618},
-    43: {"bloons": [{"type": "Rainbow", "count": 10}, {"type": "Ceramic", "count": 7}], "rbe": 1204, "cash": 1572},
-    44: {"bloons": [{"type": "Zebra", "count": 50}], "rbe": 1150, "cash": 1526},
-    45: {"bloons": [{"type": "Fortified Lead", "count": 4, "fortified": True}, {"type": "Rainbow", "count": 24}], "rbe": 1256, "cash": 1642},
-    46: {"bloons": [{"type": "Ceramic", "count": 6}, {"type": "Fortified Ceramic", "count": 3, "fortified": True}], "rbe": 1152, "cash": 1546},
-    47: {"bloons": [{"type": "Pink", "count": 70}, {"type": "Camo Ceramic", "count": 2, "camo": True}], "rbe": 558, "cash": 974},
-    48: {"bloons": [{"type": "Purple", "count": 40}, {"type": "Rainbow", "count": 30}], "rbe": 1850, "cash": 2296},
-    49: {"bloons": [{"type": "Green", "count": 343}, {"type": "Rainbow", "count": 20}, {"type": "Ceramic", "count": 18}], "rbe": 3847, "cash": 4357},
-    50: {"bloons": [{"type": "MOAB", "count": 2}, {"type": "Red", "count": 20}], "rbe": 1252, "cash": 1622},
-    51: {"bloons": [{"type": "Ceramic", "count": 10}, {"type": "Rainbow", "count": 5}], "rbe": 1275, "cash": 1655},
-    52: {"bloons": [{"type": "Rainbow", "count": 25}, {"type": "Ceramic", "count": 5}], "rbe": 1695, "cash": 2085},
-    53: {"bloons": [{"type": "Pink", "count": 80}, {"type": "MOAB", "count": 1}], "rbe": 1016, "cash": 1424},
-    54: {"bloons": [{"type": "Ceramic", "count": 35}], "rbe": 3640, "cash": 4120},
-    55: {"bloons": [{"type": "Ceramic", "count": 30}, {"type": "MOAB", "count": 1}], "rbe": 3736, "cash": 4236},
-    56: {"bloons": [{"type": "Rainbow", "count": 40}], "rbe": 1880, "cash": 2340},
-    57: {"bloons": [{"type": "MOAB", "count": 2}], "rbe": 1232, "cash": 1632},
-    58: {"bloons": [{"type": "Ceramic", "count": 15}, {"type": "Fortified Ceramic", "count": 10, "fortified": True}], "rbe": 3280, "cash": 3810},
-    59: {"bloons": [{"type": "Camo Lead", "count": 10, "camo": True}, {"type": "Ceramic", "count": 30}], "rbe": 3350, "cash": 3890},
-    60: {"bloons": [{"type": "BFB", "count": 1}], "rbe": 3164, "cash": 3784},
-    61: {"bloons": [{"type": "Zebra", "count": 150}, {"type": "MOAB", "count": 5}], "rbe": 6530, "cash": 7240},
-    62: {"bloons": [{"type": "Fortified Lead", "count": 25, "fortified": True}, {"type": "MOAB", "count": 2}], "rbe": 1864, "cash": 2380},
-    63: {"bloons": [{"type": "Ceramic", "count": 122}], "rbe": 12688, "cash": 13398},
-    64: {"bloons": [{"type": "MOAB", "count": 6}, {"type": "BFB", "count": 3}], "rbe": 13188, "cash": 13988},
-    65: {"bloons": [{"type": "Lead", "count": 20}, {"type": "BFB", "count": 3}], "rbe": 9952, "cash": 10722},
-    66: {"bloons": [{"type": "MOAB", "count": 11}], "rbe": 6776, "cash": 7616},
-    67: {"bloons": [{"type": "Ceramic", "count": 14}, {"type": "Fortified Ceramic", "count": 9, "fortified": True}], "rbe": 2984, "cash": 3614},
-    68: {"bloons": [{"type": "MOAB", "count": 4}, {"type": "BFB", "count": 1}], "rbe": 5628, "cash": 6408},
-    69: {"bloons": [{"type": "Lead", "count": 40}, {"type": "Ceramic", "count": 50}], "rbe": 6120, "cash": 7040},
-    70: {"bloons": [{"type": "Camo White", "count": 120, "camo": True}, {"type": "MOAB", "count": 4}], "rbe": 3784, "cash": 4724},
-    71: {"bloons": [{"type": "Ceramic", "count": 30}, {"type": "MOAB", "count": 6}], "rbe": 6816, "cash": 7746},
-    72: {"bloons": [{"type": "BFB", "count": 2}], "rbe": 6328, "cash": 7208},
-    73: {"bloons": [{"type": "MOAB", "count": 8}, {"type": "BFB", "count": 2}], "rbe": 11256, "cash": 12266},
-    74: {"bloons": [{"type": "Ceramic", "count": 42}, {"type": "BFB", "count": 1}], "rbe": 7532, "cash": 8502},
-    75: {"bloons": [{"type": "Lead", "count": 20}, {"type": "MOAB", "count": 14}, {"type": "BFB", "count": 3}], "rbe": 18580, "cash": 19780},
-    76: {"bloons": [{"type": "Regrow Ceramic", "count": 60, "regrow": True}], "rbe": 6240, "cash": 7320},
-    77: {"bloons": [{"type": "MOAB", "count": 12}, {"type": "BFB", "count": 4}], "rbe": 20048, "cash": 21328},
-    78: {"bloons": [{"type": "Ceramic", "count": 68}, {"type": "Camo Ceramic", "count": 72, "camo": True}, {"type": "BFB", "count": 1}], "rbe": 17724, "cash": 19044},
-    79: {"bloons": [{"type": "Regrow Rainbow", "count": 50, "regrow": True}, {"type": "BFB", "count": 4}], "rbe": 15006, "cash": 16426},
-    80: {"bloons": [{"type": "ZOMG", "count": 1}], "rbe": 16656, "cash": 18126},
-    81: {"bloons": [{"type": "BFB", "count": 6}], "rbe": 18984, "cash": 20564},
-    82: {"bloons": [{"type": "MOAB", "count": 10}, {"type": "BFB", "count": 4}], "rbe": 18816, "cash": 20436},
-    83: {"bloons": [{"type": "Ceramic", "count": 80}, {"type": "MOAB", "count": 8}], "rbe": 13248, "cash": 14888},
-    84: {"bloons": [{"type": "BFB", "count": 10}], "rbe": 31640, "cash": 33420},
-    85: {"bloons": [{"type": "ZOMG", "count": 2}], "rbe": 33312, "cash": 35212},
-    86: {"bloons": [{"type": "Fortified BFB", "count": 5, "fortified": True}], "rbe": 22820, "cash": 24840},
-    87: {"bloons": [{"type": "ZOMG", "count": 4}], "rbe": 66624, "cash": 68984},
-    88: {"bloons": [{"type": "Lead", "count": 50}, {"type": "ZOMG", "count": 3}], "rbe": 51118, "cash": 53448},
-    89: {"bloons": [{"type": "MOAB", "count": 20}, {"type": "BFB", "count": 8}], "rbe": 37632, "cash": 40152},
-    90: {"bloons": [{"type": "DDT", "count": 3, "camo": True, "lead": True}], "rbe": 2448, "cash": 4728},
-    91: {"bloons": [{"type": "Ceramic", "count": 100}, {"type": "BFB", "count": 6}], "rbe": 29384, "cash": 32024},
-    92: {"bloons": [{"type": "ZOMG", "count": 4}, {"type": "MOAB", "count": 10}], "rbe": 72784, "cash": 75784},
-    93: {"bloons": [{"type": "DDT", "count": 6, "camo": True, "lead": True}, {"type": "BFB", "count": 10}], "rbe": 36536, "cash": 39656},
-    94: {"bloons": [{"type": "BFB", "count": 6}, {"type": "ZOMG", "count": 6}], "rbe": 118920, "cash": 122820},
-    95: {"bloons": [{"type": "DDT", "count": 30, "camo": True, "lead": True}, {"type": "Fortified BFB", "count": 4, "fortified": True}], "rbe": 42740, "cash": 46240},
-    96: {"bloons": [{"type": "MOAB", "count": 40}, {"type": "ZOMG", "count": 6}], "rbe": 124576, "cash": 128976},
-    97: {"bloons": [{"type": "Fortified ZOMG", "count": 2, "fortified": True}], "rbe": 49312, "cash": 53212},
-    98: {"bloons": [{"type": "Fortified BFB", "count": 8, "fortified": True}, {"type": "ZOMG", "count": 8}], "rbe": 169760, "cash": 174880},
-    99: {"bloons": [{"type": "Fortified DDT", "count": 9, "fortified": True, "camo": True, "lead": True}], "rbe": 14688, "cash": 18408},
-    100: {"bloons": [{"type": "BAD", "count": 1}], "rbe": 55760, "cash": 61280}
+    1: {"bloons": [{"type": "Red", "count": 20}], "rbe": 20, "cash": ROUND_INCOME_TABLE[1]},
+    2: {"bloons": [{"type": "Red", "count": 35}], "rbe": 35, "cash": ROUND_INCOME_TABLE[2]},
+    3: {"bloons": [{"type": "Red", "count": 25}, {"type": "Blue", "count": 5}], "rbe": 35, "cash": ROUND_INCOME_TABLE[3]},
+    4: {"bloons": [{"type": "Red", "count": 35}, {"type": "Blue", "count": 18}], "rbe": 71, "cash": ROUND_INCOME_TABLE[4]},
+    5: {"bloons": [{"type": "Red", "count": 5}, {"type": "Blue", "count": 27}], "rbe": 59, "cash": ROUND_INCOME_TABLE[5]},
+    6: {"bloons": [{"type": "Red", "count": 15}, {"type": "Blue", "count": 15}, {"type": "Green", "count": 4}], "rbe": 57, "cash": ROUND_INCOME_TABLE[6]},
+    7: {"bloons": [{"type": "Red", "count": 20}, {"type": "Blue", "count": 20}, {"type": "Green", "count": 5}], "rbe": 75, "cash": ROUND_INCOME_TABLE[7]},
+    8: {"bloons": [{"type": "Red", "count": 10}, {"type": "Blue", "count": 26}, {"type": "Green", "count": 14}], "rbe": 104, "cash": ROUND_INCOME_TABLE[8]},
+    9: {"bloons": [{"type": "Green", "count": 30}], "rbe": 90, "cash": ROUND_INCOME_TABLE[9]},
+    10: {"bloons": [{"type": "Blue", "count": 102}], "rbe": 204, "cash": ROUND_INCOME_TABLE[10]},
+    11: {"bloons": [{"type": "Red", "count": 10}, {"type": "Blue", "count": 10}, {"type": "Green", "count": 12}, {"type": "Yellow", "count": 3}], "rbe": 78, "cash": ROUND_INCOME_TABLE[11]},
+    12: {"bloons": [{"type": "Blue", "count": 15}, {"type": "Green", "count": 10}, {"type": "Yellow", "count": 5}], "rbe": 80, "cash": ROUND_INCOME_TABLE[12]},
+    13: {"bloons": [{"type": "Blue", "count": 50}, {"type": "Green", "count": 23}], "rbe": 169, "cash": ROUND_INCOME_TABLE[13]},
+    14: {"bloons": [{"type": "Red", "count": 49}, {"type": "Blue", "count": 15}, {"type": "Green", "count": 10}, {"type": "Yellow", "count": 9}], "rbe": 145, "cash": ROUND_INCOME_TABLE[14]},
+    15: {"bloons": [{"type": "Red", "count": 20}, {"type": "Blue", "count": 15}, {"type": "Green", "count": 12}, {"type": "Yellow", "count": 5}, {"type": "Pink", "count": 3}], "rbe": 121, "cash": ROUND_INCOME_TABLE[15]},
+    16: {"bloons": [{"type": "Green", "count": 40}, {"type": "Yellow", "count": 8}], "rbe": 152, "cash": ROUND_INCOME_TABLE[16]},
+    17: {"bloons": [{"type": "Yellow", "count": 12}], "rbe": 48, "cash": ROUND_INCOME_TABLE[17]},
+    18: {"bloons": [{"type": "Green", "count": 80}], "rbe": 240, "cash": ROUND_INCOME_TABLE[18]},
+    19: {"bloons": [{"type": "Green", "count": 10}, {"type": "Yellow", "count": 4}, {"type": "Pink", "count": 7}], "rbe": 81, "cash": ROUND_INCOME_TABLE[19]},
+    20: {"bloons": [{"type": "Black", "count": 6}], "rbe": 66, "cash": ROUND_INCOME_TABLE[20]},
+    21: {"bloons": [{"type": "Yellow", "count": 40}, {"type": "Pink", "count": 14}], "rbe": 230, "cash": ROUND_INCOME_TABLE[21]},
+    22: {"bloons": [{"type": "White", "count": 16}], "rbe": 176, "cash": ROUND_INCOME_TABLE[22]},
+    23: {"bloons": [{"type": "Black", "count": 7}, {"type": "White", "count": 7}], "rbe": 154, "cash": ROUND_INCOME_TABLE[23]},
+    24: {"bloons": [{"type": "Blue", "count": 1}, {"type": "Green", "count": 1, "camo": True}], "rbe": 5, "cash": ROUND_INCOME_TABLE[24]},
+    25: {"bloons": [{"type": "Yellow", "count": 25}, {"type": "Purple", "count": 1}], "rbe": 111, "cash": ROUND_INCOME_TABLE[25]},
+    26: {"bloons": [{"type": "Pink", "count": 23}, {"type": "Zebra", "count": 4}], "rbe": 207, "cash": ROUND_INCOME_TABLE[26]},
+    27: {"bloons": [{"type": "Red", "count": 100}, {"type": "Blue", "count": 60}], "rbe": 220, "cash": ROUND_INCOME_TABLE[27]},
+    28: {"bloons": [{"type": "Lead", "count": 6}], "rbe": 138, "cash": ROUND_INCOME_TABLE[28]},
+    29: {"bloons": [{"type": "Yellow", "count": 50}, {"type": "Regrow Yellow", "count": 15}], "rbe": 260, "cash": ROUND_INCOME_TABLE[29]},
+    30: {"bloons": [{"type": "Lead", "count": 9}], "rbe": 207, "cash": ROUND_INCOME_TABLE[30]},
+    31: {"bloons": [{"type": "Black", "count": 8}, {"type": "Zebra", "count": 8}], "rbe": 272, "cash": ROUND_INCOME_TABLE[31]},
+    32: {"bloons": [{"type": "Black", "count": 15}, {"type": "White", "count": 20}], "rbe": 385, "cash": ROUND_INCOME_TABLE[32]},
+    33: {"bloons": [{"type": "Red", "count": 13, "camo": True}, {"type": "Yellow", "count": 1, "camo": True}], "rbe": 17, "cash": ROUND_INCOME_TABLE[33]},
+    34: {"bloons": [{"type": "Yellow", "count": 140}, {"type": "Zebra", "count": 5}], "rbe": 675, "cash": ROUND_INCOME_TABLE[34]},
+    35: {"bloons": [{"type": "Pink", "count": 35}, {"type": "Rainbow", "count": 18}], "rbe": 895, "cash": ROUND_INCOME_TABLE[35]},
+    36: {"bloons": [{"type": "Pink", "count": 140}, {"type": "Green", "count": 7, "camo": True}], "rbe": 721, "cash": ROUND_INCOME_TABLE[36]},
+    37: {"bloons": [{"type": "Black", "count": 25}, {"type": "White", "count": 25}, {"type": "Lead", "count": 7}, {"type": "White", "count": 10, "camo": True}], "rbe": 821, "cash": ROUND_INCOME_TABLE[37]},
+    38: {"bloons": [{"type": "White", "count": 42}, {"type": "Zebra", "count": 17}, {"type": "Lead", "count": 14}], "rbe": 1158, "cash": ROUND_INCOME_TABLE[38]},
+    39: {"bloons": [{"type": "Black", "count": 10}, {"type": "White", "count": 10}, {"type": "Rainbow", "count": 18}], "rbe": 1064, "cash": ROUND_INCOME_TABLE[39]},
+    40: {"bloons": [{"type": "MOAB", "count": 1}], "rbe": 616, "cash": ROUND_INCOME_TABLE[40]},
+    41: {"bloons": [{"type": "Black", "count": 60}], "rbe": 660, "cash": ROUND_INCOME_TABLE[41]},
+    42: {"bloons": [{"type": "Rainbow", "count": 6, "camo": True}], "rbe": 282, "cash": ROUND_INCOME_TABLE[42]},
+    43: {"bloons": [{"type": "Rainbow", "count": 10}, {"type": "Ceramic", "count": 7}], "rbe": 1204, "cash": ROUND_INCOME_TABLE[43]},
+    44: {"bloons": [{"type": "Zebra", "count": 50}], "rbe": 1150, "cash": ROUND_INCOME_TABLE[44]},
+    45: {"bloons": [{"type": "Fortified Lead", "count": 4, "fortified": True}, {"type": "Rainbow", "count": 24}], "rbe": 1256, "cash": ROUND_INCOME_TABLE[45]},
+    46: {"bloons": [{"type": "Ceramic", "count": 6}, {"type": "Fortified Ceramic", "count": 3, "fortified": True}], "rbe": 1152, "cash": ROUND_INCOME_TABLE[46]},
+    47: {"bloons": [{"type": "Pink", "count": 70}, {"type": "Camo Ceramic", "count": 2, "camo": True}], "rbe": 558, "cash": ROUND_INCOME_TABLE[47]},
+    48: {"bloons": [{"type": "Purple", "count": 40}, {"type": "Rainbow", "count": 30}], "rbe": 1850, "cash": ROUND_INCOME_TABLE[48]},
+    49: {"bloons": [{"type": "Green", "count": 343}, {"type": "Rainbow", "count": 20}, {"type": "Ceramic", "count": 18}], "rbe": 3847, "cash": ROUND_INCOME_TABLE[49]},
+    50: {"bloons": [{"type": "MOAB", "count": 2}, {"type": "Red", "count": 20}], "rbe": 1252, "cash": ROUND_INCOME_TABLE[50]},
+    51: {"bloons": [{"type": "Ceramic", "count": 10}, {"type": "Rainbow", "count": 5}], "rbe": 1275, "cash": ROUND_INCOME_TABLE[51]},
+    52: {"bloons": [{"type": "Rainbow", "count": 25}, {"type": "Ceramic", "count": 5}], "rbe": 1695, "cash": ROUND_INCOME_TABLE[52]},
+    53: {"bloons": [{"type": "Pink", "count": 80}, {"type": "MOAB", "count": 1}], "rbe": 1016, "cash": ROUND_INCOME_TABLE[53]},
+    54: {"bloons": [{"type": "Ceramic", "count": 35}], "rbe": 3640, "cash": ROUND_INCOME_TABLE[54]},
+    55: {"bloons": [{"type": "Ceramic", "count": 30}, {"type": "MOAB", "count": 1}], "rbe": 3736, "cash": ROUND_INCOME_TABLE[55]},
+    56: {"bloons": [{"type": "Rainbow", "count": 40}], "rbe": 1880, "cash": ROUND_INCOME_TABLE[56]},
+    57: {"bloons": [{"type": "MOAB", "count": 2}], "rbe": 1232, "cash": ROUND_INCOME_TABLE[57]},
+    58: {"bloons": [{"type": "Ceramic", "count": 15}, {"type": "Fortified Ceramic", "count": 10, "fortified": True}], "rbe": 3280, "cash": ROUND_INCOME_TABLE[58]},
+    59: {"bloons": [{"type": "Camo Lead", "count": 10, "camo": True}, {"type": "Ceramic", "count": 30}], "rbe": 3350, "cash": ROUND_INCOME_TABLE[59]},
+    60: {"bloons": [{"type": "BFB", "count": 1}], "rbe": 3164, "cash": ROUND_INCOME_TABLE[60]},
+    61: {"bloons": [{"type": "Zebra", "count": 150}, {"type": "MOAB", "count": 5}], "rbe": 6530, "cash": ROUND_INCOME_TABLE[61]},
+    62: {"bloons": [{"type": "Fortified Lead", "count": 25, "fortified": True}, {"type": "MOAB", "count": 2}], "rbe": 1864, "cash": ROUND_INCOME_TABLE[62]},
+    63: {"bloons": [{"type": "Ceramic", "count": 122}], "rbe": 12688, "cash": ROUND_INCOME_TABLE[63]},
+    64: {"bloons": [{"type": "MOAB", "count": 6}, {"type": "BFB", "count": 3}], "rbe": 13188, "cash": ROUND_INCOME_TABLE[64]},
+    65: {"bloons": [{"type": "Lead", "count": 20}, {"type": "BFB", "count": 3}], "rbe": 9952, "cash": ROUND_INCOME_TABLE[65]},
+    66: {"bloons": [{"type": "MOAB", "count": 11}], "rbe": 6776, "cash": ROUND_INCOME_TABLE[66]},
+    67: {"bloons": [{"type": "Ceramic", "count": 14}, {"type": "Fortified Ceramic", "count": 9, "fortified": True}], "rbe": 2984, "cash": ROUND_INCOME_TABLE[67]},
+    68: {"bloons": [{"type": "MOAB", "count": 4}, {"type": "BFB", "count": 1}], "rbe": 5628, "cash": ROUND_INCOME_TABLE[68]},
+    69: {"bloons": [{"type": "Lead", "count": 40}, {"type": "Ceramic", "count": 50}], "rbe": 6120, "cash": ROUND_INCOME_TABLE[69]},
+    70: {"bloons": [{"type": "Camo White", "count": 120, "camo": True}, {"type": "MOAB", "count": 4}], "rbe": 3784, "cash": ROUND_INCOME_TABLE[70]},
+    71: {"bloons": [{"type": "Ceramic", "count": 30}, {"type": "MOAB", "count": 6}], "rbe": 6816, "cash": ROUND_INCOME_TABLE[71]},
+    72: {"bloons": [{"type": "BFB", "count": 2}], "rbe": 6328, "cash": ROUND_INCOME_TABLE[72]},
+    73: {"bloons": [{"type": "MOAB", "count": 8}, {"type": "BFB", "count": 2}], "rbe": 11256, "cash": ROUND_INCOME_TABLE[73]},
+    74: {"bloons": [{"type": "Ceramic", "count": 42}, {"type": "BFB", "count": 1}], "rbe": 7532, "cash": ROUND_INCOME_TABLE[74]},
+    75: {"bloons": [{"type": "Lead", "count": 20}, {"type": "MOAB", "count": 14}, {"type": "BFB", "count": 3}], "rbe": 18580, "cash": ROUND_INCOME_TABLE[75]},
+    76: {"bloons": [{"type": "Regrow Ceramic", "count": 60, "regrow": True}], "rbe": 6240, "cash": ROUND_INCOME_TABLE[76]},
+    77: {"bloons": [{"type": "MOAB", "count": 12}, {"type": "BFB", "count": 4}], "rbe": 20048, "cash": ROUND_INCOME_TABLE[77]},
+    78: {"bloons": [{"type": "Ceramic", "count": 68}, {"type": "Camo Ceramic", "count": 72, "camo": True}, {"type": "BFB", "count": 1}], "rbe": 17724, "cash": ROUND_INCOME_TABLE[78]},
+    79: {"bloons": [{"type": "Regrow Rainbow", "count": 50, "regrow": True}, {"type": "BFB", "count": 4}], "rbe": 15006, "cash": ROUND_INCOME_TABLE[79]},
+    80: {"bloons": [{"type": "ZOMG", "count": 1}], "rbe": 16656, "cash": ROUND_INCOME_TABLE[80]},
+    81: {"bloons": [{"type": "BFB", "count": 6}], "rbe": 18984, "cash": ROUND_INCOME_TABLE[81]},
+    82: {"bloons": [{"type": "MOAB", "count": 10}, {"type": "BFB", "count": 4}], "rbe": 18816, "cash": ROUND_INCOME_TABLE[82]},
+    83: {"bloons": [{"type": "Ceramic", "count": 80}, {"type": "MOAB", "count": 8}], "rbe": 13248, "cash": ROUND_INCOME_TABLE[83]},
+    84: {"bloons": [{"type": "BFB", "count": 10}], "rbe": 31640, "cash": ROUND_INCOME_TABLE[84]},
+    85: {"bloons": [{"type": "ZOMG", "count": 2}], "rbe": 33312, "cash": ROUND_INCOME_TABLE[85]},
+    86: {"bloons": [{"type": "Fortified BFB", "count": 5, "fortified": True}], "rbe": 22820, "cash": ROUND_INCOME_TABLE[86]},
+    87: {"bloons": [{"type": "ZOMG", "count": 4}], "rbe": 66624, "cash": ROUND_INCOME_TABLE[87]},
+    88: {"bloons": [{"type": "Lead", "count": 50}, {"type": "ZOMG", "count": 3}], "rbe": 51118, "cash": ROUND_INCOME_TABLE[88]},
+    89: {"bloons": [{"type": "MOAB", "count": 20}, {"type": "BFB", "count": 8}], "rbe": 37632, "cash": ROUND_INCOME_TABLE[89]},
+    90: {"bloons": [{"type": "DDT", "count": 3, "camo": True, "lead": True}], "rbe": 2448, "cash": ROUND_INCOME_TABLE[90]},
+    91: {"bloons": [{"type": "Ceramic", "count": 100}, {"type": "BFB", "count": 6}], "rbe": 29384, "cash": ROUND_INCOME_TABLE[91]},
+    92: {"bloons": [{"type": "ZOMG", "count": 4}, {"type": "MOAB", "count": 10}], "rbe": 72784, "cash": ROUND_INCOME_TABLE[92]},
+    93: {"bloons": [{"type": "DDT", "count": 6, "camo": True, "lead": True}, {"type": "BFB", "count": 10}], "rbe": 36536, "cash": ROUND_INCOME_TABLE[93]},
+    94: {"bloons": [{"type": "BFB", "count": 6}, {"type": "ZOMG", "count": 6}], "rbe": 118920, "cash": ROUND_INCOME_TABLE[94]},
+    95: {"bloons": [{"type": "DDT", "count": 30, "camo": True, "lead": True}, {"type": "Fortified BFB", "count": 4, "fortified": True}], "rbe": 42740, "cash": ROUND_INCOME_TABLE[95]},
+    96: {"bloons": [{"type": "MOAB", "count": 40}, {"type": "ZOMG", "count": 6}], "rbe": 124576, "cash": ROUND_INCOME_TABLE[96]},
+    97: {"bloons": [{"type": "Fortified ZOMG", "count": 2, "fortified": True}], "rbe": 49312, "cash": ROUND_INCOME_TABLE[97]},
+    98: {"bloons": [{"type": "Fortified BFB", "count": 8, "fortified": True}, {"type": "ZOMG", "count": 8}], "rbe": 169760, "cash": ROUND_INCOME_TABLE[98]},
+    99: {"bloons": [{"type": "Fortified DDT", "count": 9, "fortified": True, "camo": True, "lead": True}], "rbe": 14688, "cash": ROUND_INCOME_TABLE[99]},
+    100: {"bloons": [{"type": "BAD", "count": 1}], "rbe": 55760, "cash": ROUND_INCOME_TABLE[100]}
 }
 
 def get_round_data(round_num):
@@ -156,125 +166,94 @@ def get_round_data(round_num):
         "cash": comp.get("cash", 0)
     }
 
-def check_strategy_defense_readiness(round_num, strategy_steps):
+def check_strategy_defense_readiness(round_num, strategy_steps, difficulty="Medium", monkey_knowledge=False):
     """
     Evaluates whether the provided strategy steps up to round_num have adequate
-    Camo, Lead, Blimp, and Ceramic popping coverage.
+    Camo, Lead, Blimp, and Ceramic popping coverage using the shared TowerReplayEngine.
+    Rejects orphan upgrades and ambiguous tower state mutations.
     """
-    active_steps = [s for s in strategy_steps if s.get("round", 1) <= round_num]
+    start_r = 3 if difficulty == "Hard" else 1
+    engine = TowerReplayEngine(difficulty=difficulty, start_round=start_r, max_round=100, monkey_knowledge=monkey_knowledge)
 
-    has_camo = False
-    has_lead = False
-    has_moab_dmg = False
-    has_ceramic_cc = False
+    for idx, s in enumerate(strategy_steps):
+        if not isinstance(s, dict):
+            continue
+        r = s.get("round", 1)
+        timing = s.get("timing", "before_round")
+        if isinstance(r, int):
+            if r > round_num:
+                continue
+            if r == round_num and timing == "after_round":
+                continue
+        engine.apply_step(s, step_index=idx)
+
+    active_towers = list(engine.active_towers.values())
+
+    # Determine global support buffs
+    has_village_camo = any(
+        t.tower_name == "Monkey Village" and t.upgrade[1] >= 2
+        for t in active_towers
+    )
+    has_decamo_sub = any(
+        t.tower_name == "Monkey Sub" and t.upgrade[0] >= 3
+        for t in active_towers
+    )
+    etienne_towers = [t for t in active_towers if t.tower_name == "Etienne"]
+    has_etienne_camo = any(
+        get_hero_level_at_round("Etienne", t.placed_round, round_num) >= 8
+        for t in etienne_towers
+    )
+    has_global_camo = has_village_camo or has_decamo_sub or has_etienne_camo
+
+    has_alch_lead_buff = any(
+        t.tower_name == "Alchemist" and t.upgrade[0] >= 2
+        for t in active_towers
+    )
+    has_mib = any(
+        t.tower_name == "Monkey Village" and t.upgrade[1] >= 3
+        for t in active_towers
+    )
 
     camo_providers = []
     lead_providers = []
     moab_providers = []
     ceramic_providers = []
 
-    for s in active_steps:
-        tower = s.get("tower", "").lower()
-        upg = s.get("upgrade", "0-0-0")
-        t_str = f"{s.get('tower')} [{upg}]"
+    for t_inst in active_towers:
+        t_name = t_inst.tower_name
+        upg = t_inst.upgrade
+        lbl = f"{t_name} [{t_inst.upg_str}]"
+        hero_lvl = get_hero_level_at_round(t_name, t_inst.placed_round, round_num) if t_inst.is_hero else None
 
-        # Check Camo capability
-        if "sauda" in tower or "etienne" in tower or "psi" in tower or "ezili" in tower:
-            has_camo = True
-            camo_providers.append(t_str)
-        elif "ninja" in tower:
-            has_camo = True
-            camo_providers.append(t_str)
-        elif "sub" in tower and ("2-" in upg or "3-" in upg or "4-" in upg or "5-" in upg):
-            has_camo = True
-            camo_providers.append(t_str)
-        elif "village" in tower and ("-2-" in upg or "-3-" in upg or "-4-" in upg or "-5-" in upg):
-            has_camo = True
-            camo_providers.append(t_str)
-        elif "sniper" in tower and ("-2" in upg):
-            has_camo = True
-            camo_providers.append(t_str)
-        elif "wizard" in tower and ("-2" in upg or "0-2-" in upg):
-            has_camo = True
-            camo_providers.append(t_str)
-        elif "dart" in tower and ("-2" in upg or "-3" in upg or "-4" in upg):
-            has_camo = True
-            camo_providers.append(t_str)
+        caps = get_tower_capabilities(t_name, upg, hero_level=hero_lvl)
 
-        # Check Lead capability
-        if "alchemist" in tower and ("2-" in upg or "3-" in upg or "4-" in upg or "5-" in upg):
-            has_lead = True
-            lead_providers.append(t_str)
-        elif "bomb" in tower:
-            has_lead = True
-            lead_providers.append(t_str)
-        elif "sauda" in tower and round_num >= 7:
-            has_lead = True
-            lead_providers.append(t_str)
-        elif "gwendolin" in tower or "striker" in tower or "churchill" in tower or "obyn" in tower:
-            has_lead = True
-            lead_providers.append(t_str)
-        elif "wizard" in tower and ("-1-" in upg or "-2-" in upg or "1-" in upg):
-            has_lead = True
-            lead_providers.append(t_str)
-        elif "glue" in tower and ("2-" in upg or "3-" in upg or "4-" in upg):
-            has_lead = True
-            lead_providers.append(t_str)
-        elif "mortar" in tower:
-            has_lead = True
-            lead_providers.append(t_str)
+        # Camo
+        if caps["camo"] or has_global_camo:
+            camo_providers.append(lbl)
 
-        # Check MOAB / Blimp damage
-        if "mauler" in s.get("details", "").lower() or ("bomb" in tower and "-3-" in upg or "-4-" in upg):
-            has_moab_dmg = True
-            moab_providers.append(t_str)
-        elif "sub" in tower and ("-3" in upg or "-4" in upg or "-5" in upg):
-            has_moab_dmg = True
-            moab_providers.append(t_str)
-        elif "buccaneer" in tower and ("3-" in upg or "4-" in upg or "-4-" in upg):
-            has_moab_dmg = True
-            moab_providers.append(t_str)
-        elif "ninja" in tower and ("4-" in upg or "5-" in upg):
-            has_moab_dmg = True
-            moab_providers.append(t_str)
-        elif "super" in tower:
-            has_moab_dmg = True
-            moab_providers.append(t_str)
-        elif "tack" in tower and ("-4" in upg or "-5" in upg):
-            has_moab_dmg = True
-            moab_providers.append(t_str)
-        elif "heli" in tower or "ace" in tower:
-            has_moab_dmg = True
-            moab_providers.append(t_str)
+        # Lead
+        if caps["lead"] or ((has_alch_lead_buff or has_mib) and t_name not in ("Banana Farm", "Monkey Village")):
+            lead_providers.append(lbl)
 
-        # Check Ceramic Crowd Control
-        if "bloonjitsu" in s.get("details", "").lower() or ("ninja" in tower and "4-" in upg):
-            has_ceramic_cc = True
-            ceramic_providers.append(t_str)
-        elif "tack" in tower and ("4-" in upg or "-4" in upg or "-5" in upg):
-            has_ceramic_cc = True
-            ceramic_providers.append(t_str)
-        elif "bomb" in tower and ("-4" in upg or "-5" in upg):
-            has_ceramic_cc = True
-            ceramic_providers.append(t_str)
-        elif "glue" in tower and ("3-" in upg or "4-" in upg):
-            has_ceramic_cc = True
-            ceramic_providers.append(t_str)
-        elif "boomerang" in tower and ("4-" in upg or "-4" in upg):
-            has_ceramic_cc = True
-            ceramic_providers.append(t_str)
-        elif "wizard" in tower and ("-4" in upg or "-5" in upg):
-            has_ceramic_cc = True
-            ceramic_providers.append(t_str)
+        # MOAB Damage
+        if caps["moab_damage"]:
+            moab_providers.append(lbl)
+
+        # Ceramic Crowd Control
+        if caps["ceramic_cc"]:
+            ceramic_providers.append(lbl)
 
     return {
         "round": round_num,
-        "camo_ready": has_camo,
+        "camo_ready": len(camo_providers) > 0,
         "camo_towers": list(dict.fromkeys(camo_providers)),
-        "lead_ready": has_lead,
+        "lead_ready": len(lead_providers) > 0,
         "lead_towers": list(dict.fromkeys(lead_providers)),
-        "moab_ready": has_moab_dmg,
+        "moab_ready": len(moab_providers) > 0,
         "moab_towers": list(dict.fromkeys(moab_providers)),
-        "ceramic_ready": has_ceramic_cc,
-        "ceramic_towers": list(dict.fromkeys(ceramic_providers))
+        "ceramic_ready": len(ceramic_providers) > 0,
+        "ceramic_towers": list(dict.fromkeys(ceramic_providers)),
+        "coverage_label": "Planned Capability Coverage",
+        "replay_errors": list(engine.errors),
+        "is_valid": len(engine.errors) == 0
     }
