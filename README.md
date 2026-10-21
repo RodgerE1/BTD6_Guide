@@ -146,3 +146,16 @@ You can update strategies in two ways:
 
 - **Markdown Export**: Click **`📋 Copy Markdown`** in the toolbar to copy a formatted Reddit/Discord-ready strategy guide directly to your clipboard.
 - **Printable Cheat Sheet**: Click **`🖨️ Export HTML`** in the toolbar to generate and open a clean, self-contained printable cheat sheet in your browser for dual-monitor or printed reference.
+
+---
+
+## 🆕 What's New in Version 1.4.0
+
+- **Reliable Database Compilation**: Fixed canonical purchase pricing and `during_round` action triggers across modular map definitions (`firing_range`, `geared`, `mesa`, `x_factor`, `quad`, `ravine`, `glacial_trail`), ensuring 100% reliable database regeneration into `guides.json` with zero economic overruns.
+- **XSS Sanitization & Strict Schema Validation**: Enforced finite numeric schema validation for `requirements.required_starting_cash` and comprehensive HTML escaping across all metadata and assumptions fields in exported printable cheat sheets.
+- **Independent Monkey Knowledge Modeling**: Decoupled `more_starting_cash` (+$200 cash) and `free_dart_monkey` ($0 first Dart Monkey) into separate, independent perks across the replay engine, economic calculations, and guide imports.
+- **Isolated User Override Loading**: Wrapped override evaluations in per-strategy exception handlers in `DataManager.load()`, guaranteeing that a malformed override cannot corrupt or block other valid custom strategies.
+- **Editor Schema-First Validation**: Structural schema validation now executes immediately after JSON parsing in the Strategy Editor, eliminating `TypeError` exceptions on string cost estimates (e.g. `"170"`).
+- **Unified Draft Lifecycle**: Unified status-aware validation across the editor, database compiler, loader, and import pipeline, allowing iterative drafts to save and compile cleanly without tripping strict tactical checkpoints.
+- **64 Automated Regression Tests**: Expanded test suite with comprehensive coverage for all v1.4.0 findings and isolated temporary-directory export testing.
+

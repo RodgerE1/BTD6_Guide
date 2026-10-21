@@ -32,7 +32,7 @@ def load_user_overrides():
             print(f"Warning: Failed to load user overrides ({e})")
     return {}
 
-def compile_database():
+def compile_database(output_path=None):
     all_maps = {}
 
     def merge_maps(source, category_name):
@@ -86,7 +86,9 @@ def compile_database():
             assign_explicit_tower_ids(strat, mid, diff)
 
             # 2. Assign stable step IDs and sync cost_estimate with exact canonical pricing
-            engine = TowerReplayEngine(difficulty=diff)
+            start_round = 3 if diff == "Hard" else 1
+            max_round = 40 if diff == "Easy" else (60 if diff == "Medium" else 80)
+            engine = TowerReplayEngine(difficulty=diff, start_round=start_round, max_round=max_round)
             for idx, s in enumerate(strat.get("steps", [])):
                 if "step_id" not in s:
                     s["step_id"] = f"{mid}_{diff.lower()}_s{s.get('step_number', idx + 1)}"
@@ -99,7 +101,13 @@ def compile_database():
                     s["cost_estimate"] = exact_cost
 
             # 3. Pre-validate before accepting into compilation
-            is_valid, val_errs, _, _ = validate_strategy(strat, map_context=mdata, diff_name=diff)
+            is_draft = strat.get("status") in ("Draft", "Needs Review", "Unverified Draft")
+            is_valid, val_errs, _, _ = validate_strategy(
+                strat,
+                map_context=mdata,
+                diff_name=diff,
+                strict_threats=(not is_draft)
+            )
             if not is_valid:
                 raise ValueError(f"Strategy {mid} [{diff}] failed pre-validation:\n" + "\n".join(val_errs[:5]))
 
@@ -108,7 +116,7 @@ def compile_database():
 
     # Build top-level database structure
     database = {
-        "version": "1.3.0",
+        "version": "1.4.0",
         "last_updated": datetime.date.today().isoformat(),
         "total_maps": len(sorted_maps),
         "supported_difficulties": ["Easy", "Medium", "Hard"],
@@ -122,7 +130,8 @@ def compile_database():
         "maps": sorted_maps
     }
 
-    output_path = os.path.join(os.path.dirname(__file__), "guides.json")
+    if output_path is None:
+        output_path = os.path.join(os.path.dirname(__file__), "guides.json")
     temp_path = output_path + ".tmp"
     with open(temp_path, "w", encoding="utf-8") as f:
         json.dump(database, f, indent=2, ensure_ascii=False)

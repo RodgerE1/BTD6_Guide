@@ -278,14 +278,14 @@ EXPERT_MAPS = {
                 "why_it_works": "Sniper and Quincy in the center can hit bloons on all four corner tracks without moving.",
                 "research_sources": ["Bloons Wiki - Quad"],
                 "steps": [
-                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "In the exact center of the map between all 4 track crossings.", "First", 460, "Fires arrows into all 4 corner paths."),
+                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "In the exact center of the map between all 4 track crossings.", "First", 455, "Fires arrows into all 4 corner paths."),
                     create_step(2, "Rounds 1–10: Opening Defense", 6, "Place", "Sniper Monkey", "0-0-0", "In the center of the map next to Quincy.", "First", 300, "Provides global rifle fire across all 4 corners."),
-                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Center map.", "First", 935, "Full Metal Jacket and Faster Firing clears bloons quickly."),
+                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Center map.", "First", 980, "Full Metal Jacket and Faster Firing clears bloons quickly."),
                     create_step(4, "Rounds 11–20: Expanding Defense", 17, "Place", "Dart Monkey", "0-0-0", "At one of the corner crossings.", "First", 170, "Adds cleanup darts."),
-                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Sniper Monkey", "3-0-2", "Center map.", "Strong", 2450, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot."),
-                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Corner crossing.", "First", 1275, "Crossbow provides high damage cleanup."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "In the center map.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons across all 4 lanes."),
-                    create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "In the center map.", "Strong", 2040, "MOAB Mauler delivers heavy blimp damage. Sniper on Strong and Quincy destroy the MOAB.")
+                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 24, "Upgrade", "Sniper Monkey", "3-0-2", "Center map.", "Strong", 3740, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot.", timing="before_round"),
+                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Corner crossing.", "First", 970, "Crossbow provides high damage cleanup.", timing="during_round"),
+                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "In the center map.", "Close", 2400, "Recursive Cluster bombs wipe out grouped bloons across all 4 lanes.", timing="during_round"),
+                    create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "In the center map.", "Strong", 2355, "MOAB Mauler delivers heavy blimp damage. Sniper on Strong and Quincy destroy the MOAB.", timing="before_round")
                 ]
             },
             "Medium": None, "Hard": None, "Impoppable": None, "CHIMPS": None
@@ -317,14 +317,14 @@ EXPERT_MAPS = {
                 "why_it_works": "The wooden bridge is the single physical convergence for all ravine paths.",
                 "research_sources": ["Bloons Wiki - Ravine"],
                 "steps": [
-                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "On the central wooden bridge where the ravine paths converge.", "First", 460, "Fires arrows across the bridge chokepoint."),
+                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "On the central wooden bridge where the ravine paths converge.", "First", 455, "Fires arrows across the bridge chokepoint."),
                     create_step(2, "Rounds 1–10: Opening Defense", 6, "Place", "Sniper Monkey", "0-0-0", "On the elevated cliff ledge overlooking the ravine.", "First", 300, "Provides global rifle fire with high-ground vision."),
-                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Cliff ledge.", "First", 935, "Full Metal Jacket and Faster Firing clears bloons quickly."),
+                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Cliff ledge.", "First", 980, "Full Metal Jacket and Faster Firing clears bloons quickly."),
                     create_step(4, "Rounds 11–20: Expanding Defense", 17, "Place", "Dart Monkey", "0-0-0", "At the exit of the wooden bridge.", "First", 170, "Adds cleanup darts."),
-                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Sniper Monkey", "3-0-2", "Cliff ledge.", "Strong", 2450, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot."),
-                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Bridge exit.", "First", 1275, "Crossbow provides high damage cleanup."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "At the bridge exit.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons."),
-                    create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "At the bridge entrance.", "Strong", 2040, "MOAB Mauler delivers heavy blimp damage. Sniper on Strong and Quincy destroy the MOAB.")
+                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 24, "Upgrade", "Sniper Monkey", "3-0-2", "Cliff ledge.", "Strong", 3740, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot.", timing="before_round"),
+                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Bridge exit.", "First", 970, "Crossbow provides high damage cleanup.", timing="during_round"),
+                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "At the bridge exit.", "Close", 2400, "Recursive Cluster bombs wipe out grouped bloons.", timing="during_round"),
+                    create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "At the bridge entrance.", "Strong", 2355, "MOAB Mauler delivers heavy blimp damage. Sniper on Strong and Quincy destroy the MOAB.", timing="before_round")
                 ]
             },
             "Medium": None, "Hard": None, "Impoppable": None, "CHIMPS": None
@@ -473,14 +473,14 @@ EXPERT_MAPS = {
                 "why_it_works": "Staggering tower placements between different ice shelves ensures continuous defense even when one tower freezes.",
                 "research_sources": ["Bloons Wiki - Glacial Trail", "Update 40 Release Notes"],
                 "steps": [
-                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "On the upper ice shelf overlooking the trail entrance.", "First", 460, "Fires arrows down the glacial path."),
+                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "On the upper ice shelf overlooking the trail entrance.", "First", 455, "Fires arrows down the glacial path."),
                     create_step(2, "Rounds 1–10: Opening Defense", 6, "Place", "Sniper Monkey", "0-0-0", "On a separate lower ice shelf away from Quincy.", "First", 300, "Provides global rifle fire when thawed."),
-                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Lower ice shelf.", "First", 935, "Full Metal Jacket and Faster Firing clears bloons quickly."),
+                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Lower ice shelf.", "First", 980, "Full Metal Jacket and Faster Firing clears bloons quickly."),
                     create_step(4, "Rounds 11–20: Expanding Defense", 17, "Place", "Dart Monkey", "0-0-0", "At the trail exit shelf.", "First", 170, "Adds third staggered tower for freeze cycle redundancy."),
-                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Sniper Monkey", "3-0-2", "Lower ice shelf.", "Strong", 2450, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot."),
-                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Exit shelf.", "First", 1275, "Crossbow provides high damage cleanup."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "Near the trail bend.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons."),
-                    create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "Near the trail entrance.", "Strong", 2040, "MOAB Mauler delivers heavy blimp damage. Sniper on Strong and Quincy destroy the MOAB.")
+                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 24, "Upgrade", "Sniper Monkey", "3-0-2", "Lower ice shelf.", "Strong", 3740, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot.", timing="before_round"),
+                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Exit shelf.", "First", 970, "Crossbow provides high damage cleanup.", timing="during_round"),
+                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "Near the trail bend.", "Close", 2400, "Recursive Cluster bombs wipe out grouped bloons.", timing="during_round"),
+                    create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "Near the trail entrance.", "Strong", 2355, "MOAB Mauler delivers heavy blimp damage. Sniper on Strong and Quincy destroy the MOAB.", timing="before_round")
                 ]
             },
             "Medium": None, "Hard": None, "Impoppable": None, "CHIMPS": None

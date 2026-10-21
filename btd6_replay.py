@@ -84,11 +84,24 @@ class TowerReplayEngine:
     Tracks active towers keyed by tower_id, canonical expenditures, refunds, and tactical buffs.
     All transitions are strictly transactional: failed transitions leave board state untouched.
     """
-    def __init__(self, difficulty="Medium", start_round=1, max_round=60, monkey_knowledge=False):
+    def __init__(self, difficulty="Medium", start_round=1, max_round=60, monkey_knowledge=False,
+                 more_starting_cash=None, free_dart_monkey=None):
         self.difficulty = difficulty
         self.start_round = start_round
         self.max_round = max_round
-        self.monkey_knowledge = bool(monkey_knowledge and difficulty != "CHIMPS")
+        is_chimps = (difficulty == "CHIMPS")
+        self.monkey_knowledge = bool(monkey_knowledge and not is_chimps)
+
+        if more_starting_cash is not None:
+            self.more_starting_cash = bool(more_starting_cash and not is_chimps)
+        else:
+            self.more_starting_cash = self.monkey_knowledge
+
+        if free_dart_monkey is not None:
+            self.free_dart_monkey = bool(free_dart_monkey and not is_chimps)
+        else:
+            self.free_dart_monkey = self.monkey_knowledge
+
         self.free_dart_used = False
         self.active_towers = {}         # tower_id -> TowerInstance
         self.all_towers = {}            # tower_id -> TowerInstance (includes sold)
@@ -297,7 +310,7 @@ class TowerReplayEngine:
                 return False, err
 
             free_dart_eligible = (
-                self.monkey_knowledge
+                self.free_dart_monkey
                 and not self.free_dart_used
                 and tower == "Dart Monkey"
                 and upg_tuple == (0, 0, 0)
@@ -305,7 +318,7 @@ class TowerReplayEngine:
             canon_cost = 0 if free_dart_eligible else get_action_canonical_cost(tower, (0, 0, 0), upg_tuple, "Place", self.difficulty)
             action_cost = canon_cost
 
-            starting_cash_limit = get_starting_cash(self.difficulty, self.monkey_knowledge)
+            starting_cash_limit = get_starting_cash(self.difficulty, more_starting_cash=self.more_starting_cash)
             if r == self.start_round:
                 new_opening_cost += action_cost
                 if new_opening_cost > starting_cash_limit:
@@ -332,7 +345,7 @@ class TowerReplayEngine:
 
             if r == self.start_round:
                 new_opening_cost += action_cost
-                starting_cash_limit = get_starting_cash(self.difficulty, self.monkey_knowledge)
+                starting_cash_limit = get_starting_cash(self.difficulty, more_starting_cash=self.more_starting_cash)
                 if new_opening_cost > starting_cash_limit:
                     err = f"Step {s_num}: opening cost ${new_opening_cost} exceeds ${starting_cash_limit} starting cash on Round {self.start_round}."
                     self.errors.append(err)
@@ -384,7 +397,7 @@ class TowerReplayEngine:
                 return False, err
 
         # 4. Economic Accounting & Cash Ceilings
-        starting_cash_limit = get_starting_cash(self.difficulty, self.monkey_knowledge)
+        starting_cash_limit = get_starting_cash(self.difficulty, more_starting_cash=self.more_starting_cash)
         if r == self.start_round and (action_cost > starting_cash_limit or int(cost_val) > starting_cash_limit):
             err = f"Step {s_num}: opening cost ${max(action_cost, int(cost_val))} exceeds ${starting_cash_limit} starting cash on Round {self.start_round}."
             self.errors.append(err)
@@ -392,14 +405,14 @@ class TowerReplayEngine:
 
         new_cum_spent = self.cumulative_cost_spent + action_cost
         new_cum_refunds = self.cumulative_refunds + refund_amount
-        earned_cash = get_cash_available(self.difficulty, r, timing=timing, monkey_knowledge=self.monkey_knowledge)
+        earned_cash = get_cash_available(self.difficulty, r, timing=timing, more_starting_cash=self.more_starting_cash)
         cash_avail = earned_cash + self.cumulative_refunds
 
         # Reject if either canonical cumulative spending or declared estimate exceeds available cash
         effective_check_cost = max(new_cum_spent, self.cumulative_cost_spent + int(cost_val))
 
         if effective_check_cost > cash_avail:
-            earned_during = get_cash_available(self.difficulty, r, timing="during_round")
+            earned_during = get_cash_available(self.difficulty, r, timing="during_round", more_starting_cash=self.more_starting_cash)
             cash_during = earned_during + self.cumulative_refunds
             if timing == "before_round" and effective_check_cost <= cash_during:
                 err = (
@@ -625,6 +638,36 @@ def validate_strategy_schema(strategy):
         if rf not in strategy:
             errors.append(f"Strategy missing required field '{rf}'.")
 
+    # Validate string metadata fields (reject None or non-string values)
+    for text_field in [
+        "difficulty", "mode", "rounds", "status", "recommended_hero",
+        "overview", "camo_handling", "lead_handling", "moab_handling", "why_it_works"
+    ]:
+        if text_field in strategy:
+            val = strategy.get(text_field)
+            if not isinstance(val, str) or val is None:
+                errors.append(f"Strategy field '{text_field}' must be a string, found {type(val).__name__}.")
+
+    # Validate requirements object and subfields
+    if "requirements" in strategy:
+        req = strategy.get("requirements")
+        if req is None or not isinstance(req, dict):
+            errors.append(f"Strategy 'requirements' must be a dictionary, found {type(req).__name__}.")
+        else:
+            if "required_starting_cash" in req:
+                req_cash = req.get("required_starting_cash")
+                if not is_valid_numeric_cost(req_cash):
+                    errors.append(f"requirements.required_starting_cash '{req_cash}' must be a finite, non-negative number.")
+            for bool_field in ("more_starting_cash", "free_dart_monkey", "monkey_knowledge"):
+                if bool_field in req:
+                    val = req.get(bool_field)
+                    if not isinstance(val, bool):
+                        errors.append(f"requirements.{bool_field} must be a boolean, found {type(val).__name__}.")
+            if "game_version" in req:
+                gv = req.get("game_version")
+                if not isinstance(gv, str) or not gv.strip():
+                    errors.append("requirements.game_version must be a non-empty string.")
+
     status = strategy.get("status", "Needs Review")
     if status not in ("Playtested", "Structurally Validated", "Verified", "Needs Review", "Draft"):
         errors.append(f"Strategy has unrecognized status '{status}'.")
@@ -699,10 +742,12 @@ def validate_strategy_schema(strategy):
     return (len(errors) == 0), errors
 
 
-def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats=True, monkey_knowledge=None):
+def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats=True, monkey_knowledge=None,
+                      more_starting_cash=None, free_dart_monkey=None):
     """
     Validates a complete strategy dictionary against all BTD6 structural, economic,
-    and tactical replay invariants.
+    and tactical replay invariants. Supports independent Monkey Knowledge perks
+    (more_starting_cash and free_dart_monkey).
     Returns: (is_valid: bool, errors: list, warnings: list, stats: dict)
     """
     errors = []
@@ -718,20 +763,31 @@ def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats
     max_round = 40 if diff == "Easy" else (60 if diff == "Medium" else 80)
     min_steps = 5 if diff == "Easy" else (8 if diff == "Medium" else 12)
 
-    # Infer monkey knowledge from strategy requirements if not explicitly supplied
+    # Infer independent perks from strategy requirements if not explicitly supplied
+    req = strategy.get("requirements") if isinstance(strategy, dict) and isinstance(strategy.get("requirements"), dict) else {}
+    if more_starting_cash is None:
+        more_starting_cash = req.get("more_starting_cash")
+    if free_dart_monkey is None:
+        free_dart_monkey = req.get("free_dart_monkey")
     if monkey_knowledge is None:
-        req = strategy.get("requirements", {}) if isinstance(strategy, dict) else {}
-        monkey_knowledge = bool(
-            req.get("monkey_knowledge")
-            or req.get("more_starting_cash")
-            or req.get("free_dart_monkey")
-            or strategy.get("monkey_knowledge")
-            or (strategy.get("starting_cash", 650) == 850)
-        )
+        if req.get("monkey_knowledge") is not None:
+            monkey_knowledge = bool(req.get("monkey_knowledge"))
+        elif more_starting_cash is not None or free_dart_monkey is not None:
+            monkey_knowledge = bool(more_starting_cash or free_dart_monkey)
+        else:
+            monkey_knowledge = bool(
+                strategy.get("monkey_knowledge")
+                or (strategy.get("starting_cash", 650) == 850)
+            )
+
+    if more_starting_cash is None:
+        more_starting_cash = monkey_knowledge
+    if free_dart_monkey is None:
+        free_dart_monkey = monkey_knowledge
 
     starting_cash = strategy.get("starting_cash", 650)
-    expected_cash = get_starting_cash(diff, monkey_knowledge=monkey_knowledge)
-    if monkey_knowledge:
+    expected_cash = get_starting_cash(diff, more_starting_cash=more_starting_cash)
+    if more_starting_cash:
         if starting_cash not in (650, expected_cash):
             errors.append(f"Starting cash is {starting_cash}, expected 650 or {expected_cash}.")
     else:
@@ -746,7 +802,14 @@ def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats
         warnings.append(f"{diff} strategy has {len(steps)} steps (recommended minimum: {min_steps}).")
 
     # Replay Simulation
-    engine = TowerReplayEngine(difficulty=diff, start_round=start_round, max_round=max_round, monkey_knowledge=monkey_knowledge)
+    engine = TowerReplayEngine(
+        difficulty=diff,
+        start_round=start_round,
+        max_round=max_round,
+        monkey_knowledge=monkey_knowledge,
+        more_starting_cash=more_starting_cash,
+        free_dart_monkey=free_dart_monkey
+    )
     for idx, s in enumerate(steps):
         success, err = engine.apply_step(s, step_index=idx)
         if not success and err:
@@ -798,6 +861,65 @@ def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats
     stats["active_towers_count"] = len(engine.active_towers)
 
     return (len(errors) == 0), errors, warnings, stats
+
+
+def prepare_and_validate_strategy(
+    strategy,
+    map_context=None,
+    diff_name=None,
+    map_id=None,
+    monkey_knowledge=None,
+    more_starting_cash=None,
+    free_dart_monkey=None,
+    strict_threats=None
+):
+    """
+    Unified authoritative strategy preparation and validation pipeline.
+    1. Runs schema validation first (rejects malformed types/costs/requirements before any mutations).
+    2. Determines draft status and establishes consistent policy.
+    3. Assigns stable step IDs and explicit tower IDs.
+    4. Normalizes and validates requirements.
+    5. Runs full transactional replay simulation and tactical checks.
+    Returns: (is_valid: bool, errors: list, warnings: list, prepared_strategy: dict)
+    """
+    if not isinstance(strategy, dict):
+        return False, ["Strategy object must be a JSON dictionary."], [], {}
+
+    # 1. Structural Schema Validation FIRST
+    schema_ok, schema_errs = validate_strategy_schema(strategy)
+    if not schema_ok:
+        return False, schema_errs, [], strategy
+
+    diff = diff_name or strategy.get("difficulty", "Easy")
+    status = strategy.get("status", "Needs Review")
+    is_draft = status in ("Draft", "Needs Review")
+
+    if strict_threats is None:
+        strict_threats = not is_draft
+
+    target_mid = map_id or (map_context.get("id") if isinstance(map_context, dict) else "custom_map")
+
+    # 2. Assign step IDs and explicit tower IDs safely
+    for idx, s in enumerate(strategy.get("steps", [])):
+        if isinstance(s, dict):
+            if "step_id" not in s:
+                s["step_id"] = f"{target_mid}_{diff.lower()}_s{s.get('step_number', idx + 1)}"
+            if "timing" not in s:
+                s["timing"] = "before_round"
+
+    assign_explicit_tower_ids(strategy, target_mid, diff)
+
+    # 3. Replay and Economic Validation
+    is_valid, errs, warns, stats = validate_strategy(
+        strategy,
+        map_context=map_context,
+        diff_name=diff,
+        strict_threats=strict_threats,
+        monkey_knowledge=monkey_knowledge,
+        more_starting_cash=more_starting_cash,
+        free_dart_monkey=free_dart_monkey
+    )
+    return is_valid, errs, warns, strategy
 
 def normalize_map_strategies(maps_dict):
     """
@@ -881,7 +1003,7 @@ def normalize_map_strategies(maps_dict):
                     "targeting": "Strong",
                     "cost_estimate": bomb_cost,
                     "details": "MOAB Mauler targets the blimp. The Destroyer and Sub effortlessly pop the MOAB and ceramic insides.",
-                    "timing": "before_round"
+                    "timing": "during_round" if (bomb_cost > 1930 or mid == "cargo") else "before_round"
                 }
                 strat["steps"] = s1_5 + [new_s6, new_s7, new_s8, new_s9]
 
@@ -893,21 +1015,36 @@ def normalize_map_strategies(maps_dict):
         elif mid == 'firing_range':
             if len(steps) >= 8:
                 steps[4]["round"] = 24
+                steps[4]["cost_estimate"] = 3740
                 steps[5]["round"] = 28
                 steps[5]["timing"] = "before_round"
+                steps[5]["cost_estimate"] = 940
                 steps[6]["round"] = 34
                 steps[6]["timing"] = "during_round"
+                steps[6]["cost_estimate"] = 2720
+                steps[7]["round"] = 37
                 steps[7]["timing"] = "during_round"
+                steps[7]["cost_estimate"] = 2355
 
         elif mid == 'geared':
-            if len(steps) >= 5:
+            if len(steps) >= 8:
                 steps[4]["round"] = 24
+                steps[4]["cost_estimate"] = 3740
+                steps[5]["cost_estimate"] = 445
+                steps[6]["cost_estimate"] = 1955
+                steps[7]["cost_estimate"] = 2355
 
         elif mid in ['mesa', 'x_factor', 'quad', 'ravine', 'glacial_trail']:
-            if len(steps) >= 7:
+            if len(steps) >= 8:
                 steps[4]["round"] = 24
+                steps[4]["cost_estimate"] = 3740
+                steps[5]["round"] = 27
                 steps[5]["timing"] = "during_round"
+                steps[5]["cost_estimate"] = 970
+                steps[6]["round"] = 34
                 steps[6]["timing"] = "during_round"
+                steps[6]["cost_estimate"] = 2400
+                steps[7]["cost_estimate"] = 2355
 
         elif mid == 'infernal':
             if len(steps) >= 7:

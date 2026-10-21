@@ -320,23 +320,25 @@ STARTING_CASH = {
     "CHIMPS": 650
 }
 
-def get_starting_cash(difficulty="Medium", monkey_knowledge=False):
+def get_starting_cash(difficulty="Medium", monkey_knowledge=False, more_starting_cash=None):
     """
     Returns starting cash for difficulty, factoring in the 'More Cash'
     Primary Monkey Knowledge perk (+$200 starting cash in non-CHIMPS modes).
+    Accepts explicit more_starting_cash flag or general monkey_knowledge flag.
     """
     base = STARTING_CASH.get(difficulty, 650)
-    if monkey_knowledge and difficulty != "CHIMPS":
+    has_more_cash = more_starting_cash if more_starting_cash is not None else monkey_knowledge
+    if has_more_cash and difficulty != "CHIMPS":
         return base + 200
     return base
 
-def get_cumulative_cash_ceiling(difficulty, round_num, monkey_knowledge=False):
+def get_cumulative_cash_ceiling(difficulty, round_num, monkey_knowledge=False, more_starting_cash=None):
     """
     Returns the maximum realistic cumulative cash earned by the END of round_num,
     including starting cash (with optional Monkey Knowledge).
     """
     start_round = 3 if difficulty == "Hard" else 1
-    starting_cash = get_starting_cash(difficulty, monkey_knowledge=monkey_knowledge)
+    starting_cash = get_starting_cash(difficulty, monkey_knowledge=monkey_knowledge, more_starting_cash=more_starting_cash)
     if round_num < start_round:
         return starting_cash
 
@@ -345,16 +347,17 @@ def get_cumulative_cash_ceiling(difficulty, round_num, monkey_knowledge=False):
         cash += ROUND_INCOME_TABLE.get(r, 0)
     return cash
 
-def get_cash_available(difficulty, round_num, timing="before_round", monkey_knowledge=False):
+def get_cash_available(difficulty, round_num, timing="before_round", monkey_knowledge=False, more_starting_cash=None):
     """
     Returns cash available at a given round based on action timing:
     - 'before_round' (default): cash available from starting cash plus rounds completed prior to round_num.
     - 'during_round': cash available prior to round_num plus pop cash earned during round_num (no end-of-round bonus).
     - 'after_round': cash available after round_num completes, including its end-of-round bonus.
     - 'monkey_knowledge': optional boolean factoring in 'More Cash' perk (+$200 starting cash).
+    - 'more_starting_cash': optional explicit boolean for the +$200 starting cash perk.
     """
     start_round = 3 if difficulty == "Hard" else 1
-    starting_cash = get_starting_cash(difficulty, monkey_knowledge=monkey_knowledge)
+    starting_cash = get_starting_cash(difficulty, monkey_knowledge=monkey_knowledge, more_starting_cash=more_starting_cash)
     if round_num < start_round:
         return starting_cash
 

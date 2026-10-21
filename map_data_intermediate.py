@@ -3,7 +3,7 @@ map_data_intermediate.py
 Contains comprehensive, round-by-round Easy/Standard (R1-40) strategies for all 26 Intermediate maps.
 """
 
-def create_step(step_number, round_range, round_num, action, tower, upgrade, placement, targeting, cost, details):
+def create_step(step_number, round_range, round_num, action, tower, upgrade, placement, targeting, cost, details, timing="before_round"):
     return {
         "step_number": step_number,
         "round_range": round_range,
@@ -14,7 +14,8 @@ def create_step(step_number, round_range, round_num, action, tower, upgrade, pla
         "placement": placement,
         "targeting": targeting,
         "cost_estimate": cost,
-        "details": details
+        "details": details,
+        "timing": timing
     }
 
 INTERMEDIATE_MAPS = {
@@ -316,14 +317,14 @@ INTERMEDIATE_MAPS = {
                 "why_it_works": "Snipers on the elevated firing bench have unlimited global range and ignore all the ground barriers.",
                 "research_sources": ["Bloons Wiki - Firing Range"],
                 "steps": [
-                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "On the elevated wooden firing bench.", "First", 460, "Fires arrows over the clay barriers with high ground vision."),
+                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "On the elevated wooden firing bench.", "First", 455, "Fires arrows over the clay barriers with high ground vision."),
                     create_step(2, "Rounds 1–10: Opening Defense", 6, "Place", "Sniper Monkey", "0-0-0", "On the firing bench next to Quincy.", "First", 300, "Provides global rifle fire across the range."),
-                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Firing bench.", "First", 935, "Full Metal Jacket and Faster Firing clears bloons quickly."),
+                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Firing bench.", "First", 980, "Full Metal Jacket and Faster Firing clears bloons quickly."),
                     create_step(4, "Rounds 11–20: Expanding Defense", 17, "Place", "Tack Shooter", "0-0-0", "At the ground gap where bloons enter the main firing alley.", "First", 240, "Close-range multi-shot inside the alley."),
-                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Sniper Monkey", "3-0-2", "Firing bench.", "Strong", 2450, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot."),
-                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Tack Shooter", "2-0-3", "Alley gap.", "First", 1555, "Tack Sprayer shreds grouped bloon waves."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 32, "Upgrade", "Tack Shooter", "2-0-4", "Alley gap.", "First", 2800, "Overdrive completely controls the ground alley."),
-                    create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "At the firing alley entrance.", "Strong", 2040, "MOAB Mauler delivers heavy blimp damage. Deadly Precision Sniper and Overdrive pop the MOAB.")
+                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 24, "Upgrade", "Sniper Monkey", "3-0-2", "Firing bench.", "Strong", 3740, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot.", timing="before_round"),
+                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 28, "Upgrade", "Tack Shooter", "2-0-3", "Alley gap.", "First", 940, "Tack Sprayer shreds grouped bloon waves.", timing="before_round"),
+                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Upgrade", "Tack Shooter", "2-0-4", "Alley gap.", "First", 2720, "Overdrive completely controls the ground alley.", timing="during_round"),
+                    create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "At the firing alley entrance.", "Strong", 2355, "MOAB Mauler delivers heavy blimp damage. Deadly Precision Sniper and Overdrive pop the MOAB.", timing="during_round")
                 ]
             },
             "Medium": None, "Hard": None, "Impoppable": None, "CHIMPS": None

@@ -1,6 +1,6 @@
 {
-  "version": "1.3.0",
-  "last_updated": "2026-10-20",
+  "version": "1.4.0",
+  "last_updated": "2026-10-21",
   "total_maps": 87,
   "supported_difficulties": [
     "Easy",
@@ -797,9 +797,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Innate camo detection and fast shurikens down the steps.",
+              "timing": "before_round",
               "step_id": "adoras_temple_easy_s1",
-              "tower_id": "adoras_temple_easy_t1",
-              "timing": "before_round"
+              "tower_id": "adoras_temple_easy_t1"
             },
             {
               "step_number": 2,
@@ -812,9 +812,9 @@
               "targeting": "First",
               "cost_estimate": 170,
               "details": "Adds early chip damage.",
+              "timing": "before_round",
               "step_id": "adoras_temple_easy_s2",
-              "tower_id": "adoras_temple_easy_t2",
-              "timing": "before_round"
+              "tower_id": "adoras_temple_easy_t2"
             },
             {
               "step_number": 3,
@@ -827,9 +827,9 @@
               "targeting": "First",
               "cost_estimate": 810,
               "details": "Seeking shurikens follow bloons up the steps.",
+              "timing": "before_round",
               "step_id": "adoras_temple_easy_s3",
-              "tower_id": "adoras_temple_easy_t1",
-              "timing": "before_round"
+              "tower_id": "adoras_temple_easy_t1"
             },
             {
               "step_number": 4,
@@ -842,9 +842,9 @@
               "targeting": "First",
               "cost_estimate": 720,
               "details": "Double Shot clears fast pinks and grouped bloons.",
+              "timing": "before_round",
               "step_id": "adoras_temple_easy_s4",
-              "tower_id": "adoras_temple_easy_t1",
-              "timing": "before_round"
+              "tower_id": "adoras_temple_easy_t1"
             },
             {
               "step_number": 5,
@@ -857,9 +857,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "adoras_temple_easy_s5",
-              "tower_id": "adoras_temple_easy_t3",
-              "timing": "before_round"
+              "tower_id": "adoras_temple_easy_t3"
             },
             {
               "step_number": 6,
@@ -872,9 +872,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Ninja shurikens.",
+              "timing": "before_round",
               "step_id": "adoras_temple_easy_s6",
-              "tower_id": "adoras_temple_easy_t3",
-              "timing": "before_round"
+              "tower_id": "adoras_temple_easy_t3"
             },
             {
               "step_number": 7,
@@ -887,9 +887,9 @@
               "targeting": "First",
               "cost_estimate": 2340,
               "details": "Bloonjitsu unleashes 5 seeking shurikens per attack.",
+              "timing": "before_round",
               "step_id": "adoras_temple_easy_s7",
-              "tower_id": "adoras_temple_easy_t1",
-              "timing": "before_round"
+              "tower_id": "adoras_temple_easy_t1"
             },
             {
               "step_number": 8,
@@ -902,9 +902,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Bloonjitsu destroys the MOAB.",
+              "timing": "before_round",
               "step_id": "adoras_temple_easy_s8",
-              "tower_id": "adoras_temple_easy_t4",
-              "timing": "before_round"
+              "tower_id": "adoras_temple_easy_t4"
             }
           ],
           "best_hero_reason": "Adora's canonical sacred home; her Blood Sacrifice instantly levels her up and massively enhances all Sun Temples on the pyramid.",
@@ -2332,9 +2332,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Secures the exit courtyard.",
+              "timing": "before_round",
               "step_id": "ancient_portal_easy_s1",
-              "tower_id": "ancient_portal_easy_t1",
-              "timing": "before_round"
+              "tower_id": "ancient_portal_easy_t1"
             },
             {
               "step_number": 2,
@@ -2347,9 +2347,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Innate camo detection across the courtyard.",
+              "timing": "before_round",
               "step_id": "ancient_portal_easy_s2",
-              "tower_id": "ancient_portal_easy_t2",
-              "timing": "before_round"
+              "tower_id": "ancient_portal_easy_t2"
             },
             {
               "step_number": 3,
@@ -2362,9 +2362,9 @@
               "targeting": "First",
               "cost_estimate": 810,
               "details": "Seeking shurikens follow bloons through the portals.",
+              "timing": "before_round",
               "step_id": "ancient_portal_easy_s3",
-              "tower_id": "ancient_portal_easy_t2",
-              "timing": "before_round"
+              "tower_id": "ancient_portal_easy_t2"
             },
             {
               "step_number": 4,
@@ -2377,9 +2377,9 @@
               "targeting": "First",
               "cost_estimate": 720,
               "details": "Double Shot clears fast pinks and grouped bloons.",
+              "timing": "before_round",
               "step_id": "ancient_portal_easy_s4",
-              "tower_id": "ancient_portal_easy_t2",
-              "timing": "before_round"
+              "tower_id": "ancient_portal_easy_t2"
             },
             {
               "step_number": 5,
@@ -2392,9 +2392,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "ancient_portal_easy_s5",
-              "tower_id": "ancient_portal_easy_t3",
-              "timing": "before_round"
+              "tower_id": "ancient_portal_easy_t3"
             },
             {
               "step_number": 6,
@@ -2407,9 +2407,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Ninja shurikens.",
+              "timing": "before_round",
               "step_id": "ancient_portal_easy_s6",
-              "tower_id": "ancient_portal_easy_t3",
-              "timing": "before_round"
+              "tower_id": "ancient_portal_easy_t3"
             },
             {
               "step_number": 7,
@@ -2422,9 +2422,9 @@
               "targeting": "First",
               "cost_estimate": 2340,
               "details": "Bloonjitsu unleashes 5 seeking shurikens per attack.",
+              "timing": "before_round",
               "step_id": "ancient_portal_easy_s7",
-              "tower_id": "ancient_portal_easy_t2",
-              "timing": "before_round"
+              "tower_id": "ancient_portal_easy_t2"
             },
             {
               "step_number": 8,
@@ -2437,9 +2437,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Bloonjitsu and Sauda destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "ancient_portal_easy_s8",
-              "tower_id": "ancient_portal_easy_t4",
-              "timing": "before_round"
+              "tower_id": "ancient_portal_easy_t4"
             }
           ],
           "best_hero_reason": "Bloons teleworking through portal gates emerge clumped together, making Pat's Big Squeeze and Roar devastating for area-of-effect destruction.",
@@ -4634,9 +4634,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Hits bloons on all 4 spiral revolutions.",
+              "timing": "before_round",
               "step_id": "balance_easy_s1",
-              "tower_id": "balance_easy_t1",
-              "timing": "before_round"
+              "tower_id": "balance_easy_t1"
             },
             {
               "step_number": 2,
@@ -4649,9 +4649,9 @@
               "targeting": "First",
               "cost_estimate": 240,
               "details": "Covers the entire inner spiral.",
+              "timing": "before_round",
               "step_id": "balance_easy_s2",
-              "tower_id": "balance_easy_t2",
-              "timing": "before_round"
+              "tower_id": "balance_easy_t2"
             },
             {
               "step_number": 3,
@@ -4664,9 +4664,9 @@
               "targeting": "First",
               "cost_estimate": 555,
               "details": "Faster shooting and extra pierce.",
+              "timing": "before_round",
               "step_id": "balance_easy_s3",
-              "tower_id": "balance_easy_t2",
-              "timing": "before_round"
+              "tower_id": "balance_easy_t2"
             },
             {
               "step_number": 4,
@@ -4679,9 +4679,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "balance_easy_s4",
-              "tower_id": "balance_easy_t3",
-              "timing": "before_round"
+              "tower_id": "balance_easy_t3"
             },
             {
               "step_number": 5,
@@ -4694,9 +4694,9 @@
               "targeting": "First",
               "cost_estimate": 380,
               "details": "Tack Sprayer fires 16 tacks continuously.",
+              "timing": "before_round",
               "step_id": "balance_easy_s5",
-              "tower_id": "balance_easy_t2",
-              "timing": "before_round"
+              "tower_id": "balance_easy_t2"
             },
             {
               "step_number": 6,
@@ -4709,9 +4709,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Tack damage and fire rate.",
+              "timing": "before_round",
               "step_id": "balance_easy_s6",
-              "tower_id": "balance_easy_t3",
-              "timing": "before_round"
+              "tower_id": "balance_easy_t3"
             },
             {
               "step_number": 7,
@@ -4724,9 +4724,9 @@
               "targeting": "First",
               "cost_estimate": 2720,
               "details": "Overdrive completely vaporizes everything entering the spiral.",
+              "timing": "before_round",
               "step_id": "balance_easy_s7",
-              "tower_id": "balance_easy_t2",
-              "timing": "before_round"
+              "tower_id": "balance_easy_t2"
             },
             {
               "step_number": 8,
@@ -4739,9 +4739,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler weakens the blimp before it enters the center. Overdrive finishes it instantly.",
+              "timing": "before_round",
               "step_id": "balance_easy_s8",
-              "tower_id": "balance_easy_t4",
-              "timing": "before_round"
+              "tower_id": "balance_easy_t4"
             }
           ],
           "best_hero_reason": "The center circular dais is the premier Sauda spot in the game: 100% of all bloons pass directly under her dual blades on every lap.",
@@ -5416,9 +5416,9 @@
               "targeting": "First",
               "cost_estimate": 455,
               "details": "Fires arrows down both the left and right market lanes.",
+              "timing": "before_round",
               "step_id": "bazaar_easy_s1",
-              "tower_id": "bazaar_easy_t1",
-              "timing": "before_round"
+              "tower_id": "bazaar_easy_t1"
             },
             {
               "step_number": 2,
@@ -5431,9 +5431,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Covers both market paths with grape fire.",
+              "timing": "before_round",
               "step_id": "bazaar_easy_s2",
-              "tower_id": "bazaar_easy_t2",
-              "timing": "before_round"
+              "tower_id": "bazaar_easy_t2"
             },
             {
               "step_number": 3,
@@ -5446,9 +5446,9 @@
               "targeting": "First",
               "cost_estimate": 210,
               "details": "Grape Shot fires 4 grapes.",
+              "timing": "before_round",
               "step_id": "bazaar_easy_s3",
-              "tower_id": "bazaar_easy_t2",
-              "timing": "before_round"
+              "tower_id": "bazaar_easy_t2"
             },
             {
               "step_number": 4,
@@ -5461,9 +5461,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Hot Shot grants Lead-popping; Crow's Nest provides full Camo detection.",
+              "timing": "before_round",
               "step_id": "bazaar_easy_s4",
-              "tower_id": "bazaar_easy_t2",
-              "timing": "before_round"
+              "tower_id": "bazaar_easy_t2"
             },
             {
               "step_number": 5,
@@ -5476,9 +5476,9 @@
               "targeting": "First",
               "cost_estimate": 3485,
               "details": "Destroyer unleashes rapid grape barrages.",
+              "timing": "before_round",
               "step_id": "bazaar_easy_s5",
-              "tower_id": "bazaar_easy_t2",
-              "timing": "before_round"
+              "tower_id": "bazaar_easy_t2"
             },
             {
               "step_number": 6,
@@ -7720,9 +7720,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Hits bloons on both standard and prime paths.",
+              "timing": "before_round",
               "step_id": "bloonarius_prime_easy_s1",
-              "tower_id": "bloonarius_prime_easy_t1",
-              "timing": "before_round"
+              "tower_id": "bloonarius_prime_easy_t1"
             },
             {
               "step_number": 2,
@@ -7735,9 +7735,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Innate camo detection across both tracks.",
+              "timing": "before_round",
               "step_id": "bloonarius_prime_easy_s2",
-              "tower_id": "bloonarius_prime_easy_t2",
-              "timing": "before_round"
+              "tower_id": "bloonarius_prime_easy_t2"
             },
             {
               "step_number": 3,
@@ -7750,9 +7750,9 @@
               "targeting": "First",
               "cost_estimate": 810,
               "details": "Seeking shurikens follow bloons on both lanes.",
+              "timing": "before_round",
               "step_id": "bloonarius_prime_easy_s3",
-              "tower_id": "bloonarius_prime_easy_t2",
-              "timing": "before_round"
+              "tower_id": "bloonarius_prime_easy_t2"
             },
             {
               "step_number": 4,
@@ -7765,9 +7765,9 @@
               "targeting": "First",
               "cost_estimate": 720,
               "details": "Double Shot clears fast pinks and grouped bloons.",
+              "timing": "before_round",
               "step_id": "bloonarius_prime_easy_s4",
-              "tower_id": "bloonarius_prime_easy_t2",
-              "timing": "before_round"
+              "tower_id": "bloonarius_prime_easy_t2"
             },
             {
               "step_number": 5,
@@ -7780,9 +7780,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "bloonarius_prime_easy_s5",
-              "tower_id": "bloonarius_prime_easy_t3",
-              "timing": "before_round"
+              "tower_id": "bloonarius_prime_easy_t3"
             },
             {
               "step_number": 6,
@@ -7795,9 +7795,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Ninja shurikens.",
+              "timing": "before_round",
               "step_id": "bloonarius_prime_easy_s6",
-              "tower_id": "bloonarius_prime_easy_t3",
-              "timing": "before_round"
+              "tower_id": "bloonarius_prime_easy_t3"
             },
             {
               "step_number": 7,
@@ -7810,9 +7810,9 @@
               "targeting": "First",
               "cost_estimate": 2340,
               "details": "Bloonjitsu unleashes 5 seeking shurikens per attack.",
+              "timing": "before_round",
               "step_id": "bloonarius_prime_easy_s7",
-              "tower_id": "bloonarius_prime_easy_t2",
-              "timing": "before_round"
+              "tower_id": "bloonarius_prime_easy_t2"
             },
             {
               "step_number": 8,
@@ -7825,9 +7825,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Bloonjitsu and Sauda destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "bloonarius_prime_easy_s8",
-              "tower_id": "bloonarius_prime_easy_t4",
-              "timing": "before_round"
+              "tower_id": "bloonarius_prime_easy_t4"
             }
           ],
           "best_hero_reason": "Bloon paths switch between prime and non-prime rounds; Etienne's global UAV and flying drones provide seamless coverage across shifting paths.",
@@ -9374,7 +9374,7 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler targets the blimp. The Destroyer and Sub effortlessly pop the MOAB and ceramic insides.",
-              "timing": "before_round",
+              "timing": "during_round",
               "step_id": "cargo_easy_s9",
               "tower_id": "cargo_easy_t5"
             }
@@ -11646,9 +11646,9 @@
               "targeting": "First",
               "cost_estimate": 455,
               "details": "Has range covering both alternating chutes.",
+              "timing": "before_round",
               "step_id": "chutes_easy_s1",
-              "tower_id": "chutes_easy_t1",
-              "timing": "before_round"
+              "tower_id": "chutes_easy_t1"
             },
             {
               "step_number": 2,
@@ -11661,9 +11661,9 @@
               "targeting": "First",
               "cost_estimate": 170,
               "details": "Adds piercing darts across both lanes.",
+              "timing": "before_round",
               "step_id": "chutes_easy_s2",
-              "tower_id": "chutes_easy_t2",
-              "timing": "before_round"
+              "tower_id": "chutes_easy_t2"
             },
             {
               "step_number": 3,
@@ -11676,9 +11676,9 @@
               "targeting": "First",
               "cost_estimate": 440,
               "details": "Faster attack speed and long range.",
+              "timing": "before_round",
               "step_id": "chutes_easy_s3",
-              "tower_id": "chutes_easy_t2",
-              "timing": "before_round"
+              "tower_id": "chutes_easy_t2"
             },
             {
               "step_number": 4,
@@ -11691,9 +11691,9 @@
               "targeting": "First",
               "cost_estimate": 240,
               "details": "Catches bloons exiting either chute.",
+              "timing": "before_round",
               "step_id": "chutes_easy_s4",
-              "tower_id": "chutes_easy_t3",
-              "timing": "before_round"
+              "tower_id": "chutes_easy_t3"
             },
             {
               "step_number": 5,
@@ -11706,9 +11706,9 @@
               "targeting": "First",
               "cost_estimate": 530,
               "details": "Crossbow hits camo bloons on Round 24 and 33 across both chutes.",
+              "timing": "before_round",
               "step_id": "chutes_easy_s5",
-              "tower_id": "chutes_easy_t2",
-              "timing": "before_round"
+              "tower_id": "chutes_easy_t2"
             },
             {
               "step_number": 6,
@@ -11721,9 +11721,9 @@
               "targeting": "Close",
               "cost_estimate": 2400,
               "details": "Recursive Cluster bombs pop Round 28 Leads and grouped bloons.",
+              "timing": "before_round",
               "step_id": "chutes_easy_s6",
-              "tower_id": "chutes_easy_t4",
-              "timing": "before_round"
+              "tower_id": "chutes_easy_t4"
             },
             {
               "step_number": 7,
@@ -11736,9 +11736,9 @@
               "targeting": "First",
               "cost_estimate": 3655,
               "details": "Overdrive completely locks down the bottom exit.",
+              "timing": "before_round",
               "step_id": "chutes_easy_s7",
-              "tower_id": "chutes_easy_t3",
-              "timing": "before_round"
+              "tower_id": "chutes_easy_t3"
             },
             {
               "step_number": 8,
@@ -11751,9 +11751,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler deals massive damage to the Round 40 blimp. Overdrive and Quincy finish it off.",
+              "timing": "before_round",
               "step_id": "chutes_easy_s8",
-              "tower_id": "chutes_easy_t5",
-              "timing": "before_round"
+              "tower_id": "chutes_easy_t5"
             }
           ],
           "best_hero_reason": "Fast dual sand chutes require affordable opening defense; Quincy's bouncing arrows and Storm of Arrows cover both chutes reliably.",
@@ -13181,9 +13181,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Secures early rounds from inside quadrant 1.",
+              "timing": "before_round",
               "step_id": "covered_garden_easy_s1",
-              "tower_id": "covered_garden_easy_t1",
-              "timing": "before_round"
+              "tower_id": "covered_garden_easy_t1"
             },
             {
               "step_number": 2,
@@ -13196,9 +13196,9 @@
               "targeting": "First",
               "cost_estimate": 240,
               "details": "Placed before quadrant 1 is covered by glass.",
+              "timing": "before_round",
               "step_id": "covered_garden_easy_s2",
-              "tower_id": "covered_garden_easy_t2",
-              "timing": "before_round"
+              "tower_id": "covered_garden_easy_t2"
             },
             {
               "step_number": 3,
@@ -13211,9 +13211,9 @@
               "targeting": "First",
               "cost_estimate": 555,
               "details": "Upgrade during a round when quadrant 1 is open.",
+              "timing": "before_round",
               "step_id": "covered_garden_easy_s3",
-              "tower_id": "covered_garden_easy_t2",
-              "timing": "before_round"
+              "tower_id": "covered_garden_easy_t2"
             },
             {
               "step_number": 4,
@@ -13226,9 +13226,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Innate camo detection across the greenhouse.",
+              "timing": "before_round",
               "step_id": "covered_garden_easy_s4",
-              "tower_id": "covered_garden_easy_t3",
-              "timing": "before_round"
+              "tower_id": "covered_garden_easy_t3"
             },
             {
               "step_number": 5,
@@ -13241,9 +13241,9 @@
               "targeting": "First",
               "cost_estimate": 1530,
               "details": "Double Shot handles dense swarms.",
+              "timing": "before_round",
               "step_id": "covered_garden_easy_s5",
-              "tower_id": "covered_garden_easy_t3",
-              "timing": "before_round"
+              "tower_id": "covered_garden_easy_t3"
             },
             {
               "step_number": 6,
@@ -13256,9 +13256,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "covered_garden_easy_s6",
-              "tower_id": "covered_garden_easy_t4",
-              "timing": "before_round"
+              "tower_id": "covered_garden_easy_t4"
             },
             {
               "step_number": 7,
@@ -13271,9 +13271,9 @@
               "targeting": "First",
               "cost_estimate": 3100,
               "details": "Overdrive completely locks down the inner bend.",
+              "timing": "before_round",
               "step_id": "covered_garden_easy_s7",
-              "tower_id": "covered_garden_easy_t2",
-              "timing": "before_round"
+              "tower_id": "covered_garden_easy_t2"
             },
             {
               "step_number": 8,
@@ -13286,9 +13286,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Sauda and Overdrive destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "covered_garden_easy_s8",
-              "tower_id": "covered_garden_easy_t5",
-              "timing": "before_round"
+              "tower_id": "covered_garden_easy_t5"
             }
           ],
           "best_hero_reason": "The 4 glass greenhouse quadrants rotate every round, covering towers. Geraldo's pre-placed turrets, nails, and totems remain active under glass.",
@@ -13948,9 +13948,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Controls the central chasm pass.",
+              "timing": "before_round",
               "step_id": "cracked_easy_s1",
-              "tower_id": "cracked_easy_t1",
-              "timing": "before_round"
+              "tower_id": "cracked_easy_t1"
             },
             {
               "step_number": 2,
@@ -13963,9 +13963,9 @@
               "targeting": "First",
               "cost_estimate": 275,
               "details": "Provides fast dart attacks from the water.",
+              "timing": "before_round",
               "step_id": "cracked_easy_s2",
-              "tower_id": "cracked_easy_t2",
-              "timing": "before_round"
+              "tower_id": "cracked_easy_t2"
             },
             {
               "step_number": 3,
@@ -13993,9 +13993,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "cracked_easy_s4",
-              "tower_id": "cracked_easy_t3",
-              "timing": "before_round"
+              "tower_id": "cracked_easy_t3"
             },
             {
               "step_number": 5,
@@ -14008,9 +14008,9 @@
               "targeting": "First",
               "cost_estimate": 935,
               "details": "Triple Guns fires high-frequency darts.",
+              "timing": "before_round",
               "step_id": "cracked_easy_s5",
-              "tower_id": "cracked_easy_t2",
-              "timing": "before_round"
+              "tower_id": "cracked_easy_t2"
             },
             {
               "step_number": 6,
@@ -14023,9 +14023,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Sub and Sauda.",
+              "timing": "before_round",
               "step_id": "cracked_easy_s6",
-              "tower_id": "cracked_easy_t3",
-              "timing": "before_round"
+              "tower_id": "cracked_easy_t3"
             },
             {
               "step_number": 7,
@@ -14038,9 +14038,9 @@
               "targeting": "First",
               "cost_estimate": 2125,
               "details": "Armor Piercing Darts inflicts heavy damage to ceramics and blimps.",
+              "timing": "before_round",
               "step_id": "cracked_easy_s7",
-              "tower_id": "cracked_easy_t2",
-              "timing": "before_round"
+              "tower_id": "cracked_easy_t2"
             },
             {
               "step_number": 8,
@@ -14053,9 +14053,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. The Sub and Sauda destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "cracked_easy_s8",
-              "tower_id": "cracked_easy_t4",
-              "timing": "before_round"
+              "tower_id": "cracked_easy_t4"
             }
           ],
           "best_hero_reason": "Intersecting dry riverbed crossings allow Sauda to lock down early bloons while water sections allow cheap Sub backup.",
@@ -17801,9 +17801,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Hits bloons before they split down the river branches.",
+              "timing": "before_round",
               "step_id": "downstream_easy_s1",
-              "tower_id": "downstream_easy_t1",
-              "timing": "before_round"
+              "tower_id": "downstream_easy_t1"
             },
             {
               "step_number": 2,
@@ -17816,9 +17816,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Covers both river paths.",
+              "timing": "before_round",
               "step_id": "downstream_easy_s2",
-              "tower_id": "downstream_easy_t2",
-              "timing": "before_round"
+              "tower_id": "downstream_easy_t2"
             },
             {
               "step_number": 3,
@@ -17831,9 +17831,9 @@
               "targeting": "First",
               "cost_estimate": 210,
               "details": "Grape Shot fires 4 grapes.",
+              "timing": "before_round",
               "step_id": "downstream_easy_s3",
-              "tower_id": "downstream_easy_t2",
-              "timing": "before_round"
+              "tower_id": "downstream_easy_t2"
             },
             {
               "step_number": 4,
@@ -17846,9 +17846,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Hot Shot grants Lead-popping; Crow's Nest provides full Camo detection.",
+              "timing": "before_round",
               "step_id": "downstream_easy_s4",
-              "tower_id": "downstream_easy_t2",
-              "timing": "before_round"
+              "tower_id": "downstream_easy_t2"
             },
             {
               "step_number": 5,
@@ -17861,9 +17861,9 @@
               "targeting": "First",
               "cost_estimate": 3485,
               "details": "Destroyer unleashes rapid grape barrages.",
+              "timing": "before_round",
               "step_id": "downstream_easy_s5",
-              "tower_id": "downstream_easy_t2",
-              "timing": "before_round"
+              "tower_id": "downstream_easy_t2"
             },
             {
               "step_number": 6,
@@ -19396,9 +19396,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Defends the early rounds cleanly.",
+              "timing": "before_round",
               "step_id": "encrypted_easy_s1",
-              "tower_id": "encrypted_easy_t1",
-              "timing": "before_round"
+              "tower_id": "encrypted_easy_t1"
             },
             {
               "step_number": 2,
@@ -19411,9 +19411,9 @@
               "targeting": "First",
               "cost_estimate": 240,
               "details": "Covers the central crypt intersection.",
+              "timing": "before_round",
               "step_id": "encrypted_easy_s2",
-              "tower_id": "encrypted_easy_t2",
-              "timing": "before_round"
+              "tower_id": "encrypted_easy_t2"
             },
             {
               "step_number": 3,
@@ -19426,9 +19426,9 @@
               "targeting": "First",
               "cost_estimate": 555,
               "details": "Faster shooting and extra pierce.",
+              "timing": "before_round",
               "step_id": "encrypted_easy_s3",
-              "tower_id": "encrypted_easy_t2",
-              "timing": "before_round"
+              "tower_id": "encrypted_easy_t2"
             },
             {
               "step_number": 4,
@@ -19441,9 +19441,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Innate camo detection and fast shurikens.",
+              "timing": "before_round",
               "step_id": "encrypted_easy_s4",
-              "tower_id": "encrypted_easy_t3",
-              "timing": "before_round"
+              "tower_id": "encrypted_easy_t3"
             },
             {
               "step_number": 5,
@@ -19456,9 +19456,9 @@
               "targeting": "First",
               "cost_estimate": 1530,
               "details": "Double Shot handles dense swarms.",
+              "timing": "before_round",
               "step_id": "encrypted_easy_s5",
-              "tower_id": "encrypted_easy_t3",
-              "timing": "before_round"
+              "tower_id": "encrypted_easy_t3"
             },
             {
               "step_number": 6,
@@ -19471,9 +19471,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "encrypted_easy_s6",
-              "tower_id": "encrypted_easy_t4",
-              "timing": "before_round"
+              "tower_id": "encrypted_easy_t4"
             },
             {
               "step_number": 7,
@@ -19486,9 +19486,9 @@
               "targeting": "First",
               "cost_estimate": 3100,
               "details": "Overdrive completely locks down the catacombs.",
+              "timing": "before_round",
               "step_id": "encrypted_easy_s7",
-              "tower_id": "encrypted_easy_t2",
-              "timing": "before_round"
+              "tower_id": "encrypted_easy_t2"
             },
             {
               "step_number": 8,
@@ -19501,9 +19501,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Sauda and Overdrive destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "encrypted_easy_s8",
-              "tower_id": "encrypted_easy_t5",
-              "timing": "before_round"
+              "tower_id": "encrypted_easy_t5"
             }
           ],
           "best_hero_reason": "Graveyard tombs with line-of-sight walls make Mortars and Bomb Shooters the strongest defense, massively buffed by Striker Jones.",
@@ -21727,9 +21727,9 @@
               "targeting": "First",
               "cost_estimate": 455,
               "details": "Fires arrows over the clay barriers with high ground vision.",
+              "timing": "before_round",
               "step_id": "firing_range_easy_s1",
-              "tower_id": "firing_range_easy_t1",
-              "timing": "before_round"
+              "tower_id": "firing_range_easy_t1"
             },
             {
               "step_number": 2,
@@ -21742,9 +21742,9 @@
               "targeting": "First",
               "cost_estimate": 300,
               "details": "Provides global rifle fire across the range.",
+              "timing": "before_round",
               "step_id": "firing_range_easy_s2",
-              "tower_id": "firing_range_easy_t2",
-              "timing": "before_round"
+              "tower_id": "firing_range_easy_t2"
             },
             {
               "step_number": 3,
@@ -21757,9 +21757,9 @@
               "targeting": "First",
               "cost_estimate": 980,
               "details": "Full Metal Jacket and Faster Firing clears bloons quickly.",
+              "timing": "before_round",
               "step_id": "firing_range_easy_s3",
-              "tower_id": "firing_range_easy_t2",
-              "timing": "before_round"
+              "tower_id": "firing_range_easy_t2"
             },
             {
               "step_number": 4,
@@ -21772,9 +21772,9 @@
               "targeting": "First",
               "cost_estimate": 240,
               "details": "Close-range multi-shot inside the alley.",
+              "timing": "before_round",
               "step_id": "firing_range_easy_s4",
-              "tower_id": "firing_range_easy_t3",
-              "timing": "before_round"
+              "tower_id": "firing_range_easy_t3"
             },
             {
               "step_number": 5,
@@ -21787,9 +21787,9 @@
               "targeting": "Strong",
               "cost_estimate": 3740,
               "details": "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot.",
+              "timing": "before_round",
               "step_id": "firing_range_easy_s5",
-              "tower_id": "firing_range_easy_t2",
-              "timing": "before_round"
+              "tower_id": "firing_range_easy_t2"
             },
             {
               "step_number": 6,
@@ -26347,9 +26347,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Has range touching both alternating paths.",
+              "timing": "before_round",
               "step_id": "haunted_easy_s1",
-              "tower_id": "haunted_easy_t1",
-              "timing": "before_round"
+              "tower_id": "haunted_easy_t1"
             },
             {
               "step_number": 2,
@@ -26362,9 +26362,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Innate camo detection and fast shurikens across both paths.",
+              "timing": "before_round",
               "step_id": "haunted_easy_s2",
-              "tower_id": "haunted_easy_t2",
-              "timing": "before_round"
+              "tower_id": "haunted_easy_t2"
             },
             {
               "step_number": 3,
@@ -26377,9 +26377,9 @@
               "targeting": "First",
               "cost_estimate": 810,
               "details": "Seeking shurikens follow bloons on both lanes.",
+              "timing": "before_round",
               "step_id": "haunted_easy_s3",
-              "tower_id": "haunted_easy_t2",
-              "timing": "before_round"
+              "tower_id": "haunted_easy_t2"
             },
             {
               "step_number": 4,
@@ -26392,9 +26392,9 @@
               "targeting": "First",
               "cost_estimate": 720,
               "details": "Double Shot clears fast pinks and grouped bloons.",
+              "timing": "before_round",
               "step_id": "haunted_easy_s4",
-              "tower_id": "haunted_easy_t2",
-              "timing": "before_round"
+              "tower_id": "haunted_easy_t2"
             },
             {
               "step_number": 5,
@@ -26407,9 +26407,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "haunted_easy_s5",
-              "tower_id": "haunted_easy_t3",
-              "timing": "before_round"
+              "tower_id": "haunted_easy_t3"
             },
             {
               "step_number": 6,
@@ -26422,9 +26422,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Ninja shurikens.",
+              "timing": "before_round",
               "step_id": "haunted_easy_s6",
-              "tower_id": "haunted_easy_t3",
-              "timing": "before_round"
+              "tower_id": "haunted_easy_t3"
             },
             {
               "step_number": 7,
@@ -26437,9 +26437,9 @@
               "targeting": "First",
               "cost_estimate": 2340,
               "details": "Bloonjitsu unleashes 5 seeking shurikens per attack.",
+              "timing": "before_round",
               "step_id": "haunted_easy_s7",
-              "tower_id": "haunted_easy_t2",
-              "timing": "before_round"
+              "tower_id": "haunted_easy_t2"
             },
             {
               "step_number": 8,
@@ -26452,9 +26452,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Bloonjitsu and Sauda destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "haunted_easy_s8",
-              "tower_id": "haunted_easy_t4",
-              "timing": "before_round"
+              "tower_id": "haunted_easy_t4"
             }
           ],
           "best_hero_reason": "Two parallel lanes split the track; Etienne's global Camo eliminates the need for expensive split Villages on both sides.",
@@ -30168,9 +30168,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Secures the race entrance with dual-lane reach.",
+              "timing": "before_round",
               "step_id": "karts_n_darts_easy_s1",
-              "tower_id": "karts_n_darts_easy_t1",
-              "timing": "before_round"
+              "tower_id": "karts_n_darts_easy_t1"
             },
             {
               "step_number": 2,
@@ -30183,9 +30183,9 @@
               "targeting": "First",
               "cost_estimate": 240,
               "details": "Covers the entire 180-degree racing bend.",
+              "timing": "before_round",
               "step_id": "karts_n_darts_easy_s2",
-              "tower_id": "karts_n_darts_easy_t2",
-              "timing": "before_round"
+              "tower_id": "karts_n_darts_easy_t2"
             },
             {
               "step_number": 3,
@@ -30198,9 +30198,9 @@
               "targeting": "First",
               "cost_estimate": 555,
               "details": "Faster shooting and extra pierce.",
+              "timing": "before_round",
               "step_id": "karts_n_darts_easy_s3",
-              "tower_id": "karts_n_darts_easy_t2",
-              "timing": "before_round"
+              "tower_id": "karts_n_darts_easy_t2"
             },
             {
               "step_number": 4,
@@ -30213,9 +30213,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "karts_n_darts_easy_s4",
-              "tower_id": "karts_n_darts_easy_t3",
-              "timing": "before_round"
+              "tower_id": "karts_n_darts_easy_t3"
             },
             {
               "step_number": 5,
@@ -30228,9 +30228,9 @@
               "targeting": "First",
               "cost_estimate": 380,
               "details": "Tack Sprayer fires 16 tacks continuously.",
+              "timing": "before_round",
               "step_id": "karts_n_darts_easy_s5",
-              "tower_id": "karts_n_darts_easy_t2",
-              "timing": "before_round"
+              "tower_id": "karts_n_darts_easy_t2"
             },
             {
               "step_number": 6,
@@ -30243,9 +30243,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Tack damage and fire rate.",
+              "timing": "before_round",
               "step_id": "karts_n_darts_easy_s6",
-              "tower_id": "karts_n_darts_easy_t3",
-              "timing": "before_round"
+              "tower_id": "karts_n_darts_easy_t3"
             },
             {
               "step_number": 7,
@@ -30258,9 +30258,9 @@
               "targeting": "First",
               "cost_estimate": 2720,
               "details": "Overdrive completely locks down the hairpin.",
+              "timing": "before_round",
               "step_id": "karts_n_darts_easy_s7",
-              "tower_id": "karts_n_darts_easy_t2",
-              "timing": "before_round"
+              "tower_id": "karts_n_darts_easy_t2"
             },
             {
               "step_number": 8,
@@ -30273,9 +30273,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Sauda and Overdrive destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "karts_n_darts_easy_s8",
-              "tower_id": "karts_n_darts_easy_t4",
-              "timing": "before_round"
+              "tower_id": "karts_n_darts_easy_t4"
             }
           ],
           "best_hero_reason": "Multiple race tracks with rapid kart bloons require Rosalia's flight repositioning and anti-lead grenades to cover the winding circuit.",
@@ -32459,9 +32459,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Hits bloons from both alternating glacial lanes.",
+              "timing": "before_round",
               "step_id": "lost_crevasse_easy_s1",
-              "tower_id": "lost_crevasse_easy_t1",
-              "timing": "before_round"
+              "tower_id": "lost_crevasse_easy_t1"
             },
             {
               "step_number": 2,
@@ -32474,9 +32474,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Innate camo detection across the crevasse.",
+              "timing": "before_round",
               "step_id": "lost_crevasse_easy_s2",
-              "tower_id": "lost_crevasse_easy_t2",
-              "timing": "before_round"
+              "tower_id": "lost_crevasse_easy_t2"
             },
             {
               "step_number": 3,
@@ -32489,9 +32489,9 @@
               "targeting": "First",
               "cost_estimate": 810,
               "details": "Seeking shurikens follow bloons through the frozen gorge.",
+              "timing": "before_round",
               "step_id": "lost_crevasse_easy_s3",
-              "tower_id": "lost_crevasse_easy_t2",
-              "timing": "before_round"
+              "tower_id": "lost_crevasse_easy_t2"
             },
             {
               "step_number": 4,
@@ -32504,9 +32504,9 @@
               "targeting": "First",
               "cost_estimate": 720,
               "details": "Double Shot clears fast pinks and grouped bloons.",
+              "timing": "before_round",
               "step_id": "lost_crevasse_easy_s4",
-              "tower_id": "lost_crevasse_easy_t2",
-              "timing": "before_round"
+              "tower_id": "lost_crevasse_easy_t2"
             },
             {
               "step_number": 5,
@@ -32519,9 +32519,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "lost_crevasse_easy_s5",
-              "tower_id": "lost_crevasse_easy_t3",
-              "timing": "before_round"
+              "tower_id": "lost_crevasse_easy_t3"
             },
             {
               "step_number": 6,
@@ -32534,9 +32534,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Ninja shurikens.",
+              "timing": "before_round",
               "step_id": "lost_crevasse_easy_s6",
-              "tower_id": "lost_crevasse_easy_t3",
-              "timing": "before_round"
+              "tower_id": "lost_crevasse_easy_t3"
             },
             {
               "step_number": 7,
@@ -32549,9 +32549,9 @@
               "targeting": "First",
               "cost_estimate": 2340,
               "details": "Bloonjitsu unleashes 5 seeking shurikens per attack.",
+              "timing": "before_round",
               "step_id": "lost_crevasse_easy_s7",
-              "tower_id": "lost_crevasse_easy_t2",
-              "timing": "before_round"
+              "tower_id": "lost_crevasse_easy_t2"
             },
             {
               "step_number": 8,
@@ -32564,9 +32564,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Bloonjitsu and Sauda destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "lost_crevasse_easy_s8",
-              "tower_id": "lost_crevasse_easy_t4",
-              "timing": "before_round"
+              "tower_id": "lost_crevasse_easy_t4"
             }
           ],
           "best_hero_reason": "Narrow icy crevasse choke concentrates all bloons; Obyn's Brambles and Wall of Trees trap every single wave with 100% efficiency.",
@@ -34054,9 +34054,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Secures the cove entrance with dual-lane reach.",
+              "timing": "before_round",
               "step_id": "luminous_cove_easy_s1",
-              "tower_id": "luminous_cove_easy_t1",
-              "timing": "before_round"
+              "tower_id": "luminous_cove_easy_t1"
             },
             {
               "step_number": 2,
@@ -34069,9 +34069,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Fires cannonballs and grapes across the reef.",
+              "timing": "before_round",
               "step_id": "luminous_cove_easy_s2",
-              "tower_id": "luminous_cove_easy_t2",
-              "timing": "before_round"
+              "tower_id": "luminous_cove_easy_t2"
             },
             {
               "step_number": 3,
@@ -34084,9 +34084,9 @@
               "targeting": "First",
               "cost_estimate": 210,
               "details": "Grape Shot fires 4 grapes.",
+              "timing": "before_round",
               "step_id": "luminous_cove_easy_s3",
-              "tower_id": "luminous_cove_easy_t2",
-              "timing": "before_round"
+              "tower_id": "luminous_cove_easy_t2"
             },
             {
               "step_number": 4,
@@ -34099,9 +34099,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Hot Shot grants Lead-popping; Crow's Nest provides full Camo detection.",
+              "timing": "before_round",
               "step_id": "luminous_cove_easy_s4",
-              "tower_id": "luminous_cove_easy_t2",
-              "timing": "before_round"
+              "tower_id": "luminous_cove_easy_t2"
             },
             {
               "step_number": 5,
@@ -34114,9 +34114,9 @@
               "targeting": "First",
               "cost_estimate": 3485,
               "details": "Destroyer unleashes rapid grape barrages.",
+              "timing": "before_round",
               "step_id": "luminous_cove_easy_s5",
-              "tower_id": "luminous_cove_easy_t2",
-              "timing": "before_round"
+              "tower_id": "luminous_cove_easy_t2"
             },
             {
               "step_number": 6,
@@ -37996,9 +37996,9 @@
               "targeting": "First",
               "cost_estimate": 455,
               "details": "Has high ground vision down into the track entrance.",
+              "timing": "before_round",
               "step_id": "moon_landing_easy_s1",
-              "tower_id": "moon_landing_easy_t1",
-              "timing": "before_round"
+              "tower_id": "moon_landing_easy_t1"
             },
             {
               "step_number": 2,
@@ -38011,9 +38011,9 @@
               "targeting": "First",
               "cost_estimate": 640,
               "details": "Target the blast reticle in the center of the first crater.",
+              "timing": "before_round",
               "step_id": "moon_landing_easy_s2",
-              "tower_id": "moon_landing_easy_t2",
-              "timing": "before_round"
+              "tower_id": "moon_landing_easy_t2"
             },
             {
               "step_number": 3,
@@ -38026,9 +38026,9 @@
               "targeting": "First",
               "cost_estimate": 1275,
               "details": "Bigger Blast and Faster Reload maximizes splash coverage.",
+              "timing": "before_round",
               "step_id": "moon_landing_easy_s3",
-              "tower_id": "moon_landing_easy_t2",
-              "timing": "before_round"
+              "tower_id": "moon_landing_easy_t2"
             },
             {
               "step_number": 4,
@@ -38041,9 +38041,9 @@
               "targeting": "First",
               "cost_estimate": 170,
               "details": "Adds cleanup darts inside the crater.",
+              "timing": "before_round",
               "step_id": "moon_landing_easy_s4",
-              "tower_id": "moon_landing_easy_t3",
-              "timing": "before_round"
+              "tower_id": "moon_landing_easy_t3"
             },
             {
               "step_number": 5,
@@ -38056,9 +38056,9 @@
               "targeting": "First",
               "cost_estimate": 765,
               "details": "Signal Flare decamos all bloons and pops Leads easily on Round 28.",
+              "timing": "before_round",
               "step_id": "moon_landing_easy_s5",
-              "tower_id": "moon_landing_easy_t2",
-              "timing": "before_round"
+              "tower_id": "moon_landing_easy_t2"
             },
             {
               "step_number": 6,
@@ -38071,9 +38071,9 @@
               "targeting": "First",
               "cost_estimate": 970,
               "details": "Crossbow provides high damage cleanup inside the crater.",
+              "timing": "before_round",
               "step_id": "moon_landing_easy_s6",
-              "tower_id": "moon_landing_easy_t3",
-              "timing": "before_round"
+              "tower_id": "moon_landing_easy_t3"
             },
             {
               "step_number": 7,
@@ -38086,9 +38086,9 @@
               "targeting": "Close",
               "cost_estimate": 2400,
               "details": "Recursive Cluster bombs wipe out dense mid-game waves.",
+              "timing": "before_round",
               "step_id": "moon_landing_easy_s7",
-              "tower_id": "moon_landing_easy_t4",
-              "timing": "before_round"
+              "tower_id": "moon_landing_easy_t4"
             },
             {
               "step_number": 8,
@@ -38101,9 +38101,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler tears the Round 40 blimp apart. Mortar and Crossbow destroy the ceramics.",
+              "timing": "before_round",
               "step_id": "moon_landing_easy_s8",
-              "tower_id": "moon_landing_easy_t5",
-              "timing": "before_round"
+              "tower_id": "moon_landing_easy_t5"
             }
           ],
           "best_hero_reason": "Crater trenches completely block normal vision. Striker Jones boosts Mortar Monkeys with faster firing and massive artillery stuns into craters.",
@@ -44135,9 +44135,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Secures the spiral entrance on permanent dry land.",
+              "timing": "before_round",
               "step_id": "polyphemus_easy_s1",
-              "tower_id": "polyphemus_easy_t1",
-              "timing": "before_round"
+              "tower_id": "polyphemus_easy_t1"
             },
             {
               "step_number": 2,
@@ -44150,9 +44150,9 @@
               "targeting": "First",
               "cost_estimate": 240,
               "details": "Covers the inner spiral bend.",
+              "timing": "before_round",
               "step_id": "polyphemus_easy_s2",
-              "tower_id": "polyphemus_easy_t2",
-              "timing": "before_round"
+              "tower_id": "polyphemus_easy_t2"
             },
             {
               "step_number": 3,
@@ -44165,9 +44165,9 @@
               "targeting": "First",
               "cost_estimate": 555,
               "details": "Faster shooting and extra pierce.",
+              "timing": "before_round",
               "step_id": "polyphemus_easy_s3",
-              "tower_id": "polyphemus_easy_t2",
-              "timing": "before_round"
+              "tower_id": "polyphemus_easy_t2"
             },
             {
               "step_number": 4,
@@ -44180,9 +44180,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "polyphemus_easy_s4",
-              "tower_id": "polyphemus_easy_t3",
-              "timing": "before_round"
+              "tower_id": "polyphemus_easy_t3"
             },
             {
               "step_number": 5,
@@ -44195,9 +44195,9 @@
               "targeting": "First",
               "cost_estimate": 380,
               "details": "Tack Sprayer fires 16 tacks continuously.",
+              "timing": "before_round",
               "step_id": "polyphemus_easy_s5",
-              "tower_id": "polyphemus_easy_t2",
-              "timing": "before_round"
+              "tower_id": "polyphemus_easy_t2"
             },
             {
               "step_number": 6,
@@ -44210,9 +44210,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Tack damage and fire rate.",
+              "timing": "before_round",
               "step_id": "polyphemus_easy_s6",
-              "tower_id": "polyphemus_easy_t3",
-              "timing": "before_round"
+              "tower_id": "polyphemus_easy_t3"
             },
             {
               "step_number": 7,
@@ -44225,9 +44225,9 @@
               "targeting": "First",
               "cost_estimate": 2720,
               "details": "Overdrive completely locks down the caldera spiral.",
+              "timing": "before_round",
               "step_id": "polyphemus_easy_s7",
-              "tower_id": "polyphemus_easy_t2",
-              "timing": "before_round"
+              "tower_id": "polyphemus_easy_t2"
             },
             {
               "step_number": 8,
@@ -44240,9 +44240,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Sauda and Overdrive destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "polyphemus_easy_s8",
-              "tower_id": "polyphemus_easy_t4",
-              "timing": "before_round"
+              "tower_id": "polyphemus_easy_t4"
             }
           ],
           "best_hero_reason": "The central cyclops eye provides water access that periodically floods and drains; Brickell deploys deadly mega mines that hit both paths.",
@@ -44902,9 +44902,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Secures the dock entrance with zero leaks.",
+              "timing": "before_round",
               "step_id": "protect_the_yacht_easy_s1",
-              "tower_id": "protect_the_yacht_easy_t1",
-              "timing": "before_round"
+              "tower_id": "protect_the_yacht_easy_t1"
             },
             {
               "step_number": 2,
@@ -44917,9 +44917,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Fires cannonballs and grapes across the marina.",
+              "timing": "before_round",
               "step_id": "protect_the_yacht_easy_s2",
-              "tower_id": "protect_the_yacht_easy_t2",
-              "timing": "before_round"
+              "tower_id": "protect_the_yacht_easy_t2"
             },
             {
               "step_number": 3,
@@ -44932,9 +44932,9 @@
               "targeting": "First",
               "cost_estimate": 210,
               "details": "Grape Shot fires 4 grapes.",
+              "timing": "before_round",
               "step_id": "protect_the_yacht_easy_s3",
-              "tower_id": "protect_the_yacht_easy_t2",
-              "timing": "before_round"
+              "tower_id": "protect_the_yacht_easy_t2"
             },
             {
               "step_number": 4,
@@ -44947,9 +44947,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Hot Shot grants Lead-popping; Crow's Nest provides full Camo detection.",
+              "timing": "before_round",
               "step_id": "protect_the_yacht_easy_s4",
-              "tower_id": "protect_the_yacht_easy_t2",
-              "timing": "before_round"
+              "tower_id": "protect_the_yacht_easy_t2"
             },
             {
               "step_number": 5,
@@ -44962,9 +44962,9 @@
               "targeting": "First",
               "cost_estimate": 3485,
               "details": "Destroyer unleashes rapid grape barrages.",
+              "timing": "before_round",
               "step_id": "protect_the_yacht_easy_s5",
-              "tower_id": "protect_the_yacht_easy_t2",
-              "timing": "before_round"
+              "tower_id": "protect_the_yacht_easy_t2"
             },
             {
               "step_number": 6,
@@ -46496,9 +46496,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Catches bloons from both descending paths.",
+              "timing": "before_round",
               "step_id": "quarry_easy_s1",
-              "tower_id": "quarry_easy_t1",
-              "timing": "before_round"
+              "tower_id": "quarry_easy_t1"
             },
             {
               "step_number": 2,
@@ -46511,9 +46511,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Innate camo detection across the pit.",
+              "timing": "before_round",
               "step_id": "quarry_easy_s2",
-              "tower_id": "quarry_easy_t2",
-              "timing": "before_round"
+              "tower_id": "quarry_easy_t2"
             },
             {
               "step_number": 3,
@@ -46526,9 +46526,9 @@
               "targeting": "First",
               "cost_estimate": 810,
               "details": "Seeking shurikens follow bloons through the stone ramps.",
+              "timing": "before_round",
               "step_id": "quarry_easy_s3",
-              "tower_id": "quarry_easy_t2",
-              "timing": "before_round"
+              "tower_id": "quarry_easy_t2"
             },
             {
               "step_number": 4,
@@ -46541,9 +46541,9 @@
               "targeting": "First",
               "cost_estimate": 720,
               "details": "Double Shot clears fast pinks and grouped bloons.",
+              "timing": "before_round",
               "step_id": "quarry_easy_s4",
-              "tower_id": "quarry_easy_t2",
-              "timing": "before_round"
+              "tower_id": "quarry_easy_t2"
             },
             {
               "step_number": 5,
@@ -46556,9 +46556,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "quarry_easy_s5",
-              "tower_id": "quarry_easy_t3",
-              "timing": "before_round"
+              "tower_id": "quarry_easy_t3"
             },
             {
               "step_number": 6,
@@ -46571,9 +46571,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Ninja shurikens.",
+              "timing": "before_round",
               "step_id": "quarry_easy_s6",
-              "tower_id": "quarry_easy_t3",
-              "timing": "before_round"
+              "tower_id": "quarry_easy_t3"
             },
             {
               "step_number": 7,
@@ -46586,9 +46586,9 @@
               "targeting": "First",
               "cost_estimate": 2340,
               "details": "Bloonjitsu unleashes 5 seeking shurikens per attack.",
+              "timing": "before_round",
               "step_id": "quarry_easy_s7",
-              "tower_id": "quarry_easy_t2",
-              "timing": "before_round"
+              "tower_id": "quarry_easy_t2"
             },
             {
               "step_number": 8,
@@ -46601,9 +46601,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Bloonjitsu and Sauda destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "quarry_easy_s8",
-              "tower_id": "quarry_easy_t4",
-              "timing": "before_round"
+              "tower_id": "quarry_easy_t4"
             }
           ],
           "best_hero_reason": "Stepped quarry stone walls block projectile line of sight. Psi's psionic attacks ignore quarry depth and target bloons across all levels.",
@@ -47263,9 +47263,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Hits bloons from both alternating street paths.",
+              "timing": "before_round",
               "step_id": "quiet_street_easy_s1",
-              "tower_id": "quiet_street_easy_t1",
-              "timing": "before_round"
+              "tower_id": "quiet_street_easy_t1"
             },
             {
               "step_number": 2,
@@ -47278,9 +47278,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Innate camo detection across the intersection.",
+              "timing": "before_round",
               "step_id": "quiet_street_easy_s2",
-              "tower_id": "quiet_street_easy_t2",
-              "timing": "before_round"
+              "tower_id": "quiet_street_easy_t2"
             },
             {
               "step_number": 3,
@@ -47293,9 +47293,9 @@
               "targeting": "First",
               "cost_estimate": 810,
               "details": "Seeking shurikens follow bloons down both streets.",
+              "timing": "before_round",
               "step_id": "quiet_street_easy_s3",
-              "tower_id": "quiet_street_easy_t2",
-              "timing": "before_round"
+              "tower_id": "quiet_street_easy_t2"
             },
             {
               "step_number": 4,
@@ -47308,9 +47308,9 @@
               "targeting": "First",
               "cost_estimate": 720,
               "details": "Double Shot clears fast pinks and grouped bloons.",
+              "timing": "before_round",
               "step_id": "quiet_street_easy_s4",
-              "tower_id": "quiet_street_easy_t2",
-              "timing": "before_round"
+              "tower_id": "quiet_street_easy_t2"
             },
             {
               "step_number": 5,
@@ -47323,9 +47323,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "quiet_street_easy_s5",
-              "tower_id": "quiet_street_easy_t3",
-              "timing": "before_round"
+              "tower_id": "quiet_street_easy_t3"
             },
             {
               "step_number": 6,
@@ -47338,9 +47338,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Ninja shurikens.",
+              "timing": "before_round",
               "step_id": "quiet_street_easy_s6",
-              "tower_id": "quiet_street_easy_t3",
-              "timing": "before_round"
+              "tower_id": "quiet_street_easy_t3"
             },
             {
               "step_number": 7,
@@ -47353,9 +47353,9 @@
               "targeting": "First",
               "cost_estimate": 2340,
               "details": "Bloonjitsu unleashes 5 seeking shurikens per attack.",
+              "timing": "before_round",
               "step_id": "quiet_street_easy_s7",
-              "tower_id": "quiet_street_easy_t2",
-              "timing": "before_round"
+              "tower_id": "quiet_street_easy_t2"
             },
             {
               "step_number": 8,
@@ -47368,9 +47368,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Bloonjitsu and Sauda destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "quiet_street_easy_s8",
-              "tower_id": "quiet_street_easy_t4",
-              "timing": "before_round"
+              "tower_id": "quiet_street_easy_t4"
             }
           ],
           "best_hero_reason": "Urban townhouses block horizontal sightlines. Psi attacks through structures with zero hindrance, targeting both streets simultaneously.",
@@ -48030,9 +48030,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Hits bloons on both lanes with full sword reach.",
+              "timing": "before_round",
               "step_id": "rake_easy_s1",
-              "tower_id": "rake_easy_t1",
-              "timing": "before_round"
+              "tower_id": "rake_easy_t1"
             },
             {
               "step_number": 2,
@@ -48045,9 +48045,9 @@
               "targeting": "First",
               "cost_estimate": 240,
               "details": "Radial fire hits both crossing paths.",
+              "timing": "before_round",
               "step_id": "rake_easy_s2",
-              "tower_id": "rake_easy_t2",
-              "timing": "before_round"
+              "tower_id": "rake_easy_t2"
             },
             {
               "step_number": 3,
@@ -48060,9 +48060,9 @@
               "targeting": "First",
               "cost_estimate": 555,
               "details": "Faster shooting and extra pierce.",
+              "timing": "before_round",
               "step_id": "rake_easy_s3",
-              "tower_id": "rake_easy_t2",
-              "timing": "before_round"
+              "tower_id": "rake_easy_t2"
             },
             {
               "step_number": 4,
@@ -48075,9 +48075,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "rake_easy_s4",
-              "tower_id": "rake_easy_t3",
-              "timing": "before_round"
+              "tower_id": "rake_easy_t3"
             },
             {
               "step_number": 5,
@@ -48090,9 +48090,9 @@
               "targeting": "First",
               "cost_estimate": 380,
               "details": "Tack Sprayer fires 16 tacks into both lanes.",
+              "timing": "before_round",
               "step_id": "rake_easy_s5",
-              "tower_id": "rake_easy_t2",
-              "timing": "before_round"
+              "tower_id": "rake_easy_t2"
             },
             {
               "step_number": 6,
@@ -48105,9 +48105,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Tack damage and fire rate.",
+              "timing": "before_round",
               "step_id": "rake_easy_s6",
-              "tower_id": "rake_easy_t3",
-              "timing": "before_round"
+              "tower_id": "rake_easy_t3"
             },
             {
               "step_number": 7,
@@ -48120,9 +48120,9 @@
               "targeting": "First",
               "cost_estimate": 2720,
               "details": "Overdrive completely locks down the bridge.",
+              "timing": "before_round",
               "step_id": "rake_easy_s7",
-              "tower_id": "rake_easy_t2",
-              "timing": "before_round"
+              "tower_id": "rake_easy_t2"
             },
             {
               "step_number": 8,
@@ -48135,9 +48135,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Sauda and Overdrive destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "rake_easy_s8",
-              "tower_id": "rake_easy_t4",
-              "timing": "before_round"
+              "tower_id": "rake_easy_t4"
             }
           ],
           "best_hero_reason": "Diverging paths across the garden intersect only at the exit; Etienne's Level 8 global Camo and UCAV provide full dual-lane control.",
@@ -54214,9 +54214,9 @@
               "targeting": "First",
               "cost_estimate": 275,
               "details": "High-velocity dart fire across the first crossing.",
+              "timing": "before_round",
               "step_id": "spice_islands_easy_s1",
-              "tower_id": "spice_islands_easy_t1",
-              "timing": "before_round"
+              "tower_id": "spice_islands_easy_t1"
             },
             {
               "step_number": 2,
@@ -54229,9 +54229,9 @@
               "targeting": "First",
               "cost_estimate": 170,
               "details": "Provides vision for Sub's Advanced Intel.",
+              "timing": "before_round",
               "step_id": "spice_islands_easy_s2",
-              "tower_id": "spice_islands_easy_t2",
-              "timing": "before_round"
+              "tower_id": "spice_islands_easy_t2"
             },
             {
               "step_number": 3,
@@ -54244,9 +54244,9 @@
               "targeting": "First",
               "cost_estimate": 535,
               "details": "Advanced Intel allows Sub to shoot anywhere Dart Monkey can see.",
+              "timing": "before_round",
               "step_id": "spice_islands_easy_s3",
-              "tower_id": "spice_islands_easy_t1",
-              "timing": "before_round"
+              "tower_id": "spice_islands_easy_t1"
             },
             {
               "step_number": 4,
@@ -54259,9 +54259,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Adds heavy cannon and grape fire.",
+              "timing": "before_round",
               "step_id": "spice_islands_easy_s4",
-              "tower_id": "spice_islands_easy_t3",
-              "timing": "before_round"
+              "tower_id": "spice_islands_easy_t3"
             },
             {
               "step_number": 5,
@@ -54274,9 +54274,9 @@
               "targeting": "First",
               "cost_estimate": 635,
               "details": "Hot Shot pops Leads on Round 28; prepares path for Destroyer.",
+              "timing": "before_round",
               "step_id": "spice_islands_easy_s5",
-              "tower_id": "spice_islands_easy_t3",
-              "timing": "before_round"
+              "tower_id": "spice_islands_easy_t3"
             },
             {
               "step_number": 6,
@@ -54289,9 +54289,9 @@
               "targeting": "First",
               "cost_estimate": 2165,
               "details": "Triple Guns rapidly fires darts across the map.",
+              "timing": "before_round",
               "step_id": "spice_islands_easy_s6",
-              "tower_id": "spice_islands_easy_t1",
-              "timing": "before_round"
+              "tower_id": "spice_islands_easy_t1"
             },
             {
               "step_number": 7,
@@ -54304,9 +54304,9 @@
               "targeting": "First",
               "cost_estimate": 3485,
               "details": "Destroyer unleashes devastating grape volleys.",
+              "timing": "before_round",
               "step_id": "spice_islands_easy_s7",
-              "tower_id": "spice_islands_easy_t3",
-              "timing": "before_round"
+              "tower_id": "spice_islands_easy_t3"
             },
             {
               "step_number": 8,
@@ -54319,9 +54319,9 @@
               "targeting": "First",
               "cost_estimate": 2125,
               "details": "Armor Piercing Darts inflicts heavy blimp damage. The MOAB pops almost immediately upon entering.",
+              "timing": "before_round",
               "step_id": "spice_islands_easy_s8",
-              "tower_id": "spice_islands_easy_t1",
-              "timing": "before_round"
+              "tower_id": "spice_islands_easy_t1"
             }
           ],
           "best_hero_reason": "Vast ocean archipelago allows building a colossal Sub and Buccaneer fleet; Brickell's Naval Tactics doubles all naval attack speed.",
@@ -55734,9 +55734,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Hits bloons on both alternating stream paths.",
+              "timing": "before_round",
               "step_id": "spring_spring_easy_s1",
-              "tower_id": "spring_spring_easy_t1",
-              "timing": "before_round"
+              "tower_id": "spring_spring_easy_t1"
             },
             {
               "step_number": 2,
@@ -55749,9 +55749,9 @@
               "targeting": "First",
               "cost_estimate": 275,
               "details": "Provides fast dart attacks from the water.",
+              "timing": "before_round",
               "step_id": "spring_spring_easy_s2",
-              "tower_id": "spring_spring_easy_t2",
-              "timing": "before_round"
+              "tower_id": "spring_spring_easy_t2"
             },
             {
               "step_number": 3,
@@ -55779,9 +55779,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "spring_spring_easy_s4",
-              "tower_id": "spring_spring_easy_t3",
-              "timing": "before_round"
+              "tower_id": "spring_spring_easy_t3"
             },
             {
               "step_number": 5,
@@ -55794,9 +55794,9 @@
               "targeting": "First",
               "cost_estimate": 935,
               "details": "Triple Guns fires high-frequency darts.",
+              "timing": "before_round",
               "step_id": "spring_spring_easy_s5",
-              "tower_id": "spring_spring_easy_t2",
-              "timing": "before_round"
+              "tower_id": "spring_spring_easy_t2"
             },
             {
               "step_number": 6,
@@ -55809,9 +55809,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Sub and Sauda.",
+              "timing": "before_round",
               "step_id": "spring_spring_easy_s6",
-              "tower_id": "spring_spring_easy_t3",
-              "timing": "before_round"
+              "tower_id": "spring_spring_easy_t3"
             },
             {
               "step_number": 7,
@@ -55824,9 +55824,9 @@
               "targeting": "First",
               "cost_estimate": 2125,
               "details": "Armor Piercing Darts inflicts heavy damage to ceramics and blimps.",
+              "timing": "before_round",
               "step_id": "spring_spring_easy_s7",
-              "tower_id": "spring_spring_easy_t2",
-              "timing": "before_round"
+              "tower_id": "spring_spring_easy_t2"
             },
             {
               "step_number": 8,
@@ -55839,9 +55839,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. The Sub and Sauda destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "spring_spring_easy_s8",
-              "tower_id": "spring_spring_easy_t4",
-              "timing": "before_round"
+              "tower_id": "spring_spring_easy_t4"
             }
           ],
           "best_hero_reason": "Split paths around twin ponds split bloons; Etienne's aerial drones seamlessly support both tracks while ponds allow Sub support.",
@@ -56501,9 +56501,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Secures the early riverbed with zero leaks.",
+              "timing": "before_round",
               "step_id": "streambed_easy_s1",
-              "tower_id": "streambed_easy_t1",
-              "timing": "before_round"
+              "tower_id": "streambed_easy_t1"
             },
             {
               "step_number": 2,
@@ -56516,9 +56516,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Innate camo detection and fast shurikens.",
+              "timing": "before_round",
               "step_id": "streambed_easy_s2",
-              "tower_id": "streambed_easy_t2",
-              "timing": "before_round"
+              "tower_id": "streambed_easy_t2"
             },
             {
               "step_number": 3,
@@ -56531,9 +56531,9 @@
               "targeting": "First",
               "cost_estimate": 810,
               "details": "Seeking shurikens follow bloons through the mud curves.",
+              "timing": "before_round",
               "step_id": "streambed_easy_s3",
-              "tower_id": "streambed_easy_t2",
-              "timing": "before_round"
+              "tower_id": "streambed_easy_t2"
             },
             {
               "step_number": 4,
@@ -56546,9 +56546,9 @@
               "targeting": "First",
               "cost_estimate": 720,
               "details": "Double Shot clears fast pinks and grouped bloons.",
+              "timing": "before_round",
               "step_id": "streambed_easy_s4",
-              "tower_id": "streambed_easy_t2",
-              "timing": "before_round"
+              "tower_id": "streambed_easy_t2"
             },
             {
               "step_number": 5,
@@ -56561,9 +56561,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "streambed_easy_s5",
-              "tower_id": "streambed_easy_t3",
-              "timing": "before_round"
+              "tower_id": "streambed_easy_t3"
             },
             {
               "step_number": 6,
@@ -56576,9 +56576,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Ninja shurikens.",
+              "timing": "before_round",
               "step_id": "streambed_easy_s6",
-              "tower_id": "streambed_easy_t3",
-              "timing": "before_round"
+              "tower_id": "streambed_easy_t3"
             },
             {
               "step_number": 7,
@@ -56591,9 +56591,9 @@
               "targeting": "First",
               "cost_estimate": 2340,
               "details": "Bloonjitsu unleashes 5 seeking shurikens per attack.",
+              "timing": "before_round",
               "step_id": "streambed_easy_s7",
-              "tower_id": "streambed_easy_t2",
-              "timing": "before_round"
+              "tower_id": "streambed_easy_t2"
             },
             {
               "step_number": 8,
@@ -56606,9 +56606,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Bloonjitsu and Sauda destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "streambed_easy_s8",
-              "tower_id": "streambed_easy_t4",
-              "timing": "before_round"
+              "tower_id": "streambed_easy_t4"
             }
           ],
           "best_hero_reason": "Tight corners along the winding riverbank give Sauda maximum contact time and easy early-game solo capability.",
@@ -57269,9 +57269,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Secures the geothermal entrance with dual-lane reach.",
+              "timing": "before_round",
               "step_id": "sulfur_springs_easy_s1",
-              "tower_id": "sulfur_springs_easy_t1",
-              "timing": "before_round"
+              "tower_id": "sulfur_springs_easy_t1"
             },
             {
               "step_number": 2,
@@ -57284,9 +57284,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Innate camo detection across the geysers.",
+              "timing": "before_round",
               "step_id": "sulfur_springs_easy_s2",
-              "tower_id": "sulfur_springs_easy_t2",
-              "timing": "before_round"
+              "tower_id": "sulfur_springs_easy_t2"
             },
             {
               "step_number": 3,
@@ -57299,9 +57299,9 @@
               "targeting": "First",
               "cost_estimate": 810,
               "details": "Seeking shurikens follow bloons through the sulfur curves.",
+              "timing": "before_round",
               "step_id": "sulfur_springs_easy_s3",
-              "tower_id": "sulfur_springs_easy_t2",
-              "timing": "before_round"
+              "tower_id": "sulfur_springs_easy_t2"
             },
             {
               "step_number": 4,
@@ -57314,9 +57314,9 @@
               "targeting": "First",
               "cost_estimate": 720,
               "details": "Double Shot clears fast pinks and grouped bloons.",
+              "timing": "before_round",
               "step_id": "sulfur_springs_easy_s4",
-              "tower_id": "sulfur_springs_easy_t2",
-              "timing": "before_round"
+              "tower_id": "sulfur_springs_easy_t2"
             },
             {
               "step_number": 5,
@@ -57329,9 +57329,9 @@
               "targeting": "Strong",
               "cost_estimate": 980,
               "details": "Acidic Mixture Dip handles Round 28 Leads.",
+              "timing": "before_round",
               "step_id": "sulfur_springs_easy_s5",
-              "tower_id": "sulfur_springs_easy_t3",
-              "timing": "before_round"
+              "tower_id": "sulfur_springs_easy_t3"
             },
             {
               "step_number": 6,
@@ -57344,9 +57344,9 @@
               "targeting": "Close",
               "cost_estimate": 1060,
               "details": "Berserker Brew boosts Ninja shurikens.",
+              "timing": "before_round",
               "step_id": "sulfur_springs_easy_s6",
-              "tower_id": "sulfur_springs_easy_t3",
-              "timing": "before_round"
+              "tower_id": "sulfur_springs_easy_t3"
             },
             {
               "step_number": 7,
@@ -57359,9 +57359,9 @@
               "targeting": "First",
               "cost_estimate": 2340,
               "details": "Bloonjitsu unleashes 5 seeking shurikens per attack.",
+              "timing": "before_round",
               "step_id": "sulfur_springs_easy_s7",
-              "tower_id": "sulfur_springs_easy_t2",
-              "timing": "before_round"
+              "tower_id": "sulfur_springs_easy_t2"
             },
             {
               "step_number": 8,
@@ -57374,9 +57374,9 @@
               "targeting": "Strong",
               "cost_estimate": 2355,
               "details": "MOAB Mauler delivers heavy blimp damage. Bloonjitsu and Sauda destroy the MOAB.",
+              "timing": "before_round",
               "step_id": "sulfur_springs_easy_s8",
-              "tower_id": "sulfur_springs_easy_t4",
-              "timing": "before_round"
+              "tower_id": "sulfur_springs_easy_t4"
             }
           ],
           "best_hero_reason": "Geothermal vents and tight straightaways concentrate bloons into Gwendolin's Heat It Up aura and fire traps for rapid lead and ceramic burning.",
@@ -64221,9 +64221,9 @@
               "targeting": "First",
               "cost_estimate": 510,
               "details": "Secures the slide exit with zero leaks.",
+              "timing": "before_round",
               "step_id": "water_park_easy_s1",
-              "tower_id": "water_park_easy_t1",
-              "timing": "before_round"
+              "tower_id": "water_park_easy_t1"
             },
             {
               "step_number": 2,
@@ -64236,9 +64236,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Covers both slide paths with grape fire.",
+              "timing": "before_round",
               "step_id": "water_park_easy_s2",
-              "tower_id": "water_park_easy_t2",
-              "timing": "before_round"
+              "tower_id": "water_park_easy_t2"
             },
             {
               "step_number": 3,
@@ -64251,9 +64251,9 @@
               "targeting": "First",
               "cost_estimate": 210,
               "details": "Grape Shot fires 4 grapes.",
+              "timing": "before_round",
               "step_id": "water_park_easy_s3",
-              "tower_id": "water_park_easy_t2",
-              "timing": "before_round"
+              "tower_id": "water_park_easy_t2"
             },
             {
               "step_number": 4,
@@ -64266,9 +64266,9 @@
               "targeting": "First",
               "cost_estimate": 425,
               "details": "Hot Shot grants Lead-popping; Crow's Nest provides full Camo detection.",
+              "timing": "before_round",
               "step_id": "water_park_easy_s4",
-              "tower_id": "water_park_easy_t2",
-              "timing": "before_round"
+              "tower_id": "water_park_easy_t2"
             },
             {
               "step_number": 5,
@@ -64281,9 +64281,9 @@
               "targeting": "First",
               "cost_estimate": 3485,
               "details": "Destroyer unleashes rapid grape barrages.",
+              "timing": "before_round",
               "step_id": "water_park_easy_s5",
-              "tower_id": "water_park_easy_t2",
-              "timing": "before_round"
+              "tower_id": "water_park_easy_t2"
             },
             {
               "step_number": 6,

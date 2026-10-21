@@ -20,6 +20,7 @@ from unittest.mock import patch
 import os
 import json
 import tempfile
+import copy
 import html
 import math
 
@@ -41,6 +42,7 @@ from btd6_economy import (
 from btd6_replay import (
     validate_strategy,
     validate_strategy_schema,
+    prepare_and_validate_strategy,
     TowerReplayEngine,
     TowerInstance,
     CANONICAL_HEROES,
@@ -52,6 +54,7 @@ from threat_radar_data import (
     get_round_data
 )
 from validate_guides import validate_database
+from generate_guides_database import compile_database
 from btd6_guide import DataManager, SettingsManager, BTD6GuideApp
 
 
@@ -1478,17 +1481,276 @@ class TestSuggestionsForCodingRegressions(unittest.TestCase):
             # Test HTML export
             with patch("tkinter.messagebox.showinfo"), \
                  patch("webbrowser.open"):
-                app.export_printable_html(strat=strat, map_data=map_data)
-                html_filename = "monkey_meadow_medium_guide.html"
-                html_path = os.path.join(os.path.dirname(__file__), html_filename)
+                html_path = os.path.join(tmp_dir, "monkey_meadow_medium_guide.html")
+                res_path = app.export_printable_html(strat=strat, map_data=map_data, output_path=html_path)
+                self.assertEqual(res_path, html_path)
                 self.assertTrue(os.path.exists(html_path))
                 with open(html_path, "r", encoding="utf-8") as f:
                     written = f.read()
                 self.assertIn("$850", written)
                 self.assertIn("Monkey Knowledge", written)
                 self.assertIn("Game Version", written)
-                if os.path.exists(html_path):
-                    os.remove(html_path)
+
+
+class TestV140RegressionFixes(unittest.TestCase):
+    """
+    Validates all 6 prioritized findings from Suggestions_for_Coding.txt (v1.4.0):
+    1. [P1] Database regeneration passes in fresh environment with strict economics (firing_range R28 fix).
+    2. [P1] HTML requirements field XSS sanitization and strict schema enforcement.
+    3. [P2] Metadata schema validation (rejecting null requirements, null overview, wrapper ID validation, isolated override recovery).
+    4. [P2] Independent Monkey Knowledge perks (more_starting_cash and free_dart_monkey decoupled).
+    5. [P2] Editor save JSON parsing before arithmetic (avoiding TypeError on string cost estimates like "170").
+    6. [P2] Unified draft workflow across editor, generator, loading, and import.
+    """
+
+    def _create_base_easy_strategy(self):
+        return {
+            "difficulty": "Easy",
+            "mode": "Standard",
+            "rounds": "1-40",
+            "status": "Verified",
+            "recommended_hero": "Quincy",
+            "starting_cash": 650,
+            "overview": "Base verified Easy testing strategy.",
+            "camo_handling": "Dart Monkey 0-2-3 / Quincy level 5",
+            "lead_handling": "Bomb Shooter 2-0-3",
+            "moab_handling": "Bomb Shooter 0-3-2",
+            "why_it_works": "Solid defense.",
+            "steps": [
+                {"step_number": 1, "round": 1, "timing": "before_round", "action": "Place", "tower": "Quincy", "upgrade": "0-0-0", "cost_estimate": 455, "placement": "Center"},
+                {"step_number": 2, "round": 6, "timing": "before_round", "action": "Place", "tower": "Dart Monkey", "upgrade": "0-0-0", "cost_estimate": 170, "placement": "Front"},
+                {"step_number": 3, "round": 12, "timing": "before_round", "action": "Upgrade", "tower": "Dart Monkey", "upgrade": "0-2-0", "cost_estimate": 260, "placement": "Front"},
+                {"step_number": 4, "round": 20, "timing": "before_round", "action": "Upgrade", "tower": "Dart Monkey", "upgrade": "0-2-3", "cost_estimate": 970, "placement": "Front"},
+                {"step_number": 5, "round": 28, "timing": "before_round", "action": "Place", "tower": "Bomb Shooter", "upgrade": "2-0-3", "cost_estimate": 1955, "placement": "Bend"}
+            ]
+        }
+
+    def test_finding1_database_regeneration_passes_in_temp_dir(self):
+        """[P1] Database regeneration produces a 100% invariant-compliant database in a temporary directory."""
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            temp_db = os.path.join(tmp_dir, "test_guides.json")
+            compile_database(output_path=temp_db)
+            self.assertTrue(os.path.exists(temp_db), "compile_database failed to generate database file")
+            success, errors, warnings, stats = validate_database(db_path=temp_db)
+            if errors:
+                self.fail(f"Regenerated database failed validation with {len(errors)} errors:\n" + "\n".join(errors[:10]))
+            self.assertTrue(success)
+            self.assertEqual(stats["total_maps"], 87)
+            self.assertEqual(stats["difficulty_counts"]["Easy"], 87)
+            self.assertEqual(stats["difficulty_counts"]["Medium"], 87)
+            self.assertEqual(stats["difficulty_counts"]["Hard"], 87)
+
+    def test_finding2_html_requirements_and_metadata_xss_sanitization(self):
+        """[P1] HTML requirements field rejects script injection in schema and escapes all inserted HTML values."""
+        # 1. Schema must reject non-numeric string required_starting_cash
+        strat = self._create_base_easy_strategy()
+        strat["requirements"] = {
+            "required_starting_cash": "<script>window.REVIEW_PROBE=1</script>"
+        }
+        ok, errs = validate_strategy_schema(strat)
+        self.assertFalse(ok)
+        self.assertTrue(any("required_starting_cash" in e for e in errs))
+
+        # 2. Exporter must HTML-escape every metadata field if injected values are present
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            app = BTD6GuideApp.__new__(BTD6GuideApp)
+            app.get_current_map_id = lambda: "monkey_meadow"
+            out_html = os.path.join(tmp_dir, "xss_test.html")
+            map_data = {
+                "name": "<script>alert('map_name')</script>",
+                "category": "Beginner",
+                "terrain": "Grass",
+                "lanes": "Single Track",
+                "water": False
+            }
+            xss_strat = {
+                "difficulty": "Easy", "mode": "Standard", "rounds": "1-40",
+                "status": "Verified",
+                "recommended_hero": "<script>alert('hero')</script>",
+                "starting_cash": 650,
+                "overview": "<script>alert('overview')</script>",
+                "camo_handling": "<script>alert('camo')</script>",
+                "lead_handling": "<script>alert('lead')</script>",
+                "moab_handling": "<script>alert('moab')</script>",
+                "why_it_works": "<script>alert('why')</script>",
+                "steps": [
+                    {
+                        "step_number": 1, "round": 1, "timing": "before_round",
+                        "action": "Place", "tower": "<script>alert('tower')</script>",
+                        "upgrade": "0-0-0", "cost_estimate": 215,
+                        "placement": "<script>alert('placement')</script>",
+                        "details": "<script>alert('details')</script>"
+                    }
+                ],
+                "requirements": {
+                    "required_starting_cash": "<script>window.REVIEW_PROBE=1</script>",
+                    "monkey_knowledge": False,
+                    "game_version": "<script>alert('ver')</script>"
+                }
+            }
+            with patch("webbrowser.open"):
+                res_path = app.export_printable_html(strat=xss_strat, map_data=map_data, output_path=out_html)
+            self.assertEqual(res_path, out_html)
+            self.assertTrue(os.path.exists(out_html))
+            with open(out_html, "r", encoding="utf-8") as f:
+                html_text = f.read()
+            self.assertNotIn("<script>", html_text)
+            self.assertIn("&lt;script&gt;", html_text)
+
+    def test_finding3_metadata_schema_and_override_isolation(self):
+        """[P2] Schema rejects null requirements/overview, and DataManager isolates override loading failures."""
+        base = self._create_base_easy_strategy()
+
+        # Schema rejects requirements: null
+        s1 = copy.deepcopy(base)
+        s1["requirements"] = None
+        ok1, errs1 = validate_strategy_schema(s1)
+        self.assertFalse(ok1)
+        self.assertTrue(any("requirements" in e for e in errs1))
+
+        # Schema rejects requirements: []
+        s2 = copy.deepcopy(base)
+        s2["requirements"] = []
+        ok2, errs2 = validate_strategy_schema(s2)
+        self.assertFalse(ok2)
+        self.assertTrue(any("requirements" in e for e in errs2))
+
+        # Schema rejects overview: null
+        s3 = copy.deepcopy(base)
+        s3["overview"] = None
+        ok3, errs3 = validate_strategy_schema(s3)
+        self.assertFalse(ok3)
+        self.assertTrue(any("overview" in e for e in errs3))
+
+        # DataManager override isolation: malformed override does not crash or block other valid overrides
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            db_path = os.path.join(tmp_dir, "guides.json")
+            ov_path = os.path.join(tmp_dir, "user_overrides.json")
+
+            valid_strat = copy.deepcopy(base)
+            valid_strat["overview"] = "Valid isolated override overview"
+            broken_strat = copy.deepcopy(base)
+            broken_strat["requirements"] = None  # Would crash unshielded consumers
+
+            overrides = {
+                "town_center": {"Easy": broken_strat},
+                "monkey_meadow": {"Easy": valid_strat}
+            }
+            with open(ov_path, "w", encoding="utf-8") as f:
+                json.dump(overrides, f)
+
+            base_db = {
+                "version": "1.4.0",
+                "maps": {
+                    "monkey_meadow": {"name": "Monkey Meadow", "difficulties": {"Easy": copy.deepcopy(base)}},
+                    "town_center": {"name": "Town Center", "difficulties": {"Easy": copy.deepcopy(base)}}
+                }
+            }
+            with open(db_path, "w", encoding="utf-8") as f:
+                json.dump(base_db, f)
+
+            dm = DataManager(filepath=db_path, show_dialogs=False)
+            dm.overrides_filepath = ov_path
+            loaded = dm.load()
+            self.assertTrue(loaded)
+            # monkey_meadow valid override is preserved and loaded
+            self.assertIn("monkey_meadow", dm.user_overrides)
+            self.assertEqual(
+                dm.database["maps"]["monkey_meadow"]["difficulties"]["Easy"]["overview"],
+                "Valid isolated override overview"
+            )
+            # town_center broken override was rejected without stopping the loop
+            self.assertNotIn("town_center", dm.user_overrides)
+
+    def test_finding4_independent_perks_modeling(self):
+        """[P2] Replay and economy model more_starting_cash and free_dart_monkey independently."""
+        # 1. more_starting_cash=True, free_dart_monkey=False charges FULL price for first Dart Monkey ($170 on Easy)
+        engine_no_free = TowerReplayEngine(
+            difficulty="Easy", start_round=1, max_round=40,
+            more_starting_cash=True, free_dart_monkey=False
+        )
+        step = {"step_number": 1, "round": 1, "timing": "before_round", "action": "Place", "tower": "Dart Monkey", "upgrade": "0-0-0", "cost_estimate": 170, "placement": "Start"}
+        ok, err = engine_no_free.apply_step(step, 0)
+        self.assertTrue(ok)
+        self.assertEqual(engine_no_free.step_history[-1]["cost"], 170, "Expected full Dart Monkey price ($170), but was treated as free!")
+        self.assertEqual(engine_no_free.cumulative_cost_spent, 170)
+
+        # 2. more_starting_cash=False, free_dart_monkey=True grants FREE Dart Monkey, but normal starting cash
+        engine_free = TowerReplayEngine(
+            difficulty="Easy", start_round=1, max_round=40,
+            more_starting_cash=False, free_dart_monkey=True
+        )
+        ok2, err2 = engine_free.apply_step(step, 0)
+        self.assertTrue(ok2)
+        self.assertEqual(engine_free.step_history[-1]["cost"], 0, "Expected free Dart Monkey ($0)")
+        self.assertEqual(engine_free.cumulative_cost_spent, 0)
+
+        # 3. validate_strategy preserves decoupled perk values from strategy requirements
+        strat = self._create_base_easy_strategy()
+        strat["starting_cash"] = 850
+        strat["requirements"] = {
+            "more_starting_cash": True,
+            "free_dart_monkey": False,
+            "required_starting_cash": 850
+        }
+        valid, errs, warns, stats = validate_strategy(strat, diff_name="Easy")
+        self.assertTrue(valid, f"Expected strategy to validate with independent perks, got errors: {errs}")
+        # Step 2 is Dart Monkey; must not be free
+        self.assertGreater(stats["cumulative_cost"], 455)
+
+    def test_finding5_editor_saving_rejects_string_cost_before_arithmetic(self):
+        """[P2] Editor saving validates schema first, rejecting string cost_estimate without raising TypeError."""
+        strat = self._create_base_easy_strategy()
+        strat["steps"][0]["cost_estimate"] = "170"  # String instead of int/float
+
+        # Schema validator catches it cleanly
+        ok, errs = validate_strategy_schema(strat)
+        self.assertFalse(ok)
+        self.assertTrue(any("cost_estimate" in e for e in errs))
+
+        # prepare_and_validate_strategy rejects it cleanly without TypeError
+        p_ok, p_errs, _, _ = prepare_and_validate_strategy(strat)
+        self.assertFalse(p_ok)
+        self.assertTrue(any("cost_estimate" in e for e in p_errs))
+
+    def test_finding6_draft_workflow_consistency(self):
+        """[P2] Draft strategies are evaluated consistently across validator, generator, and editor."""
+        # 1-step draft strategy with status "Draft"
+        draft = {
+            "difficulty": "Easy",
+            "mode": "Standard",
+            "rounds": "1-40",
+            "status": "Draft",
+            "recommended_hero": "Quincy",
+            "starting_cash": 650,
+            "overview": "Short draft in progress.",
+            "camo_handling": "TBD",
+            "lead_handling": "TBD",
+            "moab_handling": "TBD",
+            "why_it_works": "Draft stage.",
+            "steps": [
+                {"step_number": 1, "round": 1, "timing": "before_round", "action": "Place", "tower": "Quincy", "upgrade": "0-0-0", "cost_estimate": 455, "placement": "Start"}
+            ]
+        }
+        # Schema passes
+        s_ok, s_errs = validate_strategy_schema(draft)
+        self.assertTrue(s_ok, f"Draft schema validation failed: {s_errs}")
+
+        # Lenient validation (strict_threats=False) passes without step count or threat errors
+        v_ok, v_errs, v_warns, _ = validate_strategy(draft, diff_name="Easy", strict_threats=False)
+        self.assertTrue(v_ok, f"Draft lenient validation failed: {v_errs}")
+        self.assertTrue(len(v_warns) > 0, "Expected tactical warnings for draft")
+
+        # prepare_and_validate_strategy handles draft status automatically
+        p_ok, p_errs, p_warns, _ = prepare_and_validate_strategy(draft, diff_name="Easy")
+        self.assertTrue(p_ok, f"prepare_and_validate_strategy failed for draft: {p_errs}")
+
+        # Verified strategy with 1 step is strictly rejected for insufficient step count
+        verified = copy.deepcopy(draft)
+        verified["status"] = "Verified"
+        ver_ok, ver_errs, _, _ = validate_strategy(verified, diff_name="Easy", strict_threats=False)
+        self.assertFalse(ver_ok)
+        self.assertTrue(any("requires at least 5 steps" in e for e in ver_errs))
 
 
 if __name__ == "__main__":

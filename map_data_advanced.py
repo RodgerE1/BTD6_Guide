@@ -356,15 +356,15 @@ ADVANCED_MAPS = {
                 "why_it_works": "Global range towers on the stationary outer walls are completely unaffected by the gear rotation mechanic.",
                 "research_sources": ["Bloons Wiki - Geared"],
                 "steps": [
-                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "On the stationary upper-left outer wall platform.", "First", 460, "Safe from gear rotation with long-range arrow attacks."),
+                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "On the stationary upper-left outer wall platform.", "First", 455, "Safe from gear rotation with long-range arrow attacks."),
                     create_step(2, "Rounds 1–10: Opening Defense", 6, "Place", "Sniper Monkey", "0-0-0", "On the stationary outer wall next to Quincy.", "First", 300, "Provides global rifle fire across the entire track."),
-                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Outer wall.", "First", 935, "Full Metal Jacket and Faster Firing clears bloons quickly."),
+                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Outer wall.", "First", 980, "Full Metal Jacket and Faster Firing clears bloons quickly."),
                     create_step(4, "Rounds 11–20: Expanding Defense", 17, "Place", "Dart Monkey", "0-0-0", "On the center gear near an edge.", "First", 170, "Adds chip damage as the gear rotates."),
-                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Sniper Monkey", "3-0-2", "Outer wall.", "Strong", 2450, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot."),
-                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Place", "Bomb Shooter", "0-0-0", "On the stationary outer wall near the track exit.", "Close", 240, "Prepares explosive defense for upcoming grouped bloons."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 32, "Upgrade", "Bomb Shooter", "2-0-3", "Outer wall.", "Close", 2845, "Really Big Bombs + Cluster Bombs wipes out grouped bloon rushes."),
-                    create_step(8, "Rounds 31–39: Final Preparation", 36, "Place", "Bomb Shooter", "0-3-2", "On the outer wall.", "Strong", 2040, "MOAB Mauler delivers heavy blimp damage."),
-                    create_step(9, "Round 40: MOAB Battle", 40, "Target", "Bomb Shooter", "0-3-2", "Outer wall.", "Strong", 0, "The 3-0-2 Sniper on Strong + MOAB Mauler obliterates the Round 40 MOAB.")
+                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 24, "Upgrade", "Sniper Monkey", "3-0-2", "Outer wall.", "Strong", 3740, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot.", timing="before_round"),
+                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Place", "Bomb Shooter", "0-0-0", "On the stationary outer wall near the track exit.", "Close", 445, "Prepares explosive defense for upcoming grouped bloons.", timing="before_round"),
+                    create_step(7, "Rounds 31–39: Final Preparation", 32, "Upgrade", "Bomb Shooter", "2-0-3", "Outer wall.", "Close", 1955, "Really Big Bombs + Cluster Bombs wipes out grouped bloon rushes.", timing="before_round"),
+                    create_step(8, "Rounds 31–39: Final Preparation", 36, "Place", "Bomb Shooter", "0-3-2", "On the outer wall.", "Strong", 2355, "MOAB Mauler delivers heavy blimp damage.", timing="before_round"),
+                    create_step(9, "Round 40: MOAB Battle", 40, "Target", "Bomb Shooter", "0-3-2", "Outer wall.", "Strong", 0, "The 3-0-2 Sniper on Strong + MOAB Mauler obliterates the Round 40 MOAB.", timing="before_round")
                 ]
             },
             "Medium": None, "Hard": None, "Impoppable": None, "CHIMPS": None
@@ -435,14 +435,14 @@ ADVANCED_MAPS = {
                 "why_it_works": "The central mesa plateau has elevated vision over both upper and lower tracks.",
                 "research_sources": ["Bloons Wiki - Mesa"],
                 "steps": [
-                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "On the central elevated sandstone mesa platform.", "First", 460, "Fires arrows down into both canyon paths with high ground vision."),
+                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "On the central elevated sandstone mesa platform.", "First", 455, "Fires arrows down into both canyon paths with high ground vision."),
                     create_step(2, "Rounds 1–10: Opening Defense", 6, "Place", "Sniper Monkey", "0-0-0", "On the mesa platform next to Quincy.", "First", 300, "Provides global rifle fire across both lanes."),
-                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Mesa platform.", "First", 935, "Full Metal Jacket and Faster Firing clears bloons quickly."),
+                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Mesa platform.", "First", 980, "Full Metal Jacket and Faster Firing clears bloons quickly."),
                     create_step(4, "Rounds 11–20: Expanding Defense", 17, "Place", "Dart Monkey", "0-0-0", "At the exit path where both canyon lanes merge.", "First", 170, "Adds cleanup darts at the exit."),
-                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Sniper Monkey", "3-0-2", "Mesa platform.", "Strong", 2450, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot."),
-                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Exit merger.", "First", 1275, "Crossbow provides high damage cleanup."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "At the exit merger.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons."),
-                    create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "At the exit merger.", "Strong", 2040, "MOAB Mauler tears the Round 40 blimp apart. Sniper and Crossbow destroy the ceramics.")
+                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 24, "Upgrade", "Sniper Monkey", "3-0-2", "Mesa platform.", "Strong", 3740, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot.", timing="before_round"),
+                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Exit merger.", "First", 970, "Crossbow provides high damage cleanup.", timing="during_round"),
+                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "At the exit merger.", "Close", 2400, "Recursive Cluster bombs wipe out grouped bloons.", timing="during_round"),
+                    create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "At the exit merger.", "Strong", 2355, "MOAB Mauler tears the Round 40 blimp apart. Sniper and Crossbow destroy the ceramics.", timing="before_round")
                 ]
             },
             "Medium": None, "Hard": None, "Impoppable": None, "CHIMPS": None
@@ -474,14 +474,14 @@ ADVANCED_MAPS = {
                 "why_it_works": "The central crossway is the common intersection for all four diagonal tracks.",
                 "research_sources": ["Bloons Wiki - X Factor"],
                 "steps": [
-                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "Directly in the central crossway where all 4 diagonal lanes intersect.", "First", 460, "Fires arrows down all 4 diagonal lanes."),
+                    create_step(1, "Rounds 1–10: Opening Defense", 1, "Place", "Quincy", "0-0-0", "Directly in the central crossway where all 4 diagonal lanes intersect.", "First", 455, "Fires arrows down all 4 diagonal lanes."),
                     create_step(2, "Rounds 1–10: Opening Defense", 6, "Place", "Sniper Monkey", "0-0-0", "In the central crossway next to Quincy.", "First", 300, "Provides global rifle fire across all 4 corners."),
-                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Central crossway.", "First", 935, "Full Metal Jacket and Faster Firing clears bloons quickly."),
+                    create_step(3, "Rounds 11–20: Expanding Defense", 12, "Upgrade", "Sniper Monkey", "1-0-2", "Central crossway.", "First", 980, "Full Metal Jacket and Faster Firing clears bloons quickly."),
                     create_step(4, "Rounds 11–20: Expanding Defense", 17, "Place", "Dart Monkey", "0-0-0", "Along one of the diagonal exits.", "First", 170, "Adds cleanup darts."),
-                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 22, "Upgrade", "Sniper Monkey", "3-0-2", "Central crossway.", "Strong", 2450, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot."),
-                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Diagonal exit.", "First", 1275, "Crossbow provides high damage cleanup."),
-                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "In the central crossway.", "Close", 3085, "Recursive Cluster bombs wipe out grouped bloons across all 4 lanes."),
-                    create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "In the central crossway.", "Strong", 2040, "MOAB Mauler delivers heavy blimp damage. Sniper on Strong and Quincy destroy the MOAB.")
+                    create_step(5, "Rounds 21–30: Camo and Lead Preparation", 24, "Upgrade", "Sniper Monkey", "3-0-2", "Central crossway.", "Strong", 3740, "Deadly Precision pops Leads on Round 28 and inflicts 20 damage per shot.", timing="before_round"),
+                    create_step(6, "Rounds 21–30: Camo and Lead Preparation", 27, "Upgrade", "Dart Monkey", "0-2-3", "Diagonal exit.", "First", 970, "Crossbow provides high damage cleanup.", timing="during_round"),
+                    create_step(7, "Rounds 31–39: Final Preparation", 34, "Place", "Bomb Shooter", "2-0-3", "In the central crossway.", "Close", 2400, "Recursive Cluster bombs wipe out grouped bloons across all 4 lanes.", timing="during_round"),
+                    create_step(8, "Round 40: MOAB Battle", 37, "Place", "Bomb Shooter", "0-3-2", "In the central crossway.", "Strong", 2355, "MOAB Mauler delivers heavy blimp damage. Sniper on Strong and Quincy destroy the MOAB.", timing="before_round")
                 ]
             },
             "Medium": None, "Hard": None, "Impoppable": None, "CHIMPS": None

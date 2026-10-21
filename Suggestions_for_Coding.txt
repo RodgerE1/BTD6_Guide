@@ -1,93 +1,58 @@
-This is the strongest revision so far. The major failures from the previous review are fixed, but the new Monkey Knowledge and import features have persistence and validation problems.
-I ran all 52 tests successfully, parsed 14 Python files, and repeated the previous failure checks. All 261 production strategies pass validation, and their displayed purchase costs match replay-calculated costs. I did not edit the source code or perform in-game playthroughs.
-Confirmed fixes
-Previous issue	Current result
-Add Step crashes on missing datetime	Fixed; the suite now invokes the actual UI callback
-Refund counted twice	Fixed; the previously accepted overspend is rejected
-After-round upgrades satisfy earlier combat	Fixed
-Rejected actions advance replay chronology	Fixed
-Basic Lead popping automatically satisfies ceramic coverage	Removed
-BFB/ZOMG checks fall back to generic MOAB damage	Removed
-Radar ignores selected difficulty	Fixed
-Radar conceals replay errors	Error reporting added
-Editable estimates inflate recorded investment	Canonical transaction accounting implemented
-Previously tested malformed map container crashes	Handled
-
-
-The tests now exercise more real application behavior, which is an important improvement.
-1. High priority: Monkey Knowledge strategies can save successfully and disappear on reload
-References: [editor validation (line 3043)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:3043), [override loading (line 284)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:284).
-The editor and importer validate with the current Monkey Knowledge setting. The loader validates saved overrides with the default setting—Monkey Knowledge disabled.
-I reproduced this with a modified Medium strategy:
-1. Change its opening to Gwendolin at $725.
-2. Validate with Monkey Knowledge enabled: passes.
-3. Save the override: succeeds.
-4. Reload: the loader rejects the override and restores the bundled Sauda strategy.
-The rejected override is also removed from the in-memory override collection. A subsequent save could overwrite the override file without that strategy.
-Recommended fix: store requirements with the strategy, such as:
-"requirements": {
-  "more_starting_cash": true,
-  "free_dart_monkey": false
-}
-Use those requirements consistently during editing, loading, generation, import, and export. The current UI setting should determine whether the user can follow a guide, not whether that guide survives loading.
-2. High priority: community import processes malformed data before validating it
-Reference: [btd6_guide.pyw (line 2289)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2289).
-The importer assigns IDs before checking the strategy’s schema.
-I executed the actual import method with these inputs:
-Imported content	Result
-"steps": null	TypeError: 'NoneType' object is not iterable
-A step with "tower": null	AttributeError inside ID assignment
-
-
-These should produce ordinary import-error messages.
-The importer also allows users to accept validation failures through “import anyway.” That activates a strategy immediately even though the loader may reject it at the next restart.
-Recommended fix:
-- Validate field types before normalization or ID assignment.
-- Separate structural errors from gameplay warnings.
-- Never activate structurally invalid content.
-- If incomplete guides are allowed, save them explicitly as drafts and support that status consistently on reload.
-3. Medium priority: mixed explicit and automatic tower IDs can overwrite a tower
-References: [ID generation (line 107)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:107), [duplicate checking (line 254)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:254).
-Explicit duplicate IDs are rejected, but automatically generated IDs are not checked against existing IDs.
-Confirmed reproduction:
-1. Place a Dart Monkey with explicit ID dart_monkey_1.
-2. Place another Dart Monkey without an ID.
-3. Both placements succeed.
-4. The board contains one tower, because the generated ID overwrites the first.
-This is relevant to mixed imported and manually edited strategies.
-Recommended fix: generate an unused ID, then check uniqueness regardless of its origin. Prefer UUIDs for newly created tower instances and require explicit IDs after migration.
-4. Medium priority: schema validation still misses important fields
-References: [replay field handling (line 229)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:229), [database loading (line 226)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:226).
-Additional probes found:
-- A list-valued tower_id crashes validation with TypeError.
-- A numeric placement passes validation.
-- A list-valued step_id passes validation.
-- "Various" is accepted for an Upgrade action.
-The latter can set a tower’s upgrade state to None, rather than a valid three-tier tuple.
-The database loader checks map and strategy containers, but still does not validate their complete contents before assigning the live database.
-Recommended fix: define action-specific schemas:
-- step_id and tower_id: nonempty strings.
-- placement, details, and other displayed text: strings.
-- Place/Upgrade: concrete legal upgrade tuples.
-- Composite instructions: explicit action types rather than "Various" bypasses.
-- Step IDs: unique within a strategy.
-Validate candidate data fully before replacing live state.
-5. Medium priority: saved and shared guides do not record their execution assumptions
-Reference: [btd6_guide.pyw (line 2214)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2214).
-The new sharing format includes a schema version, map, difficulty, and strategy, but does not record the Monkey Knowledge assumptions used to validate it.
-Consequently, two users can import the same file and get different validation results based on their local toggle. Markdown and HTML also use the strategy’s stored starting_cash, which may remain $650 while validation permits $850.
-Recommended fix: make requirements part of the exported strategy and display them clearly:
-- Required starting cash.
-- Required perks.
-- Game-data version.
-- Validation status and playtest evidence.
-This should use the same metadata that fixes override reload behavior.
-What I would change next
-Prioritize these regression tests:
-1. A Monkey Knowledge-dependent guide survives save, reload, and export/import.
-2. Malformed imports return diagnostics without exceptions.
-3. Mixed explicit/generated tower IDs never collide.
-4. Every accepted strategy is safe for rendering and replay.
-5. Draft imports remain drafts after restarting.
-The remaining architectural concern is still data authority: passing the application’s model is not proof of a winning strategy. The database currently contains 87 Verified, 174 Structurally Validated, and zero Playtested entries. Continue distinguishing software validation from demonstrated gameplay results.
-My assessment: the replay and persistence foundations are substantially better now. The next release should concentrate on consistent strategy requirements and strict input boundaries, rather than adding more features before saved and shared guides behave reliably.
+The update fixes several earlier problems, but the project still has reproducible failures outside the current test coverage. The biggest issues are database regeneration, incomplete metadata validation, and inconsistent execution requirements.
+I reviewed C:\Users\rodge\OneDrive\Desktop\BTD6_Guide without changing source files.
+What improved
+- All 58 regression tests passed, with HTML output redirected to a temporary folder and dialogs mocked.
+- Import now validates step structure before generating IDs.
+- Generated tower IDs avoid existing IDs.
+- Override loading recognizes saved Monkey Knowledge requirements.
+- Draft imports distinguish tactical warnings from replay/economy errors.
+Remaining findings, in priority order
+1. [P1] Database regeneration fails with the current source data.
+   In a fresh Python process, with no user overrides, compile_database() stops with:
+   Strategy firing_range [Easy] failed pre-validation:
+   Step 6: cumulative cost $7,270 exceeds max available cash
+   $6,761 at Round 28 (before_round).
+   The checked-in database passes the existing tests, but the generator cannot currently recreate it. This makes future data updates unreliable.
+   Improve: Correct the source strategy’s purchase timing or spending, then add a test that generates and validates the entire database in a temporary directory. Keep the economic check strict.
+   Reference: [generate_guides_database.py (line 101)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/generate_guides_database.py:101).
+2. [P1] The new HTML requirements field permits script injection.
+   required_starting_cash is inserted into exported HTML without escaping. A strategy containing this value passed validation:
+   {"required_starting_cash": "<script>window.REVIEW_PROBE=1</script>"}
+   The actual exporter wrote the script verbatim. I mocked browser opening, so no script was executed. The normal import path overwrites this particular field, but direct overrides and other export inputs remain exposed.
+   Improve: Require a finite numeric value in the schema and escape every value inserted into HTML. Extend the HTML sanitization test to requirements metadata.
+   Reference: [btd6_guide.pyw (line 2167)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2167).
+3. [P2] Schema validation still accepts metadata that crashes consumers.
+   Confirmed examples:
+   Input	Validation result	Subsequent failure
+   "requirements": null	Schema passes	Replay raises AttributeError
+   "requirements": []	Schema passes	Replay raises AttributeError
+   "overview": null	Schema and replay pass	Actual import raises TypeError
+   
+   
+   Override loading also reads requirements before validating them. Because its exception handler surrounds the whole loading loop, one malformed override can prevent later valid overrides from loading.
+   Improve: Validate strategy text fields, the requirements object and its fields, and the import wrapper’s map identifiers. Isolate override failures per strategy.
+   References: [schema validation (line 606)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:606), [override loading (line 313)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:313), [import preview (line 2433)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2433).
+4. [P2] Separate Monkey Knowledge requirements collapse into one boolean.
+   The schema exposes more_starting_cash and free_dart_monkey separately, but replay combines them into one flag that grants both benefits.
+   I tested a strategy declaring:
+   {"more_starting_cash": true, "free_dart_monkey": false}
+   Replay still charged $0 for its first Dart Monkey. The import path also combines the guide’s requirements with the current user setting, so validation can depend on who imports it.
+   Improve: Pass explicit perk settings into the economy and replay engine. Validate portable guides against their recorded requirements; keep personal settings separate.
+   References: [requirement inference (line 723)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:723), [free Dart pricing (line 299)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:299), [import settings (line 2387)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2387).
+5. [P2] Editor saving still processes raw JSON before validating it.
+   The editor calculates opening spending before calling the shared validator. An opening step with "cost_estimate": "170" therefore raises:
+   TypeError: unsupported operand type(s) for +: 'int' and 'str'
+   The schema correctly rejects that input, but the save path reaches the calculation first.
+   Improve: Run structural validation immediately after parsing editor JSON, before ID assignment, arithmetic, or requirements updates. Test the editor’s save callback with malformed values.
+   Reference: [btd6_guide.pyw (line 3156)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:3156).
+6. [P2] Draft handling is inconsistent across workflows.
+   The shared validator allows short drafts and can return tactical shortcomings as warnings. However:
+   - The editor enforces minimum step counts before checking Draft status.
+   - The generator always uses strict tactical validation for overrides.
+   A one-step draft passes lenient validation but fails strict validation. Consequently, an accepted draft can become impossible to save through the editor or prevent regeneration.
+   Improve: Define one validation policy per status and use it across import, editor, loading, and generation. Alternatively, explicitly exclude drafts from generated release data while preserving them separately.
+   References: [editor minimum count (line 3140)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:3140), [generator validation (line 102)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/generate_guides_database.py:102).
+Recommended next work
+Fix findings 1–2 first, then consolidate validation and execution requirements. The highest-value architectural change is a shared strategy preparation function that validates input, assigns IDs, resolves explicit requirements, and returns diagnostics. Each entry point currently performs a different subset in a different order.
+Add regression coverage for the six cases above. Also make HTML export tests use temporary output paths directly: the new assumptions test currently writes into the project directory, which caused a permission failure and modal dialog during the initial test run.
+The database contains 87 maps and 261 strategies: 174 marked Structurally Validated, 87 marked Verified, and none marked Playtested. These checks establish internal consistency; I did not test strategy success in the game.
