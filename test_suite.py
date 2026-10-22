@@ -46,7 +46,8 @@ from btd6_replay import (
     TowerReplayEngine,
     TowerInstance,
     CANONICAL_HEROES,
-    assign_explicit_tower_ids
+    assign_explicit_tower_ids,
+    resolve_strategy_perks
 )
 from heroes_data import MAP_HERO_INTELLIGENCE, HEROES_DATABASE
 from threat_radar_data import (
@@ -55,7 +56,8 @@ from threat_radar_data import (
 )
 from validate_guides import validate_database
 from generate_guides_database import compile_database
-from btd6_guide import DataManager, SettingsManager, BTD6GuideApp
+from btd6_guide import DataManager, SettingsManager, BTD6GuideApp, format_strategy_requirements
+from map_data_impoppable import build_impoppable_strategy
 
 
 class TestCrosspathLegality(unittest.TestCase):
@@ -91,12 +93,14 @@ class TestEconomicModelAndAuthoritativePricing(unittest.TestCase):
         self.assertEqual(get_cumulative_cash_ceiling("Medium", 0), 650)
         self.assertEqual(get_cumulative_cash_ceiling("Hard", 2), 650)
         self.assertEqual(get_cumulative_cash_ceiling("Easy", 1), 771)
+        self.assertEqual(get_cumulative_cash_ceiling("Impoppable", 5), 650)
 
     def test_monotonically_increasing_cash(self):
-        for diff in ("Easy", "Medium", "Hard"):
-            start_r = 3 if diff == "Hard" else 1
+        for diff in ("Easy", "Medium", "Hard", "Impoppable"):
+            start_r = 6 if diff == "Impoppable" else (3 if diff == "Hard" else 1)
+            end_r = 101 if diff == "Impoppable" else 81
             last_cash = 0
-            for r in range(start_r, 81):
+            for r in range(start_r, end_r):
                 cash = get_cumulative_cash_ceiling(diff, r)
                 self.assertGreater(cash, last_cash, f"Cash ceiling regressed at R{r} on {diff}")
                 last_cash = cash
@@ -104,6 +108,7 @@ class TestEconomicModelAndAuthoritativePricing(unittest.TestCase):
     def test_earliest_affordable_round_finite_and_unaffordable(self):
         self.assertEqual(get_earliest_affordable_round("Easy", 500), 1)
         self.assertEqual(get_earliest_affordable_round("Hard", 500), 3)
+        self.assertEqual(get_earliest_affordable_round("Impoppable", 500), 6)
 
         r_10k = get_earliest_affordable_round("Medium", 10000)
         self.assertGreaterEqual(r_10k, 30)
@@ -658,9 +663,29 @@ class TestReviewFindingsAndHeroIntelligence(unittest.TestCase):
 
         # All 16 heroes must be represented across the 87 maps
         self.assertEqual(len(heroes_represented), 16, f"Expected all 16 heroes represented, found {len(heroes_represented)}")
-        # Sauda must not be assigned to an excessive number of maps
+        # Every alternative hero must be a valid hero in HEROES_DATABASE
+        for mid, mdata in maps.items():
+            for alt in mdata.get("hero_alternatives", []):
+                self.assertIn(alt, HEROES_DATABASE, f"Map {mid} has invalid alternative hero '{alt}'")
+
+        # Sauda must only be assigned to her genuine signature maps (6 maps)
         sauda_count = sum(1 for m in maps.values() if m.get("best_hero") == "Sauda")
-        self.assertLessEqual(sauda_count, 20, f"Sauda was assigned to {sauda_count} maps (expected <= 20)")
+        self.assertEqual(sauda_count, 6, f"Sauda was assigned to {sauda_count} maps (expected 6 signature maps)")
+        expected_sauda_maps = {"monkey_meadow", "resort", "skates", "frozen_over", "carved", "balance"}
+        actual_sauda_maps = {mid for mid, m in maps.items() if m.get("best_hero") == "Sauda"}
+        self.assertEqual(actual_sauda_maps, expected_sauda_maps)
+
+        # Rebalanced maps must match their tactical optimal heroes
+        self.assertEqual(maps["blons"]["best_hero"], "Psi")
+        self.assertEqual(maps["dark_castle"]["best_hero"], "Psi")
+        self.assertEqual(maps["cracked"]["best_hero"], "Admiral Brickell")
+        self.assertEqual(maps["streambed"]["best_hero"], "Admiral Brickell")
+        self.assertEqual(maps["lotus_island"]["best_hero"], "Admiral Brickell")
+        self.assertEqual(maps["candy_falls"]["best_hero"], "Etienne")
+        self.assertEqual(maps["town_center"]["best_hero"], "Etienne")
+        self.assertEqual(maps["winter_park"]["best_hero"], "Captain Churchill")
+        self.assertEqual(maps["middle_of_the_road"]["best_hero"], "Captain Churchill")
+        self.assertEqual(maps["park_path"]["best_hero"], "Gwendolin")
 
 
 class TestRemainingSuggestionsRegressions(unittest.TestCase):
@@ -1137,6 +1162,8 @@ class TestCleanDatabasePassesAllInvariants(unittest.TestCase):
         self.assertEqual(stats["difficulty_counts"]["Easy"], 87)
         self.assertEqual(stats["difficulty_counts"]["Medium"], 87)
         self.assertEqual(stats["difficulty_counts"]["Hard"], 87)
+        self.assertEqual(stats["difficulty_counts"]["Impoppable"], 87)
+        self.assertEqual(sum(stats["difficulty_counts"].values()), 348)
 
 
 class TestSuggestionsForCodingRegressions(unittest.TestCase):
@@ -1475,8 +1502,8 @@ class TestSuggestionsForCodingRegressions(unittest.TestCase):
             self.assertTrue(len(copied_text) > 0)
             md = copied_text[0]
             self.assertIn("Requirements:", md)
-            self.assertIn("Starting Cash: $850", md)
-            self.assertIn("Monkey Knowledge: Enabled", md)
+            self.assertIn("$850", md)
+            self.assertIn("More Starting Cash:", md)
 
             # Test HTML export
             with patch("tkinter.messagebox.showinfo"), \
@@ -1488,7 +1515,7 @@ class TestSuggestionsForCodingRegressions(unittest.TestCase):
                 with open(html_path, "r", encoding="utf-8") as f:
                     written = f.read()
                 self.assertIn("$850", written)
-                self.assertIn("Monkey Knowledge", written)
+                self.assertIn("More Starting Cash", written)
                 self.assertIn("Game Version", written)
 
 
@@ -1539,6 +1566,8 @@ class TestV140RegressionFixes(unittest.TestCase):
             self.assertEqual(stats["difficulty_counts"]["Easy"], 87)
             self.assertEqual(stats["difficulty_counts"]["Medium"], 87)
             self.assertEqual(stats["difficulty_counts"]["Hard"], 87)
+            self.assertEqual(stats["difficulty_counts"]["Impoppable"], 87)
+            self.assertEqual(sum(stats["difficulty_counts"].values()), 348)
 
     def test_finding2_html_requirements_and_metadata_xss_sanitization(self):
         """[P1] HTML requirements field rejects script injection in schema and escapes all inserted HTML values."""
@@ -1772,11 +1801,11 @@ class TestV140RegressionFixes(unittest.TestCase):
         self.assertNotIn("Trojan", easy_strat["best_hero_reason"])
         self.assertIn("Buccaneer", easy_strat["hero_synergies"])
 
-        # 2. Invariant across all 87 maps and 261 strategies:
+        # 2. Invariant across all 87 maps and 348 strategies:
         # If any strategy has a step placing a hero, recommended_hero MUST match that hero!
         canonical_hero_names = set(HEROES_DATABASE.keys())
         for mid, mdata in maps.items():
-            for diff in ["Easy", "Medium", "Hard"]:
+            for diff in ["Easy", "Medium", "Hard", "Impoppable"]:
                 strat = mdata.get("difficulties", {}).get(diff)
                 if not strat:
                     continue
@@ -1800,6 +1829,183 @@ class TestV140RegressionFixes(unittest.TestCase):
                 for h in canonical_hero_names:
                     if h.lower() in reason.lower() and h.lower() not in rec_hero.lower():
                         self.fail(f"Conflicting hero '{h}' mentioned in reason for {mid} [{diff}] with rec_hero='{rec_hero}'")
+
+
+class TestV150RegressionFixes(unittest.TestCase):
+    """
+    Validates all findings and updates for v1.5.0:
+    1. [P2 Bug 1] Saving changes preserves recorded strategy perk requirements (more_starting_cash, free_dart_monkey).
+    2. [P2 Bug 2] Database regeneration with sync_costs=True preserves free dart monkey ($0) and canonical prices.
+    3. [P2 Bug 3] assign_explicit_tower_ids() maintains internal state on upgrades and sales even when tower_id is explicit.
+    4. [P2 Bug 4] Draft strategies validate consistently between generator and validator (strict_threats=(not is_draft)).
+    5. [P2 Bug 5] Markdown and HTML exports format Starting Cash, More Starting Cash, Free Dart Monkey, and General MK independently.
+    6. [Feature] Impoppable mode economics (1.20x cost multiplier, start R6, 650 cash, R90 DDT / R100 BAD checks).
+    7. [Database] All 87 maps in production guides.json have complete, valid Impoppable strategies.
+    """
+
+    def test_bug1_prepare_and_validate_preserves_perk_requirements(self):
+        """[P2 Bug 1] prepare_and_validate_strategy preserves strategy requirements without overwriting from external default."""
+        strat = {
+            "difficulty": "Easy",
+            "mode": "Standard",
+            "rounds": "1-40",
+            "status": "Verified",
+            "recommended_hero": "Quincy",
+            "starting_cash": 850,
+            "requirements": {
+                "more_starting_cash": True,
+                "free_dart_monkey": False,
+                "monkey_knowledge": True,
+                "required_starting_cash": 850
+            },
+            "overview": "Overview text.",
+            "camo_handling": "Dart 0-2-3",
+            "lead_handling": "Bomb 2-0-3",
+            "moab_handling": "Bomb 0-3-2",
+            "why_it_works": "Defense.",
+            "steps": [
+                {"step_number": 1, "round": 1, "timing": "before_round", "action": "Place", "tower": "Quincy", "upgrade": "0-0-0", "cost_estimate": 455, "placement": "Center"},
+                {"step_number": 2, "round": 6, "timing": "before_round", "action": "Place", "tower": "Dart Monkey", "upgrade": "0-0-0", "cost_estimate": 170, "placement": "Front"},
+                {"step_number": 3, "round": 12, "timing": "before_round", "action": "Upgrade", "tower": "Dart Monkey", "upgrade": "0-2-0", "cost_estimate": 260, "placement": "Front"},
+                {"step_number": 4, "round": 20, "timing": "before_round", "action": "Upgrade", "tower": "Dart Monkey", "upgrade": "0-2-3", "cost_estimate": 970, "placement": "Front"},
+                {"step_number": 5, "round": 28, "timing": "before_round", "action": "Place", "tower": "Bomb Shooter", "upgrade": "2-0-3", "cost_estimate": 1955, "placement": "Bend"}
+            ]
+        }
+        # Calling prepare_and_validate_strategy with monkey_knowledge=False should resolve perks from strategy
+        ok, errs, warns, res_strat = prepare_and_validate_strategy(strat, diff_name="Easy", monkey_knowledge=False)
+        self.assertTrue(ok, f"Validation failed: {errs}")
+        res_req = res_strat.get("requirements", {})
+        self.assertTrue(res_req.get("more_starting_cash"), "more_starting_cash must remain True from strategy")
+        self.assertFalse(res_req.get("free_dart_monkey"), "free_dart_monkey must remain False from strategy")
+        self.assertEqual(res_req.get("required_starting_cash"), 850)
+
+    def test_bug2_regeneration_sync_costs_inherits_strategy_perks(self):
+        """[P2 Bug 2] Database regeneration with sync_costs=True preserves $0 free dart monkey when perk is True."""
+        strat_free = {
+            "difficulty": "Easy", "mode": "Standard", "rounds": "1-40", "status": "Verified",
+            "recommended_hero": "Quincy", "starting_cash": 650,
+            "requirements": {"more_starting_cash": False, "free_dart_monkey": True, "monkey_knowledge": True, "required_starting_cash": 650},
+            "overview": "Overview", "camo_handling": "Dart", "lead_handling": "Bomb", "moab_handling": "Bomb", "why_it_works": "Why",
+            "steps": [
+                {"step_number": 1, "round": 1, "timing": "before_round", "action": "Place", "tower": "Quincy", "upgrade": "0-0-0", "cost_estimate": 455, "placement": "Center"},
+                {"step_number": 2, "round": 6, "timing": "before_round", "action": "Place", "tower": "Dart Monkey", "upgrade": "0-0-0", "cost_estimate": 999, "placement": "Front"},
+                {"step_number": 3, "round": 12, "timing": "before_round", "action": "Upgrade", "tower": "Dart Monkey", "upgrade": "0-2-0", "cost_estimate": 260, "placement": "Front"},
+                {"step_number": 4, "round": 20, "timing": "before_round", "action": "Upgrade", "tower": "Dart Monkey", "upgrade": "0-2-3", "cost_estimate": 970, "placement": "Front"},
+                {"step_number": 5, "round": 28, "timing": "before_round", "action": "Place", "tower": "Bomb Shooter", "upgrade": "2-0-3", "cost_estimate": 1955, "placement": "Bend"}
+            ]
+        }
+        ok, errs, _, res = prepare_and_validate_strategy(strat_free, diff_name="Easy", sync_costs=True)
+        self.assertTrue(ok)
+        self.assertEqual(res["steps"][1]["cost_estimate"], 0, "Free dart monkey must be synced to $0")
+
+        # Now test with free_dart_monkey: False -> Dart monkey must be synced to canonical $170
+        strat_paid = copy.deepcopy(strat_free)
+        strat_paid["requirements"]["free_dart_monkey"] = False
+        strat_paid["requirements"]["monkey_knowledge"] = False
+        ok2, _, _, res2 = prepare_and_validate_strategy(strat_paid, diff_name="Easy", sync_costs=True)
+        self.assertTrue(ok2)
+        self.assertEqual(res2["steps"][1]["cost_estimate"], 170, "Paid dart monkey must be synced to $170")
+
+    def test_bug3_assign_explicit_tower_ids_tracks_state_through_upgrade_and_sale(self):
+        """[P2 Bug 3] assign_explicit_tower_ids updates tower upgrades and handles sales when tower_id is explicit."""
+        strat = {
+            "steps": [
+                {"step_number": 1, "action": "Place", "tower": "Dart Monkey", "tower_id": "test_map_easy_t1", "upgrade": "0-0-0"},
+                {"step_number": 2, "action": "Upgrade", "tower": "Dart Monkey", "tower_id": "test_map_easy_t1", "upgrade": "0-2-3"},
+                {"step_number": 3, "action": "Sell", "tower": "Dart Monkey", "tower_id": "test_map_easy_t1"},
+                {"step_number": 4, "action": "Place", "tower": "Dart Monkey", "upgrade": "0-0-0"}
+            ]
+        }
+        assign_explicit_tower_ids(strat, "test_map", "Easy")
+        # Step 4 should generate test_map_easy_t2 without conflicting with test_map_easy_t1
+        self.assertEqual(strat["steps"][0]["tower_id"], "test_map_easy_t1")
+        self.assertEqual(strat["steps"][1]["tower_id"], "test_map_easy_t1")
+        self.assertEqual(strat["steps"][2]["tower_id"], "test_map_easy_t1")
+        self.assertEqual(strat["steps"][3]["tower_id"], "test_map_easy_t2")
+
+    def test_bug4_draft_evaluation_consistent_between_generator_and_validator(self):
+        """[P2 Bug 4] Draft strategies with tactical warnings pass database validation without fatal errors."""
+        draft = {
+            "difficulty": "Easy",
+            "mode": "Standard",
+            "rounds": "1-40",
+            "status": "Draft",
+            "recommended_hero": "Quincy",
+            "starting_cash": 650,
+            "overview": "Short draft.",
+            "camo_handling": "None",
+            "lead_handling": "None",
+            "moab_handling": "None",
+            "why_it_works": "Draft stage.",
+            "steps": [
+                {"step_number": 1, "round": 1, "timing": "before_round", "action": "Place", "tower": "Quincy", "upgrade": "0-0-0", "cost_estimate": 455, "placement": "Center"}
+            ]
+        }
+        # In both validator and generator, strict_threats=(not is_draft)
+        is_draft = draft.get("status") in ("Draft", "Needs Review", "Unverified Draft")
+        self.assertTrue(is_draft)
+        ok, errs, warns, _ = validate_strategy(draft, diff_name="Easy", strict_threats=(not is_draft))
+        self.assertTrue(ok, f"Draft strategy should pass lenient validation: {errs}")
+        self.assertGreater(len(warns), 0, "Draft should produce warnings")
+
+    def test_bug5_independent_perks_export_formatting(self):
+        """[P2 Bug 5] format_strategy_requirements formats starting cash, more cash, and free dart independently."""
+        strat = {
+            "starting_cash": 850,
+            "requirements": {
+                "more_starting_cash": True,
+                "free_dart_monkey": False,
+                "monkey_knowledge": True,
+                "required_starting_cash": 850,
+                "game_version": "v45.0"
+            }
+        }
+        md_info = format_strategy_requirements(strat, format_type="markdown")
+        self.assertIn("More Starting Cash:", md_info["summary_line"])
+        self.assertIn("Enabled (+$200)", md_info["summary_line"])
+        self.assertIn("Free Dart Monkey:", md_info["summary_line"])
+        self.assertIn("None / Disabled", md_info["summary_line"])
+        self.assertIn("General MK:", md_info["summary_line"])
+        self.assertEqual(md_info["cash"], 850)
+
+        html_info = format_strategy_requirements(strat, format_type="html")
+        self.assertEqual(html_info["more_cash_display"], "Enabled (+$200)")
+        self.assertEqual(html_info["free_dart_display"], "None / Disabled")
+        self.assertEqual(html_info["mk_display"], "Active")
+        self.assertEqual(html_info["cash"], 850)
+
+    def test_impoppable_strategy_economic_and_tactical_integrity(self):
+        """Impoppable strategies build correctly with 1.20x cost multiplier, start R6, 650 cash, and pass validation."""
+        dm = DataManager(show_dialogs=False)
+        maps = dm.get_maps()
+        self.assertIn("monkey_meadow", maps)
+        mm = maps["monkey_meadow"]
+
+        impop = build_impoppable_strategy("monkey_meadow", mm)
+        self.assertEqual(impop["difficulty"], "Impoppable")
+        self.assertEqual(impop["rounds"], "6-100")
+        self.assertEqual(impop["starting_cash"], 650)
+        self.assertGreaterEqual(len(impop["steps"]), 14)
+
+        # Validate with strict threats
+        ok, errs, warns, stats = validate_strategy(impop, map_context=mm, diff_name="Impoppable", strict_threats=True)
+        self.assertTrue(ok, f"Impoppable strategy failed validation: {errs}")
+        self.assertIn("DDT", impop["moab_handling"])
+        self.assertIn("BAD", impop["moab_handling"])
+
+    def test_all_87_maps_have_impoppable_in_database(self):
+        """All 87 maps in production guides.json have an Impoppable strategy that passes validation."""
+        dm = DataManager(show_dialogs=False)
+        maps = dm.get_maps()
+        self.assertEqual(len(maps), 87)
+        for mid, mdata in maps.items():
+            diffs = mdata.get("difficulties", {})
+            self.assertIn("Impoppable", diffs, f"Map '{mid}' missing Impoppable difficulty")
+            impop = diffs["Impoppable"]
+            self.assertIsNotNone(impop, f"Map '{mid}' has None for Impoppable")
+            self.assertEqual(impop["difficulty"], "Impoppable")
+            self.assertEqual(impop["rounds"], "6-100")
+            self.assertGreaterEqual(len(impop["steps"]), 14, f"Map '{mid}' Impoppable has fewer than 14 steps")
 
 
 if __name__ == "__main__":

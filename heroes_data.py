@@ -421,16 +421,16 @@ MAP_HERO_INTELLIGENCE = {
         "synergies": "Monkey Village (2-2-0 Primary Mentoring) + Alchemist (4-2-0 Stronger Stimulant)"
     },
     "town_center": {
-        "best_hero": "Sauda",
-        "reason": "The central crossroads intersection near the pond gives Sauda multiple sweeps on every bloon as it enters and leaves the center square.",
-        "alternatives": ["Quincy", "Etienne", "Benjamin"],
-        "synergies": "Tack Shooter (2-0-4 Overdrive) + Alchemist (3-2-0)"
+        "best_hero": "Etienne",
+        "reason": "Town Center has wide streets with long sightlines and a central pond. Etienne's Level 8 UAV provides map-wide Camo detection across all paths without expensive radar villages, while UCAV devastates mid-game Ceramic and MOAB waves.",
+        "alternatives": ["Captain Churchill", "Gwendolin", "Sauda"],
+        "synergies": "Tack Shooter (2-0-4 Overdrive) + Alchemist (3-2-0) + Ninja Monkey (4-0-1 Bloonjitsu)"
     },
     "middle_of_the_road": {
-        "best_hero": "Sauda",
-        "reason": "Central roundabout layout ensures bloons pass Sauda's swords twice, allowing her high pierce and abilities to dismantle dense waves.",
-        "alternatives": ["Quincy", "Gwendolin", "Adora"],
-        "synergies": "Boomerang Monkey (4-0-2 MOAB Press) + Ice Monkey (0-2-4)"
+        "best_hero": "Captain Churchill",
+        "reason": "Long straight highway straightaways flanking the central barn provide Captain Churchill with optimal shell penetration lines, allowing Armor Piercing Shells to shred packed bloon clusters.",
+        "alternatives": ["Gwendolin", "Quincy", "Sauda"],
+        "synergies": "Boomerang Monkey (4-0-2 Glaive Ricochet) + Bomb Shooter (2-0-4 Recursive Cluster) + Monkey Village (2-2-0)"
     },
     "one_two_tree": {
         "best_hero": "Geraldo",
@@ -463,22 +463,22 @@ MAP_HERO_INTELLIGENCE = {
         "synergies": "Ice Monkey (2-0-4 Cryo Cannon) + Wizard Monkey (0-2-4)"
     },
     "lotus_island": {
-        "best_hero": "Sauda",
-        "reason": "The central track loops around the island perimeter, giving Sauda continuous contact while interactive lotus flowers stun escaping bloons.",
-        "alternatives": ["Admiral Brickell", "Pat Fusty", "Quincy"],
-        "synergies": "Buccaneer (0-3-2 Cannon Ship) + Alchemist (3-2-0)"
+        "best_hero": "Admiral Brickell",
+        "reason": "With over 80% of Lotus Island covered in navigable ocean, Admiral Brickell provides dominant naval synergy, using Sea Mines to wipe grouped MOABs and Mega Mines at island chokepoints.",
+        "alternatives": ["Pat Fusty", "Sauda", "Quincy"],
+        "synergies": "Monkey Buccaneer (0-5-2 Pirate Lord) + Sub Commander (2-0-5) + Monkey Sub (2-0-4 AP Darts)"
     },
     "candy_falls": {
-        "best_hero": "Sauda",
-        "reason": "Gentle winding curves with a single stone bridge crossing allow Sauda to solo the opening 20+ rounds with virtually zero support.",
-        "alternatives": ["Quincy", "Pat Fusty", "Etienne"],
-        "synergies": "Ninja Monkey (4-0-1 Bloonjitsu) + Alchemist (4-2-0)"
+        "best_hero": "Etienne",
+        "reason": "Candy Falls features sweeping, winding paths with multiple sight obstacles. Etienne's flying drones ignore chocolate landscape barriers, while UAV grants team-wide Camo detection without requiring multiple radar villages.",
+        "alternatives": ["Quincy", "Captain Churchill", "Sauda"],
+        "synergies": "Ninja Monkey (4-0-1 Bloonjitsu) + Alchemist (4-2-0 Stronger Stimulant) + Tack Zone (2-0-5)"
     },
     "winter_park": {
-        "best_hero": "Sauda",
-        "reason": "Twin fountain loops force bloons to circle around Sauda multiple times, maximizing her high melee DPS and Sword Charge coverage.",
-        "alternatives": ["Quincy", "Captain Churchill", "Benjamin"],
-        "synergies": "Tack Shooter (2-0-4 Overdrive) + Village (2-2-0)"
+        "best_hero": "Captain Churchill",
+        "reason": "Churchill's long-range explosive cannon shells line up straight down the intersecting fountain lanes, piercing through dense ceramic rushes and blimps across both circular tracks.",
+        "alternatives": ["Admiral Brickell", "Quincy", "Sauda"],
+        "synergies": "Tack Shooter (2-0-4 Overdrive) + Monkey Village (2-2-0) + Alchemist (4-2-0 Stronger Stimulant)"
     },
     "carved": {
         "best_hero": "Sauda",
@@ -487,10 +487,10 @@ MAP_HERO_INTELLIGENCE = {
         "synergies": "Wizard Monkey (0-2-4 Prince of Darkness) + Tack Zone (2-0-5)"
     },
     "park_path": {
-        "best_hero": "Sauda",
-        "reason": "The central figure-eight intersection allows Sauda to attack bloons on both loops while keeping abilities ready for MOABs.",
-        "alternatives": ["Quincy", "Obyn Greenfoot", "Gwendolin"],
-        "synergies": "Bomb Shooter (2-0-4 Recursive Cluster) + Primary Training (3-2-0 Village)"
+        "best_hero": "Gwendolin",
+        "reason": "The central figure-eight track loops bloons around the ornamental pond and flowerbeds, concentrating dense clusters directly into Gwendolin's Cocktail of Fire and Heat It Up aura.",
+        "alternatives": ["Pat Fusty", "Quincy", "Sauda"],
+        "synergies": "Tack Shooter (2-0-4 Overdrive) + Bomb Shooter (2-0-4 Recursive Cluster) + Primary Training (3-2-0 Village)"
     },
     "hedge": {
         "best_hero": "Obyn Greenfoot",
@@ -573,16 +573,16 @@ MAP_HERO_INTELLIGENCE = {
         "synergies": "Sniper Monkey (0-2-5 Elite Defender) + Wizard (0-2-4)"
     },
     "cracked": {
-        "best_hero": "Sauda",
-        "reason": "Intersecting dry riverbed crossings allow Sauda to lock down early bloons while water sections allow cheap Sub backup.",
-        "alternatives": ["Quincy", "Admiral Brickell", "Obyn Greenfoot"],
-        "synergies": "Monkey Sub (2-0-4 Sub Commander) + Buccaneer (0-3-2)"
+        "best_hero": "Admiral Brickell",
+        "reason": "Cracked is criss-crossed with deep water trenches winding between canyons. Admiral Brickell's Naval Tactics turns Sub Commander and Buccaneer fleets into overwhelming screen-clearing powerhouses with full water coverage.",
+        "alternatives": ["Etienne", "Quincy", "Sauda"],
+        "synergies": "Sub Commander (2-0-5) + Monkey Sub (2-0-4 AP Darts) + Pirate Lord (0-5-2 Buccaneer)"
     },
     "streambed": {
-        "best_hero": "Sauda",
-        "reason": "Tight corners along the winding riverbank give Sauda maximum contact time and easy early-game solo capability.",
-        "alternatives": ["Admiral Brickell", "Quincy", "Gwendolin"],
-        "synergies": "Buccaneer (0-5-2 Pirate Lord) + Tack Shooter (2-0-4)"
+        "best_hero": "Admiral Brickell",
+        "reason": "A wide, continuous river cuts directly through the map center with long sightlines. Admiral Brickell commands the central waterway, empowering Sub and Buccaneer fleets to dominate every river bend.",
+        "alternatives": ["Etienne", "Captain Churchill", "Sauda"],
+        "synergies": "Monkey Buccaneer (0-5-2 Pirate Lord) + Carrier Flagship (5-2-0) + Monkey Sub (2-0-4 AP Darts)"
     },
     "chutes": {
         "best_hero": "Quincy",
@@ -757,7 +757,7 @@ MAP_HERO_INTELLIGENCE = {
     "geared": {
         "best_hero": "Psi",
         "reason": "The central rotating gear moves towers away from the bloon track each round; Psi attacks bloons anywhere with infinite range, completely immune to rotation.",
-        "alternatives": ["Geraldo", "Sniper Monkey / Etienne", "Quincy"],
+        "alternatives": ["Geraldo", "Etienne", "Quincy"],
         "synergies": "Sniper Monkey (0-2-5 Elite Defender) + Heli Pilot (4-0-2 Apache)"
     },
     "sunken_columns": {
@@ -895,10 +895,10 @@ MAP_HERO_INTELLIGENCE = {
         "synergies": "Sniper Monkey (0-2-5) + Spike Factory at bottom exits"
     },
     "dark_castle": {
-        "best_hero": "Sauda",
-        "reason": "All four bloon tracks converge directly onto a single wooden drawbridge. Sauda placed at the drawbridge entrance strikes 100% of bloons from all lanes.",
-        "alternatives": ["Quincy", "Obyn Greenfoot", "Psi"],
-        "synergies": "Sub (2-0-4) in moat + Alchemist (4-2-0) on castle wall"
+        "best_hero": "Psi",
+        "reason": "Four separate tracks converge from the dark tree line onto a late drawbridge. Psi's infinite-range psionic strikes dismantle bloons across all four lanes simultaneously from the first second, preventing leaks long before bloons ever reach the castle.",
+        "alternatives": ["Etienne", "Quincy", "Obyn Greenfoot"],
+        "synergies": "Monkey Sub (2-0-4 AP Darts) in moat + Wizard Monkey (0-2-4 Prince of Darkness)"
     },
     "workshop": {
         "best_hero": "Benjamin",
@@ -907,10 +907,10 @@ MAP_HERO_INTELLIGENCE = {
         "synergies": "Spike Factory (0-2-5 Perma-Spike) + Village (2-3-0 MIB)"
     },
     "blons": {
-        "best_hero": "Sauda",
-        "reason": "Extremely short straight corner track; Sauda's instant melee burst damage and cheap cost are mandatory for stopping instant leaks.",
-        "alternatives": ["Quincy", "Tack Shooter", "Psi"],
-        "synergies": "Tack Zone (2-0-5) + Ice Monkey (2-0-4) + Alchemist"
+        "best_hero": "Psi",
+        "reason": "At 4.2 RBS, Blons is the shortest track in the entire game. Psi's infinite-range psionic attacks target bloons immediately upon spawning regardless of track speed, eliminating leaks that bypass short-range towers.",
+        "alternatives": ["Corvus", "Geraldo", "Sauda"],
+        "synergies": "Sniper Monkey (0-2-5 Elite Defender) + Tack Zone (2-0-5) + Super Glue (0-2-5)"
     },
     "dark_dungeons": {
         "best_hero": "Corvus",
@@ -1088,6 +1088,76 @@ def get_strategy_hero_intel(hero_name, map_id, map_data, difficulty="Easy"):
             )
             synergies = "Tack Shooter (2-0-4 Overdrive) + Village (2-2-0) + Alchemist"
             alternatives = ["Rosalia", "Quincy"]
+        elif map_id == "blons":
+            reason = (
+                f"Sauda provides an ultra-cheap opening anchor (${cost_val} on {difficulty}) directly on the track corner, "
+                f"providing immediate pop count while saving funds for heavy global defense."
+            )
+            synergies = "Tack Zone (2-0-5) + Ice Monkey (2-0-4) + Alchemist (3-2-0)"
+            alternatives = ["Psi", "Corvus", "Geraldo"]
+        elif map_id == "dark_castle":
+            reason = (
+                f"Sauda placed at the drawbridge entrance acts as a budget early-game gatekeeper, intercepting converging bloons "
+                f"with innate Camo while cash accumulates for long-range water and magic monkeys."
+            )
+            synergies = "Monkey Sub (2-0-4) in moat + Alchemist (4-2-0) on castle wall"
+            alternatives = ["Psi", "Etienne", "Quincy"]
+        elif map_id == "cracked":
+            reason = (
+                f"Sauda holds the early dry riverbed crossings, securing rounds 1-30 with innate Camo detection while cash "
+                f"is safely funneled into dominant naval Sub and Buccaneer upgrades."
+            )
+            synergies = "Monkey Sub (2-0-4 Sub Commander) + Buccaneer (0-3-2)"
+            alternatives = ["Admiral Brickell", "Etienne", "Quincy"]
+        elif map_id == "streambed":
+            reason = (
+                f"Sauda provides cheap early-game solo power along the riverbank corners, allowing players to establish income "
+                f"and transition into mid-game naval and artillery firepower."
+            )
+            synergies = "Monkey Buccaneer (0-5-2 Pirate Lord) + Tack Shooter (2-0-4)"
+            alternatives = ["Admiral Brickell", "Etienne", "Captain Churchill"]
+        elif map_id == "lotus_island":
+            reason = (
+                f"Sauda locks down the center land bridge during early rounds without needing Camo support, keeping spending low "
+                f"while preparing heavy naval fleet investments in the surrounding water."
+            )
+            synergies = "Monkey Buccaneer (0-3-2 Cannon Ship) + Alchemist (3-2-0)"
+            alternatives = ["Admiral Brickell", "Pat Fusty", "Quincy"]
+        elif map_id == "candy_falls":
+            reason = (
+                f"Sauda secures the stone bridge crossing on Round 1, effortlessly handling early pink and camo rushes while "
+                f"defenses prepare for spaced bloons along the candy trails."
+            )
+            synergies = "Ninja Monkey (4-0-1 Bloonjitsu) + Alchemist (4-2-0)"
+            alternatives = ["Etienne", "Quincy", "Captain Churchill"]
+        elif map_id == "winter_park":
+            reason = (
+                f"Sauda placed between the dual fountains slices bloons circling both loops, soloing early waves while saving "
+                f"cash for long-range cannons and village buffs."
+            )
+            synergies = "Tack Shooter (2-0-4 Overdrive) + Village (2-2-0)"
+            alternatives = ["Captain Churchill", "Admiral Brickell", "Quincy"]
+        elif map_id == "middle_of_the_road":
+            reason = (
+                f"Sauda commands the center roundabout, slicing bloons on multiple passes with innate Camo detection while "
+                f"building toward heavy ricochet and cluster artillery."
+            )
+            synergies = "Boomerang Monkey (4-0-2 MOAB Press) + Ice Monkey (0-2-4)"
+            alternatives = ["Captain Churchill", "Gwendolin", "Quincy"]
+        elif map_id == "town_center":
+            reason = (
+                f"Sauda anchors the town square crossroads, giving reliable multi-sweep blade damage and early Camo popping "
+                f"while defenses scale around the central pond."
+            )
+            synergies = "Tack Shooter (2-0-4 Overdrive) + Alchemist (3-2-0)"
+            alternatives = ["Etienne", "Captain Churchill", "Gwendolin"]
+        elif map_id == "park_path":
+            reason = (
+                f"Sauda defends the figure-eight intersection, using her dual blades to attack bloons on both loops while "
+                f"keeping abilities ready for mid-game rushes."
+            )
+            synergies = "Bomb Shooter (2-0-4 Recursive Cluster) + Primary Training (3-2-0 Village)"
+            alternatives = ["Gwendolin", "Pat Fusty", "Quincy"]
         else:
             reason = (
                 f"Sauda's affordable starting cost (${cost_val} on {difficulty}) allows immediate placement on Round 1 "

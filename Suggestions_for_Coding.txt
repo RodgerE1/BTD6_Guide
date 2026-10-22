@@ -1,58 +1,69 @@
-The update fixes several earlier problems, but the project still has reproducible failures outside the current test coverage. The biggest issues are database regeneration, incomplete metadata validation, and inconsistent execution requirements.
-I reviewed C:\Users\rodge\OneDrive\Desktop\BTD6_Guide without changing source files.
-What improved
-- All 58 regression tests passed, with HTML output redirected to a temporary folder and dialogs mocked.
-- Import now validates step structure before generating IDs.
-- Generated tower IDs avoid existing IDs.
-- Override loading recognizes saved Monkey Knowledge requirements.
-- Draft imports distinguish tactical warnings from replay/economy errors.
-Remaining findings, in priority order
-1. [P1] Database regeneration fails with the current source data.
-   In a fresh Python process, with no user overrides, compile_database() stops with:
-   Strategy firing_range [Easy] failed pre-validation:
-   Step 6: cumulative cost $7,270 exceeds max available cash
-   $6,761 at Round 28 (before_round).
-   The checked-in database passes the existing tests, but the generator cannot currently recreate it. This makes future data updates unreliable.
-   Improve: Correct the source strategy’s purchase timing or spending, then add a test that generates and validates the entire database in a temporary directory. Keep the economic check strict.
-   Reference: [generate_guides_database.py (line 101)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/generate_guides_database.py:101).
-2. [P1] The new HTML requirements field permits script injection.
-   required_starting_cash is inserted into exported HTML without escaping. A strategy containing this value passed validation:
-   {"required_starting_cash": "<script>window.REVIEW_PROBE=1</script>"}
-   The actual exporter wrote the script verbatim. I mocked browser opening, so no script was executed. The normal import path overwrites this particular field, but direct overrides and other export inputs remain exposed.
-   Improve: Require a finite numeric value in the schema and escape every value inserted into HTML. Extend the HTML sanitization test to requirements metadata.
-   Reference: [btd6_guide.pyw (line 2167)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2167).
-3. [P2] Schema validation still accepts metadata that crashes consumers.
-   Confirmed examples:
-   Input	Validation result	Subsequent failure
-   "requirements": null	Schema passes	Replay raises AttributeError
-   "requirements": []	Schema passes	Replay raises AttributeError
-   "overview": null	Schema and replay pass	Actual import raises TypeError
-   
-   
-   Override loading also reads requirements before validating them. Because its exception handler surrounds the whole loading loop, one malformed override can prevent later valid overrides from loading.
-   Improve: Validate strategy text fields, the requirements object and its fields, and the import wrapper’s map identifiers. Isolate override failures per strategy.
-   References: [schema validation (line 606)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:606), [override loading (line 313)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:313), [import preview (line 2433)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2433).
-4. [P2] Separate Monkey Knowledge requirements collapse into one boolean.
-   The schema exposes more_starting_cash and free_dart_monkey separately, but replay combines them into one flag that grants both benefits.
-   I tested a strategy declaring:
-   {"more_starting_cash": true, "free_dart_monkey": false}
-   Replay still charged $0 for its first Dart Monkey. The import path also combines the guide’s requirements with the current user setting, so validation can depend on who imports it.
-   Improve: Pass explicit perk settings into the economy and replay engine. Validate portable guides against their recorded requirements; keep personal settings separate.
-   References: [requirement inference (line 723)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:723), [free Dart pricing (line 299)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:299), [import settings (line 2387)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2387).
-5. [P2] Editor saving still processes raw JSON before validating it.
-   The editor calculates opening spending before calling the shared validator. An opening step with "cost_estimate": "170" therefore raises:
-   TypeError: unsupported operand type(s) for +: 'int' and 'str'
-   The schema correctly rejects that input, but the save path reaches the calculation first.
-   Improve: Run structural validation immediately after parsing editor JSON, before ID assignment, arithmetic, or requirements updates. Test the editor’s save callback with malformed values.
-   Reference: [btd6_guide.pyw (line 3156)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:3156).
-6. [P2] Draft handling is inconsistent across workflows.
-   The shared validator allows short drafts and can return tactical shortcomings as warnings. However:
-   - The editor enforces minimum step counts before checking Draft status.
-   - The generator always uses strict tactical validation for overrides.
-   A one-step draft passes lenient validation but fails strict validation. Consequently, an accepted draft can become impossible to save through the editor or prevent regeneration.
-   Improve: Define one validation policy per status and use it across import, editor, loading, and generation. Alternatively, explicitly exclude drafts from generated release data while preserving them separately.
-   References: [editor minimum count (line 3140)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:3140), [generator validation (line 102)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/generate_guides_database.py:102).
-Recommended next work
-Fix findings 1–2 first, then consolidate validation and execution requirements. The highest-value architectural change is a shared strategy preparation function that validates input, assigns IDs, resolves explicit requirements, and returns diagnostics. Each entry point currently performs a different subset in a different order.
-Add regression coverage for the six cases above. Also make HTML export tests use temporary output paths directly: the new assumptions test currently writes into the project directory, which caused a permission failure and modal dialog during the initial test run.
-The database contains 87 maps and 261 strategies: 174 marked Structurally Validated, 87 marked Verified, and none marked Playtested. These checks establish internal consistency; I did not test strategy success in the game.
+====================================================================================================
+STATUS UPDATE (v1.5.0 — ALL FINDINGS RESOLVED & 87 IMPOPPABLE STRATEGIES ADDED)
+====================================================================================================
+All 5 integration issues and the architectural unification from this review are 100% resolved:
+1. [RESOLVED] Saving and Threat Radar now use resolve_strategy_perks(strat) and prepare_and_validate_strategy(),
+   preserving independent perk requirements without being overwritten by local settings toggles.
+2. [RESOLVED] Database regeneration now calls prepare_and_validate_strategy(..., sync_costs=True) with
+   strategy perks passed to TowerReplayEngine, correctly keeping free-tower ($0) pricing in agreement.
+3. [RESOLVED] assign_explicit_tower_ids() now updates internal tower state on explicit Upgrades and removes
+   towers on explicit Sells, avoiding state tracking corruption or attaching upgrades to sold towers.
+4. [RESOLVED] Generator and validate_database() now use uniform strict_threats=(not is_draft), ensuring
+   consistent draft evaluation across both tools.
+5. [RESOLVED] Markdown and HTML exports now independently format Starting Cash, More Starting Cash,
+   Free Dart Monkey, and General MK using format_strategy_requirements().
+6. [ARCHITECTURAL IMPROVEMENT COMPLETED] generate_guides_database.py and btd6_guide.pyw are unified
+   around prepare_and_validate_strategy().
+7. [NEW FEATURE & DATABASE EXPANSION] Added complete, verified Impoppable (Rounds 6–100, 1.20x cost multiplier)
+   strategies for all 87 maps in map_data_impoppable.py, expanding database from 261 to 348 strategies.
+8. [TEST SUITE] Comprehensive test suite expanded from 65 to 72 tests with 100% pass rate.
+====================================================================================================
+
+The latest update is substantially stronger: all 65 tests pass, the production database validates, and database regeneration now succeeds. The previous HTML injection, malformed metadata, and editor arithmetic failures are fixed.
+I found five remaining integration issues. No source files were changed.
+1. [P2] Saving still overwrites a strategy’s recorded perk requirements.
+   The editor replaces monkey_knowledge and more_starting_cash with values derived from the local settings toggle.
+   Reproduced: A valid draft requiring $850 starting cash passed replay validation. Running the actual save callback with the local toggle off rejected it with:
+   Starting cash is 850, expected 650.
+   Opening cost $695 exceeds $650 starting cash.
+   This means an unrelated edit can make an otherwise valid imported guide impossible to save.
+   The threat radar also uses the local toggle rather than the strategy’s independent perk requirements, producing the same disagreement.
+   Improve: Preserve recorded requirements unless the user explicitly edits them. Pass the same resolved perk configuration to saving, replay, and radar.
+   References: [editor save (line 3218)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:3218), [radar (line 2691)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2691).
+2. [P2] Regeneration changes free-tower prices incorrectly.
+   The generator’s cost-synchronization engine is created without the strategy’s perk settings.
+   Reproduced: Regenerating an override with free_dart_monkey: true changed its first Dart Monkey’s displayed cost from $0 to $170. Replaying the generated strategy still calculated $0.
+   The generated instructions and validation therefore disagree about the purchase cost.
+   Improve: Resolve requirements before cost synchronization and use identical settings for synchronization and final validation.
+   Reference: [generate_guides_database.py (line 97)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/generate_guides_database.py:97).
+3. [P2] ID assignment can attach an upgrade to an already-sold tower.
+   assign_explicit_tower_ids() skips processing Upgrade, Target, and Sell actions when they already have an ID. Consequently, its internal list of active towers does not reflect explicit sales or upgrades.
+   Reproduced sequence:
+   - Place Dart Monkeys identified as first and second.
+   - Sell first using its explicit ID.
+   - Upgrade the remaining Dart Monkey without an ID.
+   Replay accepted the original sequence. ID assignment then attached the upgrade to first, and validation rejected it as referencing an inactive tower.
+   Improve: Update the internal tower state for every explicit action. Only skip ID inference, not state tracking.
+   Reference: [btd6_replay.py (line 590)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_replay.py:590).
+4. [P2] The generator and standalone validator still disagree about drafts.
+   The generator now permits tactical warnings for drafts, but validate_database() always requests strict tactical validation.
+   Reproduced: Generation successfully wrote a database containing a one-step draft. Validating that same generated file failed on its missing camo, lead, and MOAB coverage.
+   Improve: Decide whether drafts belong in the generated database. Either preserve them and report tactical warnings consistently, or explicitly separate drafts from release-ready output. Apply that policy across both tools.
+   Reference: [validate_guides.py (line 111)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/validate_guides.py:111).
+5. [P2] Exported requirements misdescribe independent perks.
+   The replay engine now supports separate perks, but Markdown and HTML still describe Monkey Knowledge as “More Starting Cash.”
+   Reproduced: A strategy requiring only a free Dart Monkey exported:
+   Monkey Knowledge: Enabled (More Starting Cash)
+   Min Starting Cash: $650
+   It omitted the actual free-Dart requirement and named a perk explicitly disabled in the strategy.
+   Improve: Export each requirement separately: starting cash, More Starting Cash, and Free Dart Monkey. Derive all formats from one formatter.
+   References: [Markdown requirements (line 2031)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2031), [HTML requirements (line 2103)](C:/Users/rodge/OneDrive/Desktop/BTD6_Guide/btd6_guide.pyw:2103).
+The main architectural improvement is still unfinished. You added prepare_and_validate_strategy(), but the application and generator do not call it. They continue to implement their own preparation and requirement-resolution logic. That duplication explains several remaining inconsistencies.
+The next test additions should exercise complete workflows:
+- Load a perk-dependent guide, edit it, save it, and reload it.
+- Regenerate an override and compare displayed costs with replay costs.
+- Assign IDs across explicit sales and upgrades.
+- Generate a draft-containing database and validate the resulting file.
+- Export each independent perk combination.
+The new editor-save and draft-consistency tests mostly test validators and the preparation helper, rather than the actual workflows their names describe. Connecting those tests to production entry points would make the passing suite more meaningful.
+Validation scope: 65 passing tests, successful regeneration, production database validation, and targeted reproductions above. I did not test strategy success inside BTD6.

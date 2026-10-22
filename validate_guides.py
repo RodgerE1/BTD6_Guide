@@ -51,7 +51,7 @@ def validate_database(data=None, db_path=None):
         "total_maps": 0,
         "category_counts": {},
         "status_counts": {"Playtested": 0, "Structurally Validated": 0, "Verified": 0, "Needs Review": 0},
-        "difficulty_counts": {"Easy": 0, "Medium": 0, "Hard": 0}
+        "difficulty_counts": {"Easy": 0, "Medium": 0, "Hard": 0, "Impoppable": 0}
     }
 
     # 1. Root structure checks
@@ -97,7 +97,7 @@ def validate_database(data=None, db_path=None):
             errors.append(f"Map '{map_id}' difficulties must be a dictionary.")
             continue
 
-        for diff_name in ["Easy", "Medium", "Hard"]:
+        for diff_name in ["Easy", "Medium", "Hard", "Impoppable"]:
             if diff_name not in difficulties or difficulties[diff_name] is None:
                 errors.append(f"Map '{map_id}' is missing {diff_name} strategy")
                 continue
@@ -108,9 +108,10 @@ def validate_database(data=None, db_path=None):
             status = strat.get("status", "Needs Review") if isinstance(strat, dict) else "Needs Review"
             stats["status_counts"][status] = stats["status_counts"].get(status, 0) + 1
 
-            # Validate using shared strategy validator
+            # Validate using shared strategy validator (drafts permit tactical warnings)
+            is_draft = status in ("Draft", "Needs Review", "Unverified Draft")
             ok, strat_errors, strat_warnings, _ = validate_strategy(
-                strat, map_context=map_data, diff_name=diff_name, strict_threats=True
+                strat, map_context=map_data, diff_name=diff_name, strict_threats=(not is_draft)
             )
             if not ok:
                 for err in strat_errors:
@@ -140,7 +141,7 @@ def run_cli_validation():
     print(f"\nVerification Breakdown:")
     for st_name, count in stats.get("status_counts", {}).items():
         if count > 0:
-            print(f"  - {st_name:24} {count:3} / {EXPECTED_TOTAL_MAPS * 3}")
+            print(f"  - {st_name:24} {count:3} / {EXPECTED_TOTAL_MAPS * 4}")
 
     print(f"\nValidation Diagnostics:")
     print(f"  - Invariant Violations (Errors): {len(errors)}")

@@ -26,9 +26,45 @@ from tkinter import ttk, messagebox, font, filedialog
 from heroes_data import HEROES_DATABASE, get_best_hero_for_map, get_strategy_hero_intel
 from threat_radar_data import get_round_data, check_strategy_defense_readiness, DANGER_ROUNDS
 from btd6_economy import parse_upgrade, is_legal_crosspath, get_cumulative_cash_ceiling
-from btd6_replay import validate_strategy, assign_explicit_tower_ids, validate_strategy_schema
+from btd6_replay import (
+    validate_strategy,
+    assign_explicit_tower_ids,
+    validate_strategy_schema,
+    prepare_and_validate_strategy,
+    resolve_strategy_perks,
+)
 
 USER_OVERRIDES_PATH = os.path.join(os.path.dirname(__file__), "user_overrides.json")
+
+def format_strategy_requirements(strat, format_type="markdown"):
+    req = strat.get("requirements") if isinstance(strat, dict) and isinstance(strat.get("requirements"), dict) else {}
+    perks = resolve_strategy_perks(strat)
+    cash = req.get("required_starting_cash") or strat.get("starting_cash", 650)
+    more_cash = perks["more_starting_cash"]
+    free_dart = perks["free_dart_monkey"]
+    mk_active = perks["monkey_knowledge"]
+    game_ver = req.get("game_version", "v45.0")
+
+    more_cash_display = "Enabled (+$200)" if more_cash else "None / Disabled"
+    free_dart_display = "Enabled" if free_dart else "None / Disabled"
+    mk_display = "Active" if mk_active else "None / Standard Base"
+
+    if format_type == "markdown":
+        return {
+            "cash": cash,
+            "more_cash_display": more_cash_display,
+            "free_dart_display": free_dart_display,
+            "mk_display": mk_display,
+            "game_ver": game_ver,
+            "summary_line": f"**Starting Cash:** ${cash:,} | **More Starting Cash:** {more_cash_display} | **Free Dart Monkey:** {free_dart_display} | **General MK:** {mk_display}"
+        }
+    return {
+        "cash": cash,
+        "more_cash_display": more_cash_display,
+        "free_dart_display": free_dart_display,
+        "mk_display": mk_display,
+        "game_ver": game_ver
+    }
 
 # Enable High-DPI awareness on Windows for crisp typography
 try:
@@ -439,7 +475,7 @@ class DataManager:
 class BTD6GuideApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Bloons TD 6 — Offline Strategy Guide (Easy, Medium & Hard)")
+        self.title("Bloons TD 6 — Offline Strategy Guide (Easy, Medium, Hard & Impoppable)")
         self.geometry("1240x860")
         self.minsize(960, 640)
         self.configure(bg=THEME["bg"])
@@ -456,7 +492,9 @@ class BTD6GuideApp(tk.Tk):
         self.selected_map_name = tk.StringVar()
         
         last_diff = self.settings.data.get("last_difficulty", "Easy")
-        if last_diff == "Hard":
+        if last_diff == "Impoppable":
+            init_diff_str = "Impoppable (Rounds 6–100)"
+        elif last_diff == "Hard":
             init_diff_str = "Hard (Rounds 3–80)"
         elif last_diff == "Medium":
             init_diff_str = "Medium (Rounds 1–60)"
@@ -819,15 +857,15 @@ class BTD6GuideApp(tk.Tk):
         self.map_combo.pack(side="left", padx=(0, 10))
         self.map_combo.bind("<<ComboboxSelected>>", self.on_map_selected)
 
-        # Difficulty Selector (Easy, Medium & Hard fully supported!)
+        # Difficulty Selector (Easy, Medium, Hard & Impoppable fully supported!)
         tk.Label(row2, text="Diff:", font=("Segoe UI", 9, "bold"), bg=THEME["bg"], fg=THEME["text_primary"]).pack(side="left", padx=(0, 4))
         self.diff_combo = ttk.Combobox(
             row2,
             textvariable=self.selected_difficulty,
-            values=["Easy (Rounds 1–40)", "Medium (Rounds 1–60)", "Hard (Rounds 3–80)", "Impoppable (Coming Soon)", "CHIMPS (Coming Soon)"],
+            values=["Easy (Rounds 1–40)", "Medium (Rounds 1–60)", "Hard (Rounds 3–80)", "Impoppable (Rounds 6–100)", "CHIMPS (Coming Soon)"],
             style="Dark.TCombobox",
             state="readonly",
-            width=22,
+            width=24,
             font=("Segoe UI", 10)
         )
         self.diff_combo.pack(side="left", padx=(0, 10))
@@ -1336,7 +1374,9 @@ class BTD6GuideApp(tk.Tk):
 
     def get_selected_diff_key(self):
         diff_str = self.selected_difficulty.get()
-        if "Hard" in diff_str:
+        if "Impoppable" in diff_str:
+            return "Impoppable"
+        elif "Hard" in diff_str:
             return "Hard"
         elif "Medium" in diff_str:
             return "Medium"
@@ -1369,10 +1409,10 @@ class BTD6GuideApp(tk.Tk):
 
     def on_difficulty_selected(self, event=None):
         diff_str = self.selected_difficulty.get()
-        if not ("Easy" in diff_str or "Medium" in diff_str or "Hard" in diff_str):
+        if not any(d in diff_str for d in ("Easy", "Medium", "Hard", "Impoppable")):
             messagebox.showinfo(
                 "Difficulty Notice",
-                f"{diff_str} is scheduled for future expansion.\n\nCurrently displaying the full Easy (R1–40), Medium (R1–60), and Hard (R3–80) guides."
+                f"{diff_str} is scheduled for future expansion.\n\nCurrently displaying the full Easy (R1–40), Medium (R1–60), Hard (R3–80), and Impoppable (R6–100) guides."
             )
             self.selected_difficulty.set("Easy (Rounds 1–40)")
 
@@ -1387,10 +1427,10 @@ class BTD6GuideApp(tk.Tk):
     def reload_database(self):
         if self.data_manager.load():
             total, playtested, struct_val, needs_rev, _ = self.data_manager.get_statistics()
-            self.stats_label.configure(text=f"📊 {total} Maps ({total * 3} Strats)  •  {struct_val} Structurally Validated  •  {playtested} Playtested  •  100% Offline")
+            self.stats_label.configure(text=f"📊 {total} Maps ({total * 4} Strats)  •  {struct_val} Structurally Validated  •  {playtested} Playtested  •  100% Offline")
             self.filter_maps()
             self.render_guide()
-            messagebox.showinfo("Database Reloaded", "Successfully reloaded guides.json with Easy, Medium & Hard strategies!")
+            messagebox.showinfo("Database Reloaded", "Successfully reloaded guides.json with Easy, Medium, Hard & Impoppable strategies!")
 
     def clear_guide_display(self, message=""):
         for child in self.scrollable_frame.winfo_children():
@@ -2027,18 +2067,14 @@ class BTD6GuideApp(tk.Tk):
             strat = self.get_current_strategy(map_data)
         if not map_data or not strat:
             return
-        req = strat.get("requirements", {}) if isinstance(strat, dict) else {}
-        req_mk = bool(req.get("monkey_knowledge") or strat.get("starting_cash") == 850)
-        req_cash = req.get("required_starting_cash") or strat.get("starting_cash", 650)
-        mk_str = "Enabled (More Starting Cash)" if req_mk else "None / Standard"
-        game_ver = req.get("game_version", "v45.0")
+        req_info = format_strategy_requirements(strat, format_type="markdown")
 
         lines = [
             f"# {map_data.get('name')} — {strat.get('difficulty')} Mode (Rounds {strat.get('rounds')})",
             f"**Category:** {map_data.get('category')} | **Terrain:** {map_data.get('terrain')} | **Lanes:** {map_data.get('lanes')}",
             f"**👑 Optimal Hero:** {strat.get('recommended_hero')} (Alternatives: {', '.join(strat.get('hero_alternatives', []))})",
-            f"**Starting Cash:** ${req_cash} | **Status:** {strat.get('status')} | **Game Version:** {game_ver}",
-            f"**Requirements:** Monkey Knowledge: {mk_str} | Min Starting Cash: ${req_cash}",
+            f"**Starting Cash:** ${req_info['cash']:,} | **Status:** {strat.get('status')} | **Game Version:** {req_info['game_ver']}",
+            f"**Requirements:** {req_info['summary_line']}",
             "",
             "## 📖 Tactical Overview",
             strat.get("overview", ""),
@@ -2099,11 +2135,12 @@ class BTD6GuideApp(tk.Tk):
             return None
 
         diff_name = strat.get("difficulty", "Easy")
-        req = strat.get("requirements", {}) if isinstance(strat, dict) else {}
-        req_mk = bool(req.get("monkey_knowledge") or strat.get("starting_cash") == 850)
-        req_cash = req.get("required_starting_cash") or strat.get("starting_cash", 650)
-        mk_display = "Required (+More Cash)" if req_mk else "Not Required"
-        game_ver = req.get("game_version", "v45.0")
+        req_info = format_strategy_requirements(strat, format_type="html")
+        req_cash = req_info["cash"]
+        more_cash_display = req_info["more_cash_display"]
+        free_dart_display = req_info["free_dart_display"]
+        mk_display = req_info["mk_display"]
+        game_ver = req_info["game_ver"]
         safe_mid = mid or map_data.get("id") or map_data.get("name", "strategy").lower().replace(" ", "_")
         html_filename = f"{safe_mid}_{diff_name.lower()}_guide.html"
         html_path = output_path if output_path else os.path.join(os.path.dirname(__file__), html_filename)
@@ -2178,7 +2215,9 @@ class BTD6GuideApp(tk.Tk):
         <div class="meta-item"><div class="meta-title">Terrain & Lanes</div><div class="meta-val">{html.escape(str(map_data.get('terrain', '')))} ({html.escape(str(map_data.get('lanes', '')))})</div></div>
         <div class="meta-item"><div class="meta-title">Water Support</div><div class="meta-val">{'Yes (Sub / Buccaneer)' if map_data.get('water') else 'No (Land Only)'}</div></div>
         <div class="meta-item"><div class="meta-title">Starting Cash</div><div class="meta-val">${html.escape(str(req_cash))}</div></div>
-        <div class="meta-item"><div class="meta-title">Monkey Knowledge</div><div class="meta-val">{html.escape(str(mk_display))}</div></div>
+        <div class="meta-item"><div class="meta-title">More Starting Cash</div><div class="meta-val">{html.escape(str(more_cash_display))}</div></div>
+        <div class="meta-item"><div class="meta-title">Free Dart Monkey</div><div class="meta-val">{html.escape(str(free_dart_display))}</div></div>
+        <div class="meta-item"><div class="meta-title">General MK</div><div class="meta-val">{html.escape(str(mk_display))}</div></div>
         <div class="meta-item"><div class="meta-title">Game Version</div><div class="meta-val">{html.escape(str(game_ver))}</div></div>
     </div>
     <div class="card">
@@ -2375,7 +2414,7 @@ class BTD6GuideApp(tk.Tk):
             return
 
         diff_key = strat.get("difficulty", "Easy")
-        if diff_key not in ("Easy", "Medium", "Hard"):
+        if diff_key not in ("Easy", "Medium", "Hard", "Impoppable"):
             diff_key = self.get_selected_diff_key()
             strat["difficulty"] = diff_key
 
@@ -2480,7 +2519,9 @@ class BTD6GuideApp(tk.Tk):
 
         if self.data_manager.save_override(target_mid, diff_key, strat):
             self.selected_map_name.set(map_data.get("name"))
-            if diff_key == "Hard":
+            if diff_key == "Impoppable":
+                self.selected_difficulty.set("Impoppable (Rounds 6–100)")
+            elif diff_key == "Hard":
                 self.selected_difficulty.set("Hard (Rounds 3–80)")
             elif diff_key == "Medium":
                 self.selected_difficulty.set("Medium (Rounds 1–60)")
@@ -2688,10 +2729,13 @@ class BTD6GuideApp(tk.Tk):
                 strat_diff = strat.get("difficulty", "Medium")
                 tk.Label(c3, text=f"🛡️ DEFENSE READINESS FOR '{map_data.get('name')}' ({strat_diff} MODE)", font=self.font_heading, bg=THEME["card"], fg=THEME["accent_green"]).pack(anchor="w", pady=(0, 8))
 
+                strat_perks = resolve_strategy_perks(strat, default_monkey_knowledge=self.settings.is_monkey_knowledge())
                 readiness = check_strategy_defense_readiness(
                     r, strat.get("steps", []),
                     difficulty=strat_diff,
-                    monkey_knowledge=self.settings.is_monkey_knowledge()
+                    monkey_knowledge=strat_perks["monkey_knowledge"],
+                    more_starting_cash=strat_perks["more_starting_cash"],
+                    free_dart_monkey=strat_perks["free_dart_monkey"]
                 )
 
                 if readiness.get("replay_errors"):
@@ -2704,10 +2748,10 @@ class BTD6GuideApp(tk.Tk):
                         tk.Label(err_box, text=f"... and {len(readiness['replay_errors']) - 3} more errors", font=self.font_small, bg="#2a151b", fg="#f5c2e7").pack(anchor="w")
 
                 checks = [
-                    ("Camo Defense", readiness["camo_ready"], readiness["camo_towers"], "Round 24, 33, 42, 59, 78 require Camo detection."),
-                    ("Lead Popping", readiness["lead_ready"], readiness["lead_towers"], "Round 28, 30, 45, 59 require Lead popping."),
-                    ("Blimp / MOAB Damage", readiness["moab_ready"], readiness["moab_towers"], "Rounds 40, 50, 60, 80 require heavy blimp piercing power."),
-                    ("Ceramic Crowd Control", readiness["ceramic_ready"], readiness["ceramic_towers"], "Rounds 49, 63, 76, 78 require high pierce / AoE splash.")
+                    ("Camo Defense", readiness["camo_ready"], readiness["camo_towers"], "Round 24, 33, 42, 59, 78, 90 require Camo detection."),
+                    ("Lead Popping", readiness["lead_ready"], readiness["lead_towers"], "Round 28, 30, 45, 59, 90 require Lead popping."),
+                    ("Blimp / MOAB Damage", readiness["moab_ready"], readiness["moab_towers"], "Rounds 40, 50, 60, 80, 100 require heavy blimp piercing power."),
+                    ("Ceramic Crowd Control", readiness["ceramic_ready"], readiness["ceramic_towers"], "Rounds 49, 63, 76, 78, 98 require high pierce / AoE splash.")
                 ]
 
                 for name, ready, towers, tip in checks:
@@ -3201,44 +3245,20 @@ class BTD6GuideApp(tk.Tk):
             is_draft = draft_strat.get("status") in ("Draft", "Needs Review", "Unverified Draft")
 
             # 2. Step Count Requirement (enforced only for non-draft strategies)
-            min_steps = 5 if diff_key == "Easy" else (8 if diff_key == "Medium" else 12)
+            min_steps = 14 if diff_key in ("Impoppable", "CHIMPS") else (12 if diff_key == "Hard" else (8 if diff_key == "Medium" else 5))
             if len(final_steps) < min_steps and not is_draft:
                 messagebox.showerror("Validation Failed", f"{diff_key} strategy requires at least {min_steps} steps (found {len(final_steps)}).")
                 return
 
-            # Ensure stable step_id on all steps
-            for idx, s in enumerate(draft_strat.get("steps", [])):
-                if isinstance(s, dict) and "step_id" not in s:
-                    s["step_id"] = f"{mid}_{diff_key.lower()}_s{s.get('step_number', idx + 1)}"
-
-            # Ensure explicit tower_id across all draft steps
-            assign_explicit_tower_ids(draft_strat, mid, diff_key)
-
-            # Store requirements with draft strategy
-            is_mk = self.settings.is_monkey_knowledge()
-            req = draft_strat.get("requirements") if isinstance(draft_strat.get("requirements"), dict) else {}
-            req["monkey_knowledge"] = is_mk
-            req["more_starting_cash"] = is_mk and (draft_strat.get("starting_cash") == 850)
-            req["free_dart_monkey"] = req.get("free_dart_monkey", False)
-            req["required_starting_cash"] = draft_strat.get("starting_cash", 850 if is_mk else 650)
-            req["game_version"] = req.get("game_version", "v45.0")
-
-            # Check opening round spending safely (all costs validated as numbers by schema)
-            start_r = 3 if diff_key == "Hard" else 1
-            start_spend = sum(s.get("cost_estimate", 0) for s in draft_strat.get("steps", []) if isinstance(s, dict) and s.get("round") == start_r)
-            if start_spend > 650 and is_mk:
-                draft_strat["starting_cash"] = 850
-                req["more_starting_cash"] = True
-                req["required_starting_cash"] = 850
-            draft_strat["requirements"] = req
-
-            # 3. Strict Replay, Economic & Threat Invariant Validation on Draft
-            is_valid, val_errors, val_warns, _ = validate_strategy(
+            # 3. Prepare, assign IDs, preserve requirements, sync costs, and validate via unified pipeline
+            is_valid, val_errors, val_warns, prep_strat = prepare_and_validate_strategy(
                 draft_strat,
                 map_context=map_data,
                 diff_name=diff_key,
+                map_id=mid,
+                monkey_knowledge=None,  # Preserves strategy's recorded perk requirements
                 strict_threats=(not is_draft),
-                monkey_knowledge=is_mk
+                sync_costs=True
             )
             if not is_valid:
                 err_msg = "\n• " + "\n• ".join(val_errors[:6])
@@ -3247,7 +3267,9 @@ class BTD6GuideApp(tk.Tk):
                 messagebox.showerror("Strategy Validation Failed", f"Strategy cannot be saved due to invariant violations:{err_msg}\n\nPlease correct these issues before saving.")
                 return
 
-            # 3. Save override to disk first, then commit to live state only upon success
+            draft_strat = prep_strat
+
+            # 4. Save override to disk first, then commit to live state only upon success
             if self.data_manager.save_override(mid, diff_key, draft_strat):
                 strat.clear()
                 strat.update(draft_strat)

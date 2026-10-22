@@ -166,14 +166,22 @@ def get_round_data(round_num):
         "cash": comp.get("cash", 0)
     }
 
-def check_strategy_defense_readiness(round_num, strategy_steps, difficulty="Medium", monkey_knowledge=False):
+def check_strategy_defense_readiness(round_num, strategy_steps, difficulty="Medium", monkey_knowledge=False,
+                                  more_starting_cash=None, free_dart_monkey=None):
     """
     Evaluates whether the provided strategy steps up to round_num have adequate
     Camo, Lead, Blimp, and Ceramic popping coverage using the shared TowerReplayEngine.
     Rejects orphan upgrades and ambiguous tower state mutations.
     """
-    start_r = 3 if difficulty == "Hard" else 1
-    engine = TowerReplayEngine(difficulty=difficulty, start_round=start_r, max_round=100, monkey_knowledge=monkey_knowledge)
+    start_r = 6 if difficulty in ("Impoppable", "CHIMPS") else (3 if difficulty == "Hard" else 1)
+    engine = TowerReplayEngine(
+        difficulty=difficulty,
+        start_round=start_r,
+        max_round=100,
+        monkey_knowledge=monkey_knowledge,
+        more_starting_cash=more_starting_cash,
+        free_dart_monkey=free_dart_monkey
+    )
 
     for idx, s in enumerate(strategy_steps):
         if not isinstance(s, dict):

@@ -16,9 +16,17 @@ from map_data_advanced import ADVANCED_MAPS
 from map_data_expert import EXPERT_MAPS
 from map_data_medium import build_medium_strategy
 from map_data_hard import build_hard_strategy
+from map_data_impoppable import build_impoppable_strategy
 from heroes_data import get_best_hero_for_map, get_strategy_hero_intel
 from btd6_economy import get_cash_available
-from btd6_replay import validate_strategy, normalize_map_strategies, assign_explicit_tower_ids, TowerReplayEngine
+from btd6_replay import (
+    validate_strategy,
+    normalize_map_strategies,
+    assign_explicit_tower_ids,
+    prepare_and_validate_strategy,
+    resolve_strategy_perks,
+    TowerReplayEngine,
+)
 
 USER_OVERRIDES_PATH = os.path.join(os.path.dirname(__file__), "user_overrides.json")
 
@@ -62,9 +70,10 @@ def compile_database(output_path=None):
         if "difficulties" in mdata:
             mdata["difficulties"]["Medium"] = build_medium_strategy(mid, mdata)
             mdata["difficulties"]["Hard"] = build_hard_strategy(mid, mdata)
+            mdata["difficulties"]["Impoppable"] = build_impoppable_strategy(mid, mdata)
 
             # Assign hero tactical reason and synergies tailored to each difficulty's build hero
-            for diff in ["Easy", "Medium", "Hard"]:
+            for diff in ["Easy", "Medium", "Hard", "Impoppable"]:
                 diff_strat = mdata["difficulties"].get(diff)
                 if not diff_strat:
                     continue
@@ -82,51 +91,35 @@ def compile_database(output_path=None):
                     mdata["difficulties"][diff] = override_strat
                     print(f"Preserved user override for {mid} [{diff}]")
 
-        # Assign explicit tower IDs, stable step IDs, and sync exact costs for all steps
-        for diff in ["Easy", "Medium", "Hard"]:
+        # Assign explicit tower IDs, stable step IDs, sync exact costs, and validate
+        for diff in ["Easy", "Medium", "Hard", "Impoppable"]:
             strat = mdata.get("difficulties", {}).get(diff)
             if not strat:
                 continue
 
-            # 1. Assign persistent tower IDs
-            assign_explicit_tower_ids(strat, mid, diff)
-
-            # 2. Assign stable step IDs and sync cost_estimate with exact canonical pricing
-            start_round = 3 if diff == "Hard" else 1
-            max_round = 40 if diff == "Easy" else (60 if diff == "Medium" else 80)
-            engine = TowerReplayEngine(difficulty=diff, start_round=start_round, max_round=max_round)
-            for idx, s in enumerate(strat.get("steps", [])):
-                if "step_id" not in s:
-                    s["step_id"] = f"{mid}_{diff.lower()}_s{s.get('step_number', idx + 1)}"
-                if "timing" not in s:
-                    s["timing"] = "before_round"
-
-                success, _ = engine.apply_step(s, idx)
-                if success and engine.step_history:
-                    exact_cost = engine.step_history[-1].get("cost", s.get("cost_estimate", 0))
-                    s["cost_estimate"] = exact_cost
-
-            # 3. Pre-validate before accepting into compilation
             is_draft = strat.get("status") in ("Draft", "Needs Review", "Unverified Draft")
-            is_valid, val_errs, _, _ = validate_strategy(
+            is_valid, val_errs, _, prep_strat = prepare_and_validate_strategy(
                 strat,
                 map_context=mdata,
                 diff_name=diff,
-                strict_threats=(not is_draft)
+                map_id=mid,
+                strict_threats=(not is_draft),
+                sync_costs=True
             )
             if not is_valid:
                 raise ValueError(f"Strategy {mid} [{diff}] failed pre-validation:\n" + "\n".join(val_errs[:5]))
+            mdata["difficulties"][diff] = prep_strat
 
     # Sort maps alphabetically by map name
     sorted_maps = dict(sorted(all_maps.items(), key=lambda item: item[1]["name"].lower()))
 
     # Build top-level database structure
     database = {
-        "version": "1.4.0",
+        "version": "1.5.0",
         "last_updated": datetime.date.today().isoformat(),
         "total_maps": len(sorted_maps),
-        "supported_difficulties": ["Easy", "Medium", "Hard"],
-        "future_expansion_difficulties": ["Impoppable", "CHIMPS"],
+        "supported_difficulties": ["Easy", "Medium", "Hard", "Impoppable"],
+        "future_expansion_difficulties": ["CHIMPS"],
         "category_counts": {
             "Beginner": len(BEGINNER_MAPS),
             "Intermediate": len(INTERMEDIATE_MAPS),
@@ -156,11 +149,11 @@ def compile_database(output_path=None):
     # Verification status breakdown
     statuses = {"Playtested": 0, "Structurally Validated": 0, "Verified": 0, "Needs Review": 0}
     for m in sorted_maps.values():
-        for diff in ["Easy", "Medium", "Hard"]:
+        for diff in ["Easy", "Medium", "Hard", "Impoppable"]:
             st = m["difficulties"].get(diff, {}).get("status", "Needs Review")
             statuses[st] = statuses.get(st, 0) + 1
 
-    total_strat = len(sorted_maps) * 3
+    total_strat = len(sorted_maps) * 4
     print(f"\nStrategy Verification Breakdown:")
     for st_name, count in statuses.items():
         if count > 0:

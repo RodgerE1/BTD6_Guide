@@ -589,6 +589,30 @@ def assign_explicit_tower_ids(strategy, map_id, diff):
             })
         elif act in ("Upgrade", "Target", "Sell"):
             if s.get("tower_id"):
+                # Preserve state tracking for explicit tower IDs
+                explicit_id = s.get("tower_id")
+                matched = None
+                for c in active_towers.get(tow, []):
+                    if c["id"] == explicit_id:
+                        matched = c
+                        break
+                if not matched:
+                    for c_list in active_towers.values():
+                        for c in c_list:
+                            if c["id"] == explicit_id:
+                                matched = c
+                                break
+                        if matched:
+                            break
+                if matched:
+                    if act == "Upgrade":
+                        upg_parsed = parse_upgrade(s.get("upgrade", "0-0-0"))
+                        if upg_parsed:
+                            matched["upgrade"] = upg_parsed
+                    elif act == "Sell":
+                        for c_list in active_towers.values():
+                            if matched in c_list:
+                                c_list.remove(matched)
                 continue
             candidates = active_towers.get(tow, [])
             if candidates:
@@ -626,7 +650,7 @@ def validate_strategy_schema(strategy):
         return False, ["Strategy object must be a JSON dictionary."]
 
     diff = strategy.get("difficulty", "Easy")
-    if diff not in ("Easy", "Medium", "Hard"):
+    if diff not in ("Easy", "Medium", "Hard", "Impoppable", "CHIMPS"):
         errors.append(f"Invalid strategy difficulty '{diff}'.")
 
     req_fields = [
@@ -742,6 +766,45 @@ def validate_strategy_schema(strategy):
     return (len(errors) == 0), errors
 
 
+def resolve_strategy_perks(strategy, default_monkey_knowledge=False):
+    """
+    Authoritative helper to resolve independent Monkey Knowledge perks from a strategy.
+    Preserves recorded requirements unless explicitly overridden.
+    """
+    req = strategy.get("requirements") if isinstance(strategy, dict) and isinstance(strategy.get("requirements"), dict) else {}
+    more_starting_cash = req.get("more_starting_cash")
+    free_dart_monkey = req.get("free_dart_monkey")
+    mk = req.get("monkey_knowledge")
+    
+    if mk is None:
+        if more_starting_cash is not None or free_dart_monkey is not None:
+            mk = bool(more_starting_cash or free_dart_monkey)
+        elif isinstance(strategy, dict):
+            strat_mk = strategy.get("monkey_knowledge")
+            if strat_mk is not None:
+                mk = bool(strat_mk)
+            elif strategy.get("starting_cash") == 850:
+                mk = True
+            else:
+                mk = bool(default_monkey_knowledge)
+        else:
+            mk = bool(default_monkey_knowledge)
+
+    if more_starting_cash is None:
+        if isinstance(strategy, dict) and strategy.get("starting_cash") == 850:
+            more_starting_cash = True
+        else:
+            more_starting_cash = bool(mk)
+    if free_dart_monkey is None:
+        free_dart_monkey = bool(mk)
+
+    return {
+        "monkey_knowledge": bool(mk),
+        "more_starting_cash": bool(more_starting_cash),
+        "free_dart_monkey": bool(free_dart_monkey)
+    }
+
+
 def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats=True, monkey_knowledge=None,
                       more_starting_cash=None, free_dart_monkey=None):
     """
@@ -759,31 +822,18 @@ def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats
         return False, schema_errors, warnings, stats
 
     diff = diff_name or strategy.get("difficulty", "Easy")
-    start_round = 3 if diff == "Hard" else 1
-    max_round = 40 if diff == "Easy" else (60 if diff == "Medium" else 80)
-    min_steps = 5 if diff == "Easy" else (8 if diff == "Medium" else 12)
+    start_round = 6 if diff in ("Impoppable", "CHIMPS") else (3 if diff == "Hard" else 1)
+    max_round = 100 if diff in ("Impoppable", "CHIMPS") else (80 if diff == "Hard" else (60 if diff == "Medium" else 40))
+    min_steps = 14 if diff in ("Impoppable", "CHIMPS") else (12 if diff == "Hard" else (8 if diff == "Medium" else 5))
 
     # Infer independent perks from strategy requirements if not explicitly supplied
-    req = strategy.get("requirements") if isinstance(strategy, dict) and isinstance(strategy.get("requirements"), dict) else {}
+    resolved = resolve_strategy_perks(strategy, default_monkey_knowledge=False)
     if more_starting_cash is None:
-        more_starting_cash = req.get("more_starting_cash")
+        more_starting_cash = resolved["more_starting_cash"]
     if free_dart_monkey is None:
-        free_dart_monkey = req.get("free_dart_monkey")
+        free_dart_monkey = resolved["free_dart_monkey"]
     if monkey_knowledge is None:
-        if req.get("monkey_knowledge") is not None:
-            monkey_knowledge = bool(req.get("monkey_knowledge"))
-        elif more_starting_cash is not None or free_dart_monkey is not None:
-            monkey_knowledge = bool(more_starting_cash or free_dart_monkey)
-        else:
-            monkey_knowledge = bool(
-                strategy.get("monkey_knowledge")
-                or (strategy.get("starting_cash", 650) == 850)
-            )
-
-    if more_starting_cash is None:
-        more_starting_cash = monkey_knowledge
-    if free_dart_monkey is None:
-        free_dart_monkey = monkey_knowledge
+        monkey_knowledge = resolved["monkey_knowledge"]
 
     starting_cash = strategy.get("starting_cash", 650)
     expected_cash = get_starting_cash(diff, more_starting_cash=more_starting_cash)
@@ -849,6 +899,15 @@ def validate_strategy(strategy, map_context=None, diff_name=None, strict_threats
         if not cov80["zomg"]:
             threat_issues.append("Defense lacks endgame blimp destruction for Round 80 ZOMG.")
 
+    if max_round >= 100:
+        cov90 = engine.evaluate_threat_coverage(90)
+        if not (cov90["camo"] and (cov90["lead"] or cov90["zomg"])):
+            threat_issues.append("Defense lacks Camo Lead / DDT popping power for Round 90 DDTs.")
+
+        cov100 = engine.evaluate_threat_coverage(100)
+        if not (cov100["zomg"] or cov100["moab"]):
+            threat_issues.append("Defense lacks massive single-target damage for Round 100 BAD.")
+
     if threat_issues:
         if strict_threats:
             errors.extend(threat_issues)
@@ -871,15 +930,17 @@ def prepare_and_validate_strategy(
     monkey_knowledge=None,
     more_starting_cash=None,
     free_dart_monkey=None,
-    strict_threats=None
+    strict_threats=None,
+    sync_costs=True
 ):
     """
     Unified authoritative strategy preparation and validation pipeline.
     1. Runs schema validation first (rejects malformed types/costs/requirements before any mutations).
     2. Determines draft status and establishes consistent policy.
     3. Assigns stable step IDs and explicit tower IDs.
-    4. Normalizes and validates requirements.
-    5. Runs full transactional replay simulation and tactical checks.
+    4. Normalizes and preserves requirements without overwriting unedited perks.
+    5. Optionally synchronizes step displayed costs with exact replay execution pricing.
+    6. Runs full transactional replay simulation and tactical checks.
     Returns: (is_valid: bool, errors: list, warnings: list, prepared_strategy: dict)
     """
     if not isinstance(strategy, dict):
@@ -892,7 +953,7 @@ def prepare_and_validate_strategy(
 
     diff = diff_name or strategy.get("difficulty", "Easy")
     status = strategy.get("status", "Needs Review")
-    is_draft = status in ("Draft", "Needs Review")
+    is_draft = status in ("Draft", "Needs Review", "Unverified Draft")
 
     if strict_threats is None:
         strict_threats = not is_draft
@@ -909,15 +970,52 @@ def prepare_and_validate_strategy(
 
     assign_explicit_tower_ids(strategy, target_mid, diff)
 
-    # 3. Replay and Economic Validation
+    # 3. Resolve and preserve requirements
+    perks = resolve_strategy_perks(strategy, default_monkey_knowledge=(monkey_knowledge if monkey_knowledge is not None else False))
+    if monkey_knowledge is not None:
+        perks["monkey_knowledge"] = bool(monkey_knowledge)
+    if more_starting_cash is not None:
+        perks["more_starting_cash"] = bool(more_starting_cash)
+    if free_dart_monkey is not None:
+        perks["free_dart_monkey"] = bool(free_dart_monkey)
+
+    req = strategy.get("requirements") if isinstance(strategy.get("requirements"), dict) else {}
+    req["monkey_knowledge"] = perks["monkey_knowledge"]
+    req["more_starting_cash"] = perks["more_starting_cash"]
+    req["free_dart_monkey"] = perks["free_dart_monkey"]
+    req["required_starting_cash"] = strategy.get("starting_cash", 850 if perks["more_starting_cash"] else 650)
+    req["game_version"] = req.get("game_version", "v45.0")
+    strategy["requirements"] = req
+
+    # 4. Synchronize costs if requested
+    if sync_costs:
+        start_round = 6 if diff in ("Impoppable", "CHIMPS") else (3 if diff == "Hard" else 1)
+        max_round = 100 if diff in ("Impoppable", "CHIMPS") else (80 if diff == "Hard" else (60 if diff == "Medium" else 40))
+        sync_engine = TowerReplayEngine(
+            difficulty=diff,
+            start_round=start_round,
+            max_round=max_round,
+            monkey_knowledge=perks["monkey_knowledge"],
+            more_starting_cash=perks["more_starting_cash"],
+            free_dart_monkey=perks["free_dart_monkey"]
+        )
+        for idx, s in enumerate(strategy.get("steps", [])):
+            if isinstance(s, dict):
+                s["cost_estimate"] = 0
+                success, _ = sync_engine.apply_step(s, idx)
+                if success and sync_engine.step_history:
+                    exact_cost = sync_engine.step_history[-1].get("cost", 0)
+                    s["cost_estimate"] = exact_cost
+
+    # 5. Replay and Economic Validation
     is_valid, errs, warns, stats = validate_strategy(
         strategy,
         map_context=map_context,
         diff_name=diff,
         strict_threats=strict_threats,
-        monkey_knowledge=monkey_knowledge,
-        more_starting_cash=more_starting_cash,
-        free_dart_monkey=free_dart_monkey
+        monkey_knowledge=perks["monkey_knowledge"],
+        more_starting_cash=perks["more_starting_cash"],
+        free_dart_monkey=perks["free_dart_monkey"]
     )
     return is_valid, errs, warns, strategy
 

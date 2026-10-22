@@ -45,23 +45,23 @@ CANONICAL_TOWERS = {
 }
 
 CANONICAL_HEROES = {
-    "Quincy": {"cost_easy": 455, "cost_medium": 540, "cost_hard": 585, "water": False},
-    "Gwendolin": {"cost_easy": 615, "cost_medium": 725, "cost_hard": 780, "water": False},
-    "Striker Jones": {"cost_easy": 640, "cost_medium": 750, "cost_hard": 810, "water": False},
-    "Obyn Greenfoot": {"cost_easy": 550, "cost_medium": 650, "cost_hard": 700, "water": False},
-    "Sauda": {"cost_easy": 510, "cost_medium": 600, "cost_hard": 650, "water": False},
-    "Psi": {"cost_easy": 680, "cost_medium": 800, "cost_hard": 865, "water": False},
-    "Etienne": {"cost_easy": 720, "cost_medium": 850, "cost_hard": 920, "water": False},
-    "Admiral Brickell": {"cost_easy": 640, "cost_medium": 750, "cost_hard": 810, "water": True},
-    "Benjamin": {"cost_easy": 1020, "cost_medium": 1200, "cost_hard": 1300, "water": False},
-    "Adora": {"cost_easy": 850, "cost_medium": 1000, "cost_hard": 1080, "water": False},
-    "Pat Fusty": {"cost_easy": 680, "cost_medium": 800, "cost_hard": 865, "water": True}, # Amphibious
-    "Churchill": {"cost_easy": 1530, "cost_medium": 1800, "cost_hard": 1945, "water": False},
-    "Captain Churchill": {"cost_easy": 1530, "cost_medium": 1800, "cost_hard": 1945, "water": False},
-    "Ezili": {"cost_easy": 510, "cost_medium": 600, "cost_hard": 650, "water": False},
-    "Geraldo": {"cost_easy": 550, "cost_medium": 650, "cost_hard": 700, "water": False},
-    "Corvus": {"cost_easy": 700, "cost_medium": 825, "cost_hard": 890, "water": False},
-    "Rosalia": {"cost_easy": 595, "cost_medium": 700, "cost_hard": 755, "water": False},
+    "Quincy": {"cost_easy": 455, "cost_medium": 540, "cost_hard": 585, "cost_impoppable": 650, "water": False},
+    "Gwendolin": {"cost_easy": 615, "cost_medium": 725, "cost_hard": 780, "cost_impoppable": 870, "water": False},
+    "Striker Jones": {"cost_easy": 640, "cost_medium": 750, "cost_hard": 810, "cost_impoppable": 900, "water": False},
+    "Obyn Greenfoot": {"cost_easy": 550, "cost_medium": 650, "cost_hard": 700, "cost_impoppable": 780, "water": False},
+    "Sauda": {"cost_easy": 510, "cost_medium": 600, "cost_hard": 650, "cost_impoppable": 720, "water": False},
+    "Psi": {"cost_easy": 680, "cost_medium": 800, "cost_hard": 865, "cost_impoppable": 960, "water": False},
+    "Etienne": {"cost_easy": 720, "cost_medium": 850, "cost_hard": 920, "cost_impoppable": 1020, "water": False},
+    "Admiral Brickell": {"cost_easy": 640, "cost_medium": 750, "cost_hard": 810, "cost_impoppable": 900, "water": True},
+    "Benjamin": {"cost_easy": 1020, "cost_medium": 1200, "cost_hard": 1300, "cost_impoppable": 1440, "water": False},
+    "Adora": {"cost_easy": 850, "cost_medium": 1000, "cost_hard": 1080, "cost_impoppable": 1200, "water": False},
+    "Pat Fusty": {"cost_easy": 680, "cost_medium": 800, "cost_hard": 865, "cost_impoppable": 960, "water": True}, # Amphibious
+    "Churchill": {"cost_easy": 1530, "cost_medium": 1800, "cost_hard": 1945, "cost_impoppable": 2160, "water": False},
+    "Captain Churchill": {"cost_easy": 1530, "cost_medium": 1800, "cost_hard": 1945, "cost_impoppable": 2160, "water": False},
+    "Ezili": {"cost_easy": 510, "cost_medium": 600, "cost_hard": 650, "cost_impoppable": 720, "water": False},
+    "Geraldo": {"cost_easy": 550, "cost_medium": 650, "cost_hard": 700, "cost_impoppable": 780, "water": False},
+    "Corvus": {"cost_easy": 700, "cost_medium": 825, "cost_hard": 890, "cost_impoppable": 990, "water": False},
+    "Rosalia": {"cost_easy": 595, "cost_medium": 700, "cost_hard": 755, "cost_impoppable": 840, "water": False},
 }
 
 ALL_VALID_TOWERS = set(CANONICAL_TOWERS.keys()) | set(CANONICAL_HEROES.keys())
@@ -86,6 +86,12 @@ def easy_to_medium_cost(cost_easy):
 
 def easy_to_hard_cost(cost_easy):
     return round_cost_to_5(cost_easy * (1.08 / 0.85))
+
+def hard_to_impoppable_cost(cost_hard):
+    return round_cost_to_5(cost_hard * (1.20 / 1.08))
+
+def medium_to_impoppable_cost(cost_medium):
+    return round_cost_to_5(cost_medium * 1.20)
 
 # ==============================================================================
 # CANONICAL UPGRADE COSTS (Medium Difficulty Standard Base)
@@ -337,7 +343,7 @@ def get_cumulative_cash_ceiling(difficulty, round_num, monkey_knowledge=False, m
     Returns the maximum realistic cumulative cash earned by the END of round_num,
     including starting cash (with optional Monkey Knowledge).
     """
-    start_round = 3 if difficulty == "Hard" else 1
+    start_round = 6 if difficulty in ("Impoppable", "CHIMPS") else (3 if difficulty == "Hard" else 1)
     starting_cash = get_starting_cash(difficulty, monkey_knowledge=monkey_knowledge, more_starting_cash=more_starting_cash)
     if round_num < start_round:
         return starting_cash
@@ -356,7 +362,7 @@ def get_cash_available(difficulty, round_num, timing="before_round", monkey_know
     - 'monkey_knowledge': optional boolean factoring in 'More Cash' perk (+$200 starting cash).
     - 'more_starting_cash': optional explicit boolean for the +$200 starting cash perk.
     """
-    start_round = 3 if difficulty == "Hard" else 1
+    start_round = 6 if difficulty in ("Impoppable", "CHIMPS") else (3 if difficulty == "Hard" else 1)
     starting_cash = get_starting_cash(difficulty, monkey_knowledge=monkey_knowledge, more_starting_cash=more_starting_cash)
     if round_num < start_round:
         return starting_cash
@@ -380,7 +386,7 @@ def get_earliest_affordable_round(difficulty, cumulative_cost, max_round=100, ti
     if not is_valid_numeric_cost(cumulative_cost):
         return None
 
-    start_round = 3 if difficulty == "Hard" else 1
+    start_round = 6 if difficulty in ("Impoppable", "CHIMPS") else (3 if difficulty == "Hard" else 1)
     starting_cash = get_starting_cash(difficulty, monkey_knowledge=monkey_knowledge)
     if cumulative_cost <= starting_cash:
         return start_round
